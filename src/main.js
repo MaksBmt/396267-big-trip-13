@@ -1,10 +1,16 @@
 import {createInformationTemplate} from "./view/information.js";
+import {createPriceTotalTemplate} from "./view/price-total.js";
 
 const renderHtml = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
 };
 
-const headerElement = document.querySelector(`.page-header`);
-const headerMainElement = headerElement.querySelector(`.trip-main`);
+const header = document.querySelector(`.page-header`);
+const headerMain = header.querySelector(`.trip-main`);
 
-renderHtml(headerMainElement, createInformationTemplate(), `afterbegin`);
+renderHtml(headerMain, createInformationTemplate(), `afterbegin`);
+
+const headerInformation = headerMain.querySelector(`.trip-info`);
+
+renderHtml(headerInformation, createPriceTotalTemplate(), `beforeend`);
+
