@@ -2,6 +2,7 @@ import {createInformationTemplate} from "./view/information.js";
 import {createPriceTotalTemplate} from "./view/price-total.js";
 import {createHeaderMenuTemplate} from "./view/header-menu.js";
 import {createFilterEventsTemplate} from "./view/filter-events.js";
+import {createFilterSortTemplate} from "./view/filter-sort.js";
 
 const renderHtml = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
@@ -22,3 +23,7 @@ const headerTitle = headerControl.querySelectorAll(`h2`);
 renderHtml(headerTitle[0], createHeaderMenuTemplate(), `afterend`);
 
 renderHtml(headerTitle[1], createFilterEventsTemplate(), `afterend`);
+
+const container = document.querySelector(`.trip-events`);
+
+renderHtml(container, createFilterSortTemplate(), `afterbegin`);
