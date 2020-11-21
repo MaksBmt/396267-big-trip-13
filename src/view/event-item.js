@@ -1,5 +1,5 @@
 export const createEventItem = (point) => {
-  const {type, city, price, offers} = point;
+  const {type, city, price} = point;
   return (`
   <li class="trip-events__item">
               <div class="event">
