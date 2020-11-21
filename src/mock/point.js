@@ -105,28 +105,35 @@ const generationOffers = () => {
   return offers;
 };
 
+const filterOffers = (type) => {
+  const tempNameOffers = [];
+  const used = {};
+  for (const p of generationOffers()) {
+    if (p.typeOffers.find((t) => t === type)) {
+      tempNameOffers.push(p);
+    }
+  }
+
+  const filtered = tempNameOffers.filter(function (obj) {
+    return obj.nameOffer in used ? 0 : (used[obj] = 1);
+
+  });
+
+  return filtered;
+};
+
+const resultGenerationTipe = generationTypes();
+
 export const generationPoint = () => {
   return {
-    type: generationTypes(),
+    type: resultGenerationTipe,
     city: generationCitys(),
     destination: {
       descriptions: generationDescription(),
       srcImg: generationSrc(),
     },
     price: Math.round(getRandomInteger(20, 250)),
-    offers: (type) => {
-      const tempNameOffers = [];
-      const used = {};
-      for (const p of generationOffers()) {
-        if (p.typeOffers.find((t) => t === type)) {
-          tempNameOffers.push(p);
-        }
-      }
-      tempNameOffers.filter(function (obj) {
-        return obj.nameOffer in used ? 0 : (used[obj.nameOffer] = 1);
-      });
-    }
+    offers: filterOffers(resultGenerationTipe),
   };
 };
-
 

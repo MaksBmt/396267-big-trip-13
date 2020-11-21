@@ -41,3 +41,4 @@ renderHtml(eventList, createFormEvent(), `beforeend`);
 for (let i = 0; i < POINT_COUNT; i++) {
   renderHtml(eventList, createEventItem(points[i]), `beforeend`);
 }
+
