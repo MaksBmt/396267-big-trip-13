@@ -6,8 +6,11 @@ import {createFilterSortTemplate} from "./view/filter-sort.js";
 import {createEventListTemplate} from "./view/event-list.js";
 import {createFormEvent} from "./view/form-event.js";
 import {createEventItem} from "./view/event-item.js";
+import {generationPoint} from "./mock/point.js";
 
-const POINT_COUNT = 3;
+const POINT_COUNT = 7;
+
+const points = new Array(POINT_COUNT).fill().map(generationPoint);
 
 const header = document.querySelector(`.page-header`);
 const headerMain = header.querySelector(`.trip-main`);
@@ -36,5 +39,5 @@ const eventList = container.querySelector(`.trip-events__list`);
 renderHtml(eventList, createFormEvent(), `beforeend`);
 
 for (let i = 0; i < POINT_COUNT; i++) {
-  renderHtml(eventList, createEventItem(), `beforeend`);
+  renderHtml(eventList, createEventItem(points[i]), `beforeend`);
 }
