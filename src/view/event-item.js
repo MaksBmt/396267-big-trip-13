@@ -1,5 +1,6 @@
 export const createEventItem = (point) => {
   const {type, city, price} = point;
+
   return (`
   <li class="trip-events__item">
               <div class="event">
@@ -20,14 +21,10 @@ export const createEventItem = (point) => {
                   &euro;&nbsp;<span class="event__price-value">${price}</span>
                 </p>
                 <h4 class="visually-hidden">Offers:</h4>
-                  <ul class="event__selected-offers">
-     
-                   <li class="event__offer">
-                    <span class="event__offer-title">Rent a car</span>
-                     &plus;&euro;&nbsp;
-                    <span class="event__offer-price">200</span>
-                  </li>
-                </ul>
+                <ul class="event__selected-offers">
+              
+                 
+              </ul>
       
                 <button class="event__favorite-btn  event__favorite-btn--active" type="button">
                   <span class="visually-hidden">Add to favorite</span>

@@ -122,18 +122,17 @@ const filterOffers = (type) => {
   return filtered;
 };
 
-const resultGenerationTipe = generationTypes();
-
 export const generationPoint = () => {
+  const resultGenerationType = generationTypes();
   return {
-    type: resultGenerationTipe,
+    type: resultGenerationType,
     city: generationCitys(),
     destination: {
       descriptions: generationDescription(),
       srcImg: generationSrc(),
     },
     price: Math.round(getRandomInteger(20, 250)),
-    offers: filterOffers(resultGenerationTipe),
+    offers: filterOffers(resultGenerationType),
   };
 };
 

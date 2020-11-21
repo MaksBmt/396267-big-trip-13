@@ -7,6 +7,7 @@ import {createEventListTemplate} from "./view/event-list.js";
 import {createFormEvent} from "./view/form-event.js";
 import {createEventItem} from "./view/event-item.js";
 import {generationPoint} from "./mock/point.js";
+import {createOffers} from "./view/offers.js";
 
 const POINT_COUNT = 7;
 
@@ -42,3 +43,11 @@ for (let i = 0; i < POINT_COUNT; i++) {
   renderHtml(eventList, createEventItem(points[i]), `beforeend`);
 }
 
+const listOffers = eventList.querySelectorAll(`.event__selected-offers`);
+for (let i = 0; i < POINT_COUNT; i++) {
+  if (points[i].offers.length > 0) {
+    for (let j = 0; j < points[i].offers.length; j++) {
+      renderHtml(listOffers[i], createOffers(points[i].offers[j]), `afterBegin`);
+    }
+  }
+}
