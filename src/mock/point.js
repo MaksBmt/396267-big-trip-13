@@ -3,6 +3,8 @@ const Price = {
   MAX: 250,
 };
 
+const citys = [`Sofia`, `Burgas`, `Blagoevgrad`, `Razlog`, `Primorsko`];
+
 const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
   const upper = Math.floor(Math.max(a, b));
@@ -18,8 +20,6 @@ const generationTypes = () => {
 };
 
 const generationCitys = () => {
-  const citys = [`Sofia`, `Burgas`, `Blagoevgrad`, `Razlog`, `Primorsko`];
-
   const randomIndex = getRandomInteger(0, citys.length - 1);
   return citys[randomIndex];
 };
@@ -103,43 +103,45 @@ const generationOffers = () => {
   const randomLength = getRandomInteger(0, 5);
   const offers = [];
 
+
   for (let i = 1; i <= randomLength; i++) {
     const randomIndex = getRandomInteger(0, offersLorem.length - 1);
-
-    // if (i >= 2) {
-    //   console.log('name ', offers[i - 2].name)
-
-    // }
-
     offers.push(offersLorem[randomIndex]);
-
   }
-
   return offers;
 };
 
 const filterOffers = (type) => {
   const tempNames = [];
-  const used = {};
-  for (const p of generationOffers()) {
+  // const used = {};
+  /* for (const  of generationOffers()) {
     if (p.type.find((t) => t === type)) {
       tempNames.push(p);
+
+    } */
+  for (const offer of generationOffers()) {
+    if (offer.type.includes(type)) {
+      tempNames.push(offer);
     }
   }
 
-  const filtered = tempNames.filter(function (obj) {
-    return obj.name in used ? 0 : (used[obj] = 1);
-
-  });
-
-  return filtered;
+  return tempNames;
 };
 
+/* const filtered = tempNames.filter(function (obj) {
+  return obj.name in used ? 0 : (used[obj] = 1);
+
+})
+
+return filtered;
+};
+*/
 export const generationPoint = () => {
   const resultGenerationType = generationTypes();
   return {
     type: resultGenerationType,
     city: generationCitys(),
+    cities: citys,
     destination: {
       descriptions: generationDescription(),
       srcImg: generationSrc(),

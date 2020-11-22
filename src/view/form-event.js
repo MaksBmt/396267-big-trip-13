@@ -1,4 +1,4 @@
-export const createFormEvent = () => {
+export const createFormEvent = ({type, city}) => {
   return (`
   <li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
@@ -69,16 +69,13 @@ export const createFormEvent = () => {
 
     <div class="event__field-group  event__field-group--destination">
       <label class="event__label  event__type-output" for="event-destination-1">
-        Flight
+        ${type}
       </label>
-      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="Geneva" list="destination-list-1">
+      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1">
       <datalist id="destination-list-1">
-        <option value="Amsterdam"></option>
-        <option value="Geneva"></option>
-        <option value="Chamonix"></option>
+
       </datalist>
     </div>
-
     <div class="event__field-group  event__field-group--time">
       <label class="visually-hidden" for="event-start-time-1">From</label>
       <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="19/03/19 00:00">
@@ -169,3 +166,22 @@ export const createFormEvent = () => {
 </li>
   `);
 };
+
+/* const createListDistanation = () => {
+  return (`
+  <datalist id="destination-list-1">
+  ${createOptionDistantion()}
+</datalist>
+  `);
+};
+
+for (const city of cities) {
+  const createOptionDistantion = () => {
+    return `<option value="${city}"></option>`;
+  }
+};
+ */
+
+/* option value="Amsterdam"></option>
+ <option value="Geneva"></option>
+ <option value="Chamonix"></option>  */
