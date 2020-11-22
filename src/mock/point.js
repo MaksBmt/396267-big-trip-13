@@ -1,3 +1,8 @@
+const Price = {
+  MIN: 20,
+  MAX: 250,
+};
+
 const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
   const upper = Math.floor(Math.max(a, b));
@@ -55,44 +60,44 @@ const generationSrc = () => {
 const generationOffers = () => {
   const offersLorem = [
     {
-      nameOffer: `Rent a car`,
-      priceOffers: getRandomInteger(20, 120),
-      typeOffers: [`Sightseeing`, `Restaurant`, `Train`]
+      name: `Rent a car`,
+      price: 75,
+      type: [`Sightseeing`, `Restaurant`, `Train`]
     },
     {
-      nameOffer: `Order Uber`,
-      priceOffers: getRandomInteger(10, 90),
-      typeOffers: [`Train`, `Ship`, ` Transport`, `Drive`, `Flight`]
+      name: `Order Uber`,
+      price: 50,
+      type: [`Train`, `Ship`, ` Transport`, `Drive`, `Flight`]
     },
     {
-      nameOffer: `Add luggage`,
-      priceOffers: getRandomInteger(5, 50),
-      typeOffers: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`]
+      name: `Add luggage`,
+      price: 30,
+      type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`]
     },
     {
-      nameOffer: `Switch to comfort`,
-      priceOffers: getRandomInteger(20, 120),
-      typeOffers: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`]
+      name: `Switch to comfort`,
+      price: 45,
+      type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`]
     },
     {
-      nameOffer: `Add breakfast`,
-      priceOffers: getRandomInteger(10, 40),
-      typeOffers: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`]
+      name: `Add breakfast`,
+      price: 25,
+      type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`]
     },
     {
-      nameOffer: `Book tickets`,
-      priceOffers: getRandomInteger(5, 30),
-      typeOffers: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`]
+      name: `Book tickets`,
+      price: 10,
+      type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`]
     },
     {
-      nameOffer: `Lunch in city`,
-      priceOffers: getRandomInteger(10, 50),
-      typeOffers: [`Transport`, `Drive`]
+      name: `Lunch in city`,
+      price: 25,
+      type: [`Transport`, `Drive`]
     },
     {
-      nameOffer: `Add meal`,
-      priceOffers: getRandomInteger(10, 40),
-      typeOffers: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`]
+      name: `Add meal`,
+      price: 28,
+      type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`]
     },
   ];
   const randomLength = getRandomInteger(0, 5);
@@ -100,22 +105,30 @@ const generationOffers = () => {
 
   for (let i = 1; i <= randomLength; i++) {
     const randomIndex = getRandomInteger(0, offersLorem.length - 1);
+
+    // if (i >= 2) {
+    //   console.log('name ', offers[i - 2].name)
+
+    // }
+
     offers.push(offersLorem[randomIndex]);
+
   }
+
   return offers;
 };
 
 const filterOffers = (type) => {
-  const tempNameOffers = [];
+  const tempNames = [];
   const used = {};
   for (const p of generationOffers()) {
-    if (p.typeOffers.find((t) => t === type)) {
-      tempNameOffers.push(p);
+    if (p.type.find((t) => t === type)) {
+      tempNames.push(p);
     }
   }
 
-  const filtered = tempNameOffers.filter(function (obj) {
-    return obj.nameOffer in used ? 0 : (used[obj] = 1);
+  const filtered = tempNames.filter(function (obj) {
+    return obj.name in used ? 0 : (used[obj] = 1);
 
   });
 
@@ -131,8 +144,9 @@ export const generationPoint = () => {
       descriptions: generationDescription(),
       srcImg: generationSrc(),
     },
-    price: Math.round(getRandomInteger(20, 250)),
+    price: Math.round(getRandomInteger(Price.MIN, Price.MAX)),
     offers: filterOffers(resultGenerationType),
+    isFavorite: Boolean(getRandomInteger(0, 1)),
   };
 };
 
