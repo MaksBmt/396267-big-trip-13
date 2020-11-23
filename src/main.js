@@ -8,7 +8,6 @@ import {createFormEvent} from "./view/form-event.js";
 import {createEventItem} from "./view/event-item.js";
 import {generationPoint} from "./mock/point.js";
 import {createOffer} from "./view/offer.js";
-import {createOptionDistantion} from "./view/option-distantion.js";
 
 const POINT_COUNT = 5;
 
@@ -39,10 +38,6 @@ renderHtml(container, createEventListTemplate(), `beforeend`);
 
 const eventList = container.querySelector(`.trip-events__list`);
 renderHtml(eventList, createFormEvent(points[0]), `beforeend`);
-const containerOption = container.querySelector(`datalist`);
-for (const option of points) {
-  renderHtml(containerOption, createOptionDistantion(option.citys), `afterBegin`);
-}
 
 for (let i = 0; i < POINT_COUNT; i++) {
   renderHtml(eventList, createEventItem(points[i]), `beforeend`);

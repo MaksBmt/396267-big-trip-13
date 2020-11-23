@@ -1,3 +1,13 @@
+import {CITYS} from "../mock/point.js";
+
+const createListDistanation = () => {
+  return (`
+  <datalist id="destination-list-1">
+ ${CITYS.map((city) => `<option value="${city}"></option>`).join(``)}
+  </datalist>`
+  );
+};
+
 export const createFormEvent = ({type, city}) => {
   return (`
   <li class="trip-events__item">
@@ -72,9 +82,7 @@ export const createFormEvent = ({type, city}) => {
         ${type}
       </label>
       <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1">
-      <datalist id="destination-list-1">
-
-      </datalist>
+     ${createListDistanation(CITYS)}
     </div>
     <div class="event__field-group  event__field-group--time">
       <label class="visually-hidden" for="event-start-time-1">From</label>
@@ -167,21 +175,3 @@ export const createFormEvent = ({type, city}) => {
   `);
 };
 
-/* const createListDistanation = () => {
-  return (`
-  <datalist id="destination-list-1">
-  ${createOptionDistantion()}
-</datalist>
-  `);
-};
-
-for (const city of cities) {
-  const createOptionDistantion = () => {
-    return `<option value="${city}"></option>`;
-  }
-};
- */
-
-/* option value="Amsterdam"></option>
- <option value="Geneva"></option>
- <option value="Chamonix"></option>  */

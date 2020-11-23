@@ -3,13 +3,64 @@ const Price = {
   MAX: 250,
 };
 
-const citys = [`Sofia`, `Burgas`, `Blagoevgrad`, `Razlog`, `Primorsko`];
+const CITYS = [`Sofia`, `Burgas`, `Blagoevgrad`, `Razlog`, `Primorsko`];
+
+const OFFERS = [
+  {
+    name: `Rent a car`,
+    price: 75,
+    type: [`Sightseeing`, `Restaurant`, `Train`]
+  },
+  {
+    name: `Order Uber`,
+    price: 50,
+    type: [`Train`, `Ship`, ` Transport`, `Drive`, `Flight`]
+  },
+  {
+    name: `Add luggage`,
+    price: 30,
+    type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`]
+  },
+  {
+    name: `Switch to comfort`,
+    price: 45,
+    type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`]
+  },
+  {
+    name: `Add breakfast`,
+    price: 25,
+    type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`]
+  },
+  {
+    name: `Book tickets`,
+    price: 10,
+    type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`]
+  },
+  {
+    name: `Lunch in city`,
+    price: 25,
+    type: [`Transport`, `Drive`]
+  },
+  {
+    name: `Add meal`,
+    price: 28,
+    type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`]
+  },
+];
 
 const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
   const upper = Math.floor(Math.max(a, b));
 
   return Math.floor(lower + Math.random() * (upper - lower + 1));
+};
+
+const shuffle = (gang) => {
+  for (let i = gang.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [gang[i], gang[j]] = [gang[j], gang[i]];
+  }
+  return gang;
 };
 
 const generationTypes = () => {
@@ -20,8 +71,8 @@ const generationTypes = () => {
 };
 
 const generationCitys = () => {
-  const randomIndex = getRandomInteger(0, citys.length - 1);
-  return citys[randomIndex];
+  const randomIndex = getRandomInteger(0, CITYS.length - 1);
+  return CITYS[randomIndex];
 };
 
 const generationDescription = () => {
@@ -57,91 +108,18 @@ const generationSrc = () => {
   return pictures;
 };
 
-const generationOffers = () => {
-  const offersLorem = [
-    {
-      name: `Rent a car`,
-      price: 75,
-      type: [`Sightseeing`, `Restaurant`, `Train`]
-    },
-    {
-      name: `Order Uber`,
-      price: 50,
-      type: [`Train`, `Ship`, ` Transport`, `Drive`, `Flight`]
-    },
-    {
-      name: `Add luggage`,
-      price: 30,
-      type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`]
-    },
-    {
-      name: `Switch to comfort`,
-      price: 45,
-      type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`]
-    },
-    {
-      name: `Add breakfast`,
-      price: 25,
-      type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`]
-    },
-    {
-      name: `Book tickets`,
-      price: 10,
-      type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`]
-    },
-    {
-      name: `Lunch in city`,
-      price: 25,
-      type: [`Transport`, `Drive`]
-    },
-    {
-      name: `Add meal`,
-      price: 28,
-      type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`]
-    },
-  ];
-  const randomLength = getRandomInteger(0, 5);
-  const offers = [];
-
-
-  for (let i = 1; i <= randomLength; i++) {
-    const randomIndex = getRandomInteger(0, offersLorem.length - 1);
-    offers.push(offersLorem[randomIndex]);
-  }
-  return offers;
-};
-
 const filterOffers = (type) => {
-  const tempNames = [];
-  // const used = {};
-  /* for (const  of generationOffers()) {
-    if (p.type.find((t) => t === type)) {
-      tempNames.push(p);
+  const offers = OFFERS.filter((offer) => offer.type.includes(type));
 
-    } */
-  for (const offer of generationOffers()) {
-    if (offer.type.includes(type)) {
-      tempNames.push(offer);
-    }
-  }
-
-  return tempNames;
+  return shuffle(offers.slice())
+    .slice(0, getRandomInteger(0, 5));
 };
 
-/* const filtered = tempNames.filter(function (obj) {
-  return obj.name in used ? 0 : (used[obj] = 1);
-
-})
-
-return filtered;
-};
-*/
 export const generationPoint = () => {
   const resultGenerationType = generationTypes();
   return {
     type: resultGenerationType,
     city: generationCitys(),
-    cities: citys,
     destination: {
       descriptions: generationDescription(),
       srcImg: generationSrc(),
@@ -152,3 +130,4 @@ export const generationPoint = () => {
   };
 };
 
+export {CITYS};
