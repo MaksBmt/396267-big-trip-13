@@ -115,6 +115,10 @@ const filterOffers = (type) => {
     .slice(0, getRandomInteger(0, 5));
 };
 
+const filterOffersForm = (type) => {
+  return OFFERS.filter((offerForm) => offerForm.type.includes(type));
+};
+
 export const generationPoint = () => {
   const resultGenerationType = generationTypes();
   return {
@@ -126,6 +130,7 @@ export const generationPoint = () => {
     },
     price: Math.round(getRandomInteger(Price.MIN, Price.MAX)),
     offers: filterOffers(resultGenerationType),
+    offersForm: filterOffersForm(resultGenerationType),
     isFavorite: Boolean(getRandomInteger(0, 1)),
   };
 };
