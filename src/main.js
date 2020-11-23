@@ -20,7 +20,12 @@ const renderHtml = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
 };
 
-renderHtml(headerMain, createInformationTemplate(), `afterbegin`);
+const informationCity = [];
+for (let i = 0; i < POINT_COUNT; i++) {
+  informationCity.push(points[i].city);
+}
+const infoCity = informationCity.join(` &mdash; `);
+renderHtml(headerMain, createInformationTemplate(infoCity), `afterbegin`);
 
 const headerInformation = headerMain.querySelector(`.trip-info`);
 renderHtml(headerInformation, createPriceTotalTemplate(), `beforeend`);
@@ -42,7 +47,6 @@ renderHtml(eventList, createFormEvent(points[0]), `beforeend`);
 for (let i = 0; i < POINT_COUNT; i++) {
   renderHtml(eventList, createEventItem(points[i]), `beforeend`);
   const listOffers = eventList.querySelectorAll(`.event__selected-offers`);
-
   if (points[i].offers.length > 0) {
     for (const offer of points[i].offers) {
       renderHtml(listOffers[i], createOffer(offer), `afterBegin`);
