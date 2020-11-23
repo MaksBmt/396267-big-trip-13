@@ -5,6 +5,8 @@ const Price = {
 
 const CITYS = [`Sofia`, `Burgas`, `Blagoevgrad`, `Razlog`, `Primorsko`];
 
+const TYPES = [`Taxi`, `Bus`, `Train`, `Ship`, `Transport`, `Drive`, `Flight`, `Check-in`, `Sightseeing`, `Restaurant`];
+
 const OFFERS = [
   {
     name: `Rent a car`,
@@ -64,10 +66,8 @@ const shuffle = (gang) => {
 };
 
 const generationTypes = () => {
-  const types = [`Taxi`, `Bus`, `Train`, `Ship`, `Transport`, `Drive`, `Flight`, `Check-in`, `Sightseeing`, `Restaurant`];
-
-  const randomIndex = getRandomInteger(0, types.length - 1);
-  return types[randomIndex];
+  const randomIndex = getRandomInteger(0, TYPES.length - 1);
+  return TYPES[randomIndex];
 };
 
 const generationCitys = () => {
@@ -135,4 +135,4 @@ export const generationPoint = () => {
   };
 };
 
-export {CITYS};
+export {CITYS, TYPES};
