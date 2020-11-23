@@ -1,7 +1,7 @@
 import {CITYS} from "../mock/point.js";
 import {TYPES} from "../mock/point.js";
 
-const createListDistanation = () => {
+const creationListDistanation = () => {
   return (`
   <datalist id="destination-list-1">
  ${CITYS.map((city) => `<option value="${city}"></option>`).join(``)}
@@ -9,7 +9,7 @@ const createListDistanation = () => {
   );
 };
 
-const createListOffers = (offersForm) => {
+const creationListOffers = (offersForm) => {
   return (`
   <section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
@@ -26,7 +26,7 @@ const createListOffers = (offersForm) => {
   );
 };
 
-const createItemsType = () => {
+const creationItemsType = () => {
   return TYPES.map((type) => `
   <div class="event__type-item">
      <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}">
@@ -35,11 +35,11 @@ const createItemsType = () => {
   ).join(``);
 };
 
-const createDestinationFotos = (srcImg) => {
+const creationDestinationFotos = (srcImg) => {
   return srcImg.map((foto) => ` <img class="event__photo" src="${foto}" alt="Event photo">`).join(``);
 };
 
-export const createFormEvent = ({type, city, price, offersForm, destination: {descriptions, srcImg}}) => {
+export const creationFormEvent = ({type, city, price, offersForm, destination: {descriptions, srcImg}}) => {
   return (`<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
       <header class="event__header">
@@ -53,7 +53,7 @@ export const createFormEvent = ({type, city, price, offersForm, destination: {de
               <div class="event__type-list">
                 <fieldset class="event__type-group">
                   <legend class="visually-hidden">Event type</legend>
-                     ${createItemsType(TYPES)}
+                     ${creationItemsType(TYPES)}
                   
                 </fieldset>
               </div>
@@ -64,7 +64,7 @@ export const createFormEvent = ({type, city, price, offersForm, destination: {de
                                     ${type}
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1">
-                                    ${createListDistanation(CITYS)}
+                                    ${creationListDistanation(CITYS)}
    
         <div class="event__field-group  event__field-group--time">
          <label class="visually-hidden" for="event-start-time-1">From</label>
@@ -87,14 +87,14 @@ export const createFormEvent = ({type, city, price, offersForm, destination: {de
      </header>
       <section class="event__details">
                                      
-                                   ${createListOffers(offersForm)}
+                                   ${creationListOffers(offersForm)}
        <section class="event__section  event__section--destination">
          <h3 class="event__section-title  event__section-title--destination">Destination</h3>
           <p class="event__destination-description">${descriptions}</p>
 
           <div class="event__photos-container">
             <div class="event__photos-tape">
-              ${createDestinationFotos(srcImg)}
+              ${creationDestinationFotos(srcImg)}
             </div>
           </div>
        </section>

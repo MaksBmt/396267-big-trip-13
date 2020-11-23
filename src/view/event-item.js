@@ -1,4 +1,4 @@
-export const createEventItem = ({type, city, price, isFavorite}) => {
+export const creationEventItem = ({type, city, price, isFavorite}) => {
 
   const favoriteClassName = isFavorite
     ? `event__favorite-btn  event__favorite-btn--active`

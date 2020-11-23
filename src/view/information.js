@@ -1,5 +1,5 @@
 
-export const createInformationTemplate = (infoCity) => {
+export const creationInformationTemplate = (infoCity) => {
   return (`
     <section class="trip-main__trip-info  trip-info">
     <div class="trip-info__main">
