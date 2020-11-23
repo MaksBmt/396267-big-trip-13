@@ -10,7 +10,8 @@ const createListDistanation = () => {
 };
 
 const createListOffers = (offersForm) => {
-  return (`<section class="event__section  event__section--offers">
+  return (`
+  <section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
     <div class="event__available-offers">
        ${offersForm.map((offerForm) => `<div class="event__offer-selector">   
@@ -21,20 +22,24 @@ const createListOffers = (offersForm) => {
         <span class="event__offer-price">${offerForm.price}</span>
         </label>
     </div>`).join(``)}
-    </div
   </section>`
   );
 };
 
 const createItemsType = () => {
-  return TYPES.map((type) => `<div class="event__type-item">
-  <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}">
-  <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type}</label>
-</div>`
+  return TYPES.map((type) => `
+  <div class="event__type-item">
+     <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}">
+     <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type}</label>
+  </div>`
   ).join(``);
 };
 
-export const createFormEvent = ({type, city, price, offersForm}) => {
+const createDestinationFotos = (srcImg) => {
+  return srcImg.map((foto) => ` <img class="event__photo" src="${foto}" alt="Event photo">`).join(``);
+};
+
+export const createFormEvent = ({type, city, price, offersForm, destination: {descriptions, srcImg}}) => {
   return (`<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
       <header class="event__header">
@@ -54,51 +59,47 @@ export const createFormEvent = ({type, city, price, offersForm}) => {
               </div>
         </div>
 
-                                <div class="event__field-group  event__field-group--destination">
-                                  <label class="event__label  event__type-output" for="event-destination-1">
+        <div class="event__field-group  event__field-group--destination">
+          <label class="event__label  event__type-output" for="event-destination-1">
                                     ${type}
-                                  </label>
-                                  <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1">
+          </label>
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1">
                                     ${createListDistanation(CITYS)}
-    </div>
-                                  <div class="event__field-group  event__field-group--time">
-                                    <label class="visually-hidden" for="event-start-time-1">From</label>
-                                    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="19/03/19 00:00">
+   
+        <div class="event__field-group  event__field-group--time">
+         <label class="visually-hidden" for="event-start-time-1">From</label>
+         <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="19/03/19 00:00">
                                       &mdash;
-      <label class="visually-hidden" for="event-end-time-1">To</label>
-                                      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="19/03/19 00:00">
-    </div>
+         <label class="visually-hidden" for="event-end-time-1">To</label>
+         <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="19/03/19 00:00">
+        </div>
 
-                                      <div class="event__field-group  event__field-group--price">
-                                        <label class="event__label" for="event-price-1">
-                                          <span class="visually-hidden">Price</span>
-        &euro;
-      </label>
-                                        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
-    </div>
+        <div class="event__field-group  event__field-group--price">
+          <label class="event__label" for="event-price-1">
+            <span class="visually-hidden">Price</span>
+                         &euro;
+          </label>
+          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+        </div>
 
-                                        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-                                        <button class="event__reset-btn" type="reset">Cancel</button>
-  </header>
-                                      <section class="event__details">
+        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+        <button class="event__reset-btn" type="reset">Cancel</button>
+     </header>
+      <section class="event__details">
                                      
                                    ${createListOffers(offersForm)}
-<section class="event__section  event__section--destination">
-  <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-  <p class="event__destination-description">Geneva is a city in Switzerland that lies at the southern tip of expansive Lac Léman (Lake Geneva). Surrounded by the Alps and Jura mountains, the city has views of dramatic Mont Blanc.</p>
+       <section class="event__section  event__section--destination">
+         <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+          <p class="event__destination-description">${descriptions}</p>
 
-  <div class="event__photos-container">
-    <div class="event__photos-tape">
-      <img class="event__photo" src="img/photos/1.jpg" alt="Event photo">
-        <img class="event__photo" src="img/photos/2.jpg" alt="Event photo">
-          <img class="event__photo" src="img/photos/3.jpg" alt="Event photo">
-            <img class="event__photo" src="img/photos/4.jpg" alt="Event photo">
-              <img class="event__photo" src="img/photos/5.jpg" alt="Event photo">
-        </div>
-      </div>
-    </section>
-  </section>
-</form>
+          <div class="event__photos-container">
+            <div class="event__photos-tape">
+              ${createDestinationFotos(srcImg)}
+            </div>
+          </div>
+       </section>
+     </section>
+   </form>
 </li>`);
 };
 
