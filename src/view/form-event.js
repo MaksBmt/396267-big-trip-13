@@ -1,5 +1,5 @@
-import {CITYS} from "../mock/point.js";
-import {TYPES} from "../mock/point.js";
+import {CITYS} from "../const.js";
+import {TYPES} from "../const.js";
 
 const creationListDistanation = () => {
   return (`
@@ -36,10 +36,12 @@ const creationItemsType = () => {
 };
 
 const creationDestinationFotos = (srcImg) => {
-  return srcImg.map((foto) => ` <img class="event__photo" src="${foto}" alt="Event photo">`).join(``);
+  return srcImg.map((foto) => `<img class="event__photo" src="${foto}" alt="Event photo">`).join(``);
 };
 
-export const creationFormEvent = ({type, city, price, offersForm, destination: {descriptions, srcImg}}) => {
+export const creationFormEvent = (point = {}) => {
+  const {type, city, price, offersForm, destination: {descriptions, srcImg}
+  } = point;
   return (`<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
       <header class="event__header">

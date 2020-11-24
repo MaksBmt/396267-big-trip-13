@@ -1,69 +1,9 @@
-const Price = {
-  MIN: 20,
-  MAX: 250,
-};
-
-const CITYS = [`Sofia`, `Burgas`, `Blagoevgrad`, `Razlog`, `Primorsko`];
-
-const TYPES = [`Taxi`, `Bus`, `Train`, `Ship`, `Transport`, `Drive`, `Flight`, `Check-in`, `Sightseeing`, `Restaurant`];
-
-const OFFERS = [
-  {
-    name: `Rent a car`,
-    price: 75,
-    type: [`Sightseeing`, `Restaurant`, `Train`]
-  },
-  {
-    name: `Order Uber`,
-    price: 50,
-    type: [`Train`, `Ship`, ` Transport`, `Drive`, `Flight`]
-  },
-  {
-    name: `Add luggage`,
-    price: 30,
-    type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`]
-  },
-  {
-    name: `Switch to comfort`,
-    price: 45,
-    type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`]
-  },
-  {
-    name: `Add breakfast`,
-    price: 25,
-    type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`]
-  },
-  {
-    name: `Book tickets`,
-    price: 10,
-    type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`]
-  },
-  {
-    name: `Lunch in city`,
-    price: 25,
-    type: [`Transport`, `Drive`]
-  },
-  {
-    name: `Add meal`,
-    price: 28,
-    type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`]
-  },
-];
-
-const getRandomInteger = (a = 0, b = 1) => {
-  const lower = Math.ceil(Math.min(a, b));
-  const upper = Math.floor(Math.max(a, b));
-
-  return Math.floor(lower + Math.random() * (upper - lower + 1));
-};
-
-const shuffle = (gang) => {
-  for (let i = gang.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [gang[i], gang[j]] = [gang[j], gang[i]];
-  }
-  return gang;
-};
+import {CITYS} from "../const.js";
+import {TYPES} from "../const.js";
+import {OFFERS} from "../const.js";
+import {Price} from "../const.js";
+import {getRandomInteger} from "../utils.js";
+import {shuffle} from "../utils.js";
 
 const generationTypes = () => {
   const randomIndex = getRandomInteger(0, TYPES.length - 1);
@@ -96,7 +36,6 @@ const generationDescription = () => {
   }
   return descriptions;
 };
-
 
 const generationSrc = () => {
   const pictures = [];
@@ -134,5 +73,3 @@ export const generationPoint = () => {
     isFavorite: Boolean(getRandomInteger(0, 1)),
   };
 };
-
-export {CITYS, TYPES};
