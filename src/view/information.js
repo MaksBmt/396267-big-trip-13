@@ -1,5 +1,6 @@
 
-export const creationInformationTemplate = (infoCity) => {
+export const creationInformationTemplate = (informationCity) => {
+  const infoCity = informationCity.join(` &mdash; `);
   return (`
     <section class="trip-main__trip-info  trip-info">
     <div class="trip-info__main">

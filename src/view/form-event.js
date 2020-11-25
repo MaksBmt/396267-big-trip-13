@@ -1,30 +1,29 @@
-import {CITYS} from "../const.js";
+import {CITIES} from "../const.js";
 import {TYPES} from "../const.js";
 
-const creationListDistanation = () => {
+const creationListDestination = () => {
   return (`
   <datalist id="destination-list-1">
- ${CITYS.map((city) => `<option value="${city}"></option>`).join(``)}
+ ${CITIES.map((city) => `<option value="${city}"></option>`).join(``)}
   </datalist>`
   );
 };
 
-const receivingEndElement = (sentence) => {
-  return sentence.split(` `).pop();
-};
+const generateIdFromName = (sentence) => sentence.toLowerCase().split(` `).join(`_`);
 
 const creationListOffers = (offersForm) => {
+
   return (`
   <section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
     <div class="event__available-offers">
-       ${offersForm.map((offerForm) => `<div class="event__offer-selector">   
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${receivingEndElement(offerForm.name)}-1" type="checkbox" name="event-offer-${receivingEndElement(offerForm.name)}">
-        <label class="event__offer-label" for="event-offer-${receivingEndElement(offerForm.name)}-1">
-          <span class="event__offer-title">${offerForm.name}</span>
+       ${offersForm.map((offerForm = generateIdFromName(offerForm)) => `<div class="event__offer-selector"> 
+    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerForm.name}-1" type="checkbox" name="event-offer-${offerForm.name}">
+    <label class="event__offer-label" for="event-offer-${offerForm.name}-1">
+    <span class="event__offer-title">${offerForm.name}</span>
         &plus;&euro;&nbsp;
         <span class="event__offer-price">${offerForm.price}</span>
-        </label>
+  </label>
     </div>`).join(``)}
   </section>`
   );
@@ -70,8 +69,8 @@ export const creationFormEvent = (point = {}) => {
                                     ${type}
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1">
-                                    ${creationListDistanation(CITYS)}
-   
+                                    ${creationListDestination(CITIES)}
+        </div>
         <div class="event__field-group  event__field-group--time">
          <label class="visually-hidden" for="event-start-time-1">From</label>
          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="19/03/19 00:00">

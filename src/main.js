@@ -20,15 +20,18 @@ const renderHtml = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
 };
 
-const informationCity = [];
-for (let i = 0; i < POINT_COUNT; i++) {
-  informationCity.push(points[i].city);
-}
-const infoCity = informationCity.join(` &mdash; `);
-renderHtml(headerMain, creationInformationTemplate(infoCity), `afterbegin`);
+const pointPrice = points.map((point) => {
+  return point.price;
+});
+
+const informationCity = points.map((point) => {
+  return point.city;
+});
+
+renderHtml(headerMain, creationInformationTemplate(informationCity), `afterbegin`);
 
 const headerInformation = headerMain.querySelector(`.trip-info`);
-renderHtml(headerInformation, creationPriceTotalTemplate(), `beforeend`);
+renderHtml(headerInformation, creationPriceTotalTemplate(pointPrice), `beforeend`);
 
 const headerControl = headerMain.querySelector(`.trip-controls`);
 const headerTitle = headerControl.querySelectorAll(`h2`);

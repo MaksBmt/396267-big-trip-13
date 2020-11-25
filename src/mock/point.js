@@ -1,38 +1,22 @@
-import {CITYS} from "../const.js";
-import {TYPES} from "../const.js";
-import {OFFERS} from "../const.js";
-import {Price} from "../const.js";
-import {getRandomInteger} from "../utils.js";
-import {shuffle} from "../utils.js";
+import {CITIES, SumPriceOffers, TYPES, OFFERS, DESCRIPTIONSLOREM, Price, LengthFoto, LengthDescription, QuantityOffers} from "../const.js";
+import {getRandomInteger, shuffle} from "../utils.js";
 
 const generationTypes = () => {
   const randomIndex = getRandomInteger(0, TYPES.length - 1);
   return TYPES[randomIndex];
 };
 
-const generationCitys = () => {
-  const randomIndex = getRandomInteger(0, CITYS.length - 1);
-  return CITYS[randomIndex];
+const generationCities = () => {
+  const randomIndex = getRandomInteger(0, CITIES.length - 1);
+  return CITIES[randomIndex];
 };
 
 const generationDescription = () => {
-  const descriptionsLorem = [
-    `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
-    `Cras aliquet varius magna, non porta ligula feugiat eget.`,
-    `Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra.`,
-    `Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.`,
-    `Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum.`,
-    `Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis.`,
-    `Aliquam erat volutpat.`,
-    `Nunc fermentum tortor ac porta dapibus.`,
-    `In rutrum ac purus sit amet tempus.`,
-  ];
-
-  const randomIndex = getRandomInteger(0, descriptionsLorem.length - 1);
-  const randomLength = getRandomInteger(1, 5);
+  const randomIndex = getRandomInteger(0, DESCRIPTIONSLOREM.length - 1);
+  const randomLength = getRandomInteger(LengthDescription.MIN, LengthDescription.MAX);
   const descriptions = [];
   for (let i = 1; i <= randomLength; i++) {
-    descriptions.push(descriptionsLorem[randomIndex]);
+    descriptions.push(DESCRIPTIONSLOREM[randomIndex]);
   }
   return descriptions;
 };
@@ -40,7 +24,7 @@ const generationDescription = () => {
 const generationSrc = () => {
   const pictures = [];
 
-  const randomLength = getRandomInteger(0, 5);
+  const randomLength = getRandomInteger(LengthFoto.MIN, LengthFoto.MAX);
   for (let i = 1; i <= randomLength; i++) {
     pictures.push(`http://picsum.photos/248/152?r=${Math.random()}`);
   }
@@ -51,25 +35,40 @@ const filterOffers = (type) => {
   const offers = OFFERS.filter((offer) => offer.type.includes(type));
 
   return shuffle(offers.slice())
-    .slice(0, getRandomInteger(0, 5));
+    .slice(0, getRandomInteger(QuantityOffers.MIN, QuantityOffers.MAX));
 };
 
 const filterOffersForm = (type) => {
   return OFFERS.filter((offerForm) => offerForm.type.includes(type));
 };
 
+const offersPrice = [];
+
+const sumRandomOfferPrice = (offers) => {
+  if (offers.length > 0) {
+    for (const offer of offers) {
+      offersPrice.push(offer.price);
+    }
+  }
+
+  return shuffle(offersPrice.slice())
+    .slice(0, getRandomInteger(SumPriceOffers.MIN, SumPriceOffers.MAX)).reduce((sum, current) => sum + current, 0);
+};
+
 export const generationPoint = () => {
   const resultGenerationType = generationTypes();
+  const resultGenerationOffer = filterOffers(resultGenerationType);
   return {
     type: resultGenerationType,
-    city: generationCitys(),
+    city: generationCities(),
     destination: {
       descriptions: generationDescription(),
       srcImg: generationSrc(),
     },
-    price: Math.round(getRandomInteger(Price.MIN, Price.MAX)),
-    offers: filterOffers(resultGenerationType),
+    offers: resultGenerationOffer,
+    price: Math.round(getRandomInteger(Price.MIN, Price.MAX)) + sumRandomOfferPrice(resultGenerationOffer),
     offersForm: filterOffersForm(resultGenerationType),
     isFavorite: Boolean(getRandomInteger(0, 1)),
   };
 };
+
