@@ -1,6 +1,17 @@
 
-export const creationInformationTemplate = (informationCity) => {
-  const infoCity = informationCity.join(` &mdash; `);
+const listCities = [];
+const correctsListCities = (cities) => {
+  listCities.push(cities.shift());
+  listCities.push(cities.pop());
+  return listCities.join(` &mdash; ...  &mdash; `);
+};
+
+
+export const createInformationTemplate = (informationCity) => {
+
+  const infoCity = informationCity.length < 3
+    ? informationCity.join(` &mdash; `)
+    : correctsListCities(informationCity);
   return (`
     <section class="trip-main__trip-info  trip-info">
     <div class="trip-info__main">

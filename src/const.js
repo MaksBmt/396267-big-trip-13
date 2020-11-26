@@ -1,3 +1,5 @@
+import {getRandomInteger} from "./utils.js";
+
 export const Price = {
   MIN: 20,
   MAX: 250,
@@ -13,11 +15,6 @@ export const LengthFoto = {
   MAX: 5,
 };
 
-export const QuantityOffers = {
-  MIN: 0,
-  MAX: 5,
-};
-
 export const SumPriceOffers = {
   MIN: 0,
   MAX: 2,
@@ -25,7 +22,7 @@ export const SumPriceOffers = {
 
 export const CITIES = [`Sofia`, `Burgas`, `Blagoevgrad`, `Razlog`, `Primorsko`];
 
-export const DESCRIPTIONSLOREM = [
+export const DESCRIPTIONS = [
   `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
   `Cras aliquet varius magna, non porta ligula feugiat eget.`,
   `Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra.`,
@@ -43,41 +40,49 @@ export const OFFERS = [
   {
     name: `Rent a car`,
     price: 75,
-    type: [`Sightseeing`, `Restaurant`, `Train`]
+    type: [`Sightseeing`, `Restaurant`, `Train`],
+    isChecked: Boolean(getRandomInteger(0, 1)),
   },
   {
     name: `Order Uber`,
     price: 50,
-    type: [`Train`, `Ship`, ` Transport`, `Drive`, `Flight`]
+    type: [`Train`, `Ship`, ` Transport`, `Drive`, `Flight`],
+    isChecked: Boolean(getRandomInteger()),
   },
   {
     name: `Add luggage`,
     price: 30,
-    type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`]
+    type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`],
+    isChecked: Boolean(getRandomInteger(0, 1)),
   },
   {
     name: `Switch to comfort`,
     price: 45,
-    type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`]
+    type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`],
+    isChecked: Boolean(getRandomInteger(0, 1)),
   },
   {
     name: `Add breakfast`,
     price: 25,
-    type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`]
+    type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`],
+    isChecked: Boolean(getRandomInteger(0, 1)),
   },
   {
     name: `Book tickets`,
     price: 10,
-    type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`]
+    type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`],
+    isChecked: Boolean(getRandomInteger(0, 1)),
   },
   {
     name: `Lunch in city`,
     price: 25,
-    type: [`Transport`, `Drive`]
+    type: [`Transport`, `Drive`],
+    isChecked: Boolean(getRandomInteger(0, 1)),
   },
   {
     name: `Add meal`,
     price: 28,
-    type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`]
+    type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`],
+    isChecked: Boolean(getRandomInteger(0, 1)),
   },
 ];

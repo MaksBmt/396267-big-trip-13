@@ -1,4 +1,4 @@
-export const creationOffer = ({name, price}) => {
+export const createOffer = ({name, price}) => {
 
   return (`
   <li class="event__offer">

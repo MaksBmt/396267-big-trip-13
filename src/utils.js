@@ -12,3 +12,4 @@ export const shuffle = (gang) => {
   }
   return gang;
 };
+
