@@ -20,6 +20,13 @@ export const SumPriceOffers = {
   MAX: 2,
 };
 
+export const MaxDaysGap = 148;
+
+export const AddInterval = {
+  MIN: 60,
+  MAX: 300,
+};
+
 export const CITIES = [`Sofia`, `Burgas`, `Blagoevgrad`, `Razlog`, `Primorsko`];
 
 export const DESCRIPTIONS = [

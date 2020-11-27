@@ -13,3 +13,6 @@ export const shuffle = (gang) => {
   return gang;
 };
 
+export const renderHtml = (container, template, place) => {
+  container.insertAdjacentHTML(place, template);
+};

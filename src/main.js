@@ -7,7 +7,7 @@ import {createEventListTemplate} from "./view/event-list.js";
 import {createFormEvent} from "./view/form-event.js";
 import {createEventItem} from "./view/event-item.js";
 import {generatePoint} from "./mock/point.js";
-import {createOffer} from "./view/offer.js";
+import {renderHtml} from "./utils.js";
 
 const POINT_COUNT = 5;
 
@@ -15,10 +15,6 @@ const points = new Array(POINT_COUNT).fill().map(generatePoint);
 
 const header = document.querySelector(`.page-header`);
 const headerMain = header.querySelector(`.trip-main`);
-
-const renderHtml = (container, template, place) => {
-  container.insertAdjacentHTML(place, template);
-};
 
 const pointPrice = points.map((point) => point.price);
 
@@ -46,13 +42,7 @@ renderHtml(container, createEventListTemplate(), `beforeend`);
 const eventList = container.querySelector(`.trip-events__list`);
 renderHtml(eventList, createFormEvent(points[0]), `beforeend`);
 
-for (let i = 0; i < POINT_COUNT; i++) {
-  renderHtml(eventList, createEventItem(points[i]), `beforeend`);
-  const listOffers = eventList.querySelectorAll(`.event__selected-offers`);
-  if (points[i].offers.length > 0) {
-    for (const offer of points[i].offers) {
-      renderHtml(listOffers[i], createOffer(offer), `afterBegin`);
-    }
-  }
+for (const point of points) {
+  renderHtml(eventList, createEventItem(point), `beforeend`);
 }
 

@@ -1,4 +1,4 @@
-import {CITIES, SumPriceOffers, TYPES, OFFERS, DESCRIPTIONS, Price, LengthFoto, LengthDescription} from "../const.js";
+import {CITIES, SumPriceOffers, TYPES, OFFERS, DESCRIPTIONS, Price, LengthFoto, LengthDescription, MaxDaysGap} from "../const.js";
 import {getRandomInteger, shuffle} from "../utils.js";
 import dayjs from "dayjs";
 
@@ -8,12 +8,11 @@ const generateCities = () => CITIES[getRandomInteger(0, CITIES.length - 1)];
 
 const generateDate = () => {
 
-  const maxDaysGap = 7;
-  const daysGap = getRandomInteger(1, maxDaysGap);
 
-  return dayjs().add(daysGap, `day`).toDate();
+  const daysGap = getRandomInteger(1, MaxDaysGap);
+
+  return dayjs().add(daysGap, `h`);
 };
-console.log('data ', generateDate())
 
 const generateDescription = () => {
   const randomIndex = getRandomInteger(0, DESCRIPTIONS.length - 1);
