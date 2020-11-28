@@ -14,7 +14,7 @@ const createListDestination = () => {
 const generateIdFromName = (sentence) => sentence.toLowerCase().split(` `).join(`_`);
 
 const layoutOffers = (offers) => {
-  offers.map((offer) => {
+  return offers.map((offer) => {
     const id = generateIdFromName(offer.name);
     return `<div class="event__offer-selector">
          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-1" type="checkbox" name="event-offer-${id}" ${offer.isChecked ? `checked` : ``}>

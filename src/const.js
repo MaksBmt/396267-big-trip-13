@@ -15,11 +15,6 @@ export const LengthFoto = {
   MAX: 5,
 };
 
-export const SumPriceOffers = {
-  MIN: 0,
-  MAX: 2,
-};
-
 export const MaxDaysGap = 148;
 
 export const AddInterval = {

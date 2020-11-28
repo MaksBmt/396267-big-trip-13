@@ -1,5 +1,5 @@
-import {CITIES, SumPriceOffers, TYPES, OFFERS, DESCRIPTIONS, Price, LengthFoto, LengthDescription, MaxDaysGap, AddInterval} from "../const.js";
-import {getRandomInteger, shuffle} from "../utils.js";
+import {CITIES, TYPES, OFFERS, DESCRIPTIONS, Price, LengthFoto, LengthDescription, MaxDaysGap, AddInterval} from "../const.js";
+import {getRandomInteger} from "../utils.js";
 import dayjs from "dayjs";
 
 const generateTypes = () => TYPES[getRandomInteger(0, TYPES.length - 1)];
@@ -42,12 +42,13 @@ const offersPrice = [];
 const sumRandomOfferPrice = (offers) => {
   if (offers.length > 0) {
     for (const offer of offers) {
-      offersPrice.push(offer.price);
+      if (offer.isChecked) {
+        offersPrice.push(offer.price);
+      }
     }
   }
 
-  return shuffle(offersPrice.slice())
-    .slice(0, getRandomInteger(SumPriceOffers.MIN, SumPriceOffers.MAX)).reduce((sum, current) => sum + current, 0);
+  return offersPrice.reduce((sum, current) => sum + current, 0);
 };
 
 export const generatePoint = () => {
