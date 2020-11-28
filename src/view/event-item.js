@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
-import {getRandomInteger} from "../utils.js";
-import {AddInterval} from "../const.js";
+import utc from "dayjs/plugin/utc";
+
+dayjs.extend(utc);
 
 const createResultOffers = (offers) => {
   return offers.map((offer) =>
@@ -11,20 +12,11 @@ const createResultOffers = (offers) => {
 </li>`).join(``);
 };
 
-export const createEventItem = ({type, city, price, isFavorite, dueDate, offers}) => {
-  const randomMinute = getRandomInteger(AddInterval.MIN, AddInterval.MAX);
+export const createEventItem = ({type, city, price, isFavorite, dueDate, offers, dateEnd}) => {
+  const intervalDate = dateEnd.diff(dueDate);
 
-  const increasedGap = dueDate.add(randomMinute, `minute`);
-  // const dateSecondFormat = increasedGap.format(`YYYY-MM-DD-HH-mm`);
-  // const dateOneFormat = dueDate.format(`YYYY-MM-DD-HH-mm`);
-
-  // const dateEnd = dayjs(`${dateSecondFormat}`);
-  // const dateBegining = dayjs(`${dateOneFormat}`);
-  // const intervalDate = dateEnd.diff(dateBegining);
-
-  // const hoursInterval = dayjs(new Date(intervalDate));
-  const hoursInterval = dayjs(new Date(increasedGap));
-  const resultIntervalFormat = hoursInterval.format(`H[H] mm[M]`);
+  const hoursInterval = dayjs(new Date(intervalDate));
+  const resultIntervalFormat = hoursInterval.utc().format(`H[H] mm[M]`);
 
   const favoriteClassName = isFavorite
     ? `event__favorite-btn  event__favorite-btn--active`
@@ -42,7 +34,7 @@ export const createEventItem = ({type, city, price, isFavorite, dueDate, offers}
           <p class="event__time">
             <time class="event__start-time" datetime="${dueDate.format(`YYYY-MM-DDTHH:mm`)}">${dueDate.format(`HH:mm`)}</time>
                     &mdash;
-                    <time class="event__end-time" datetime="${increasedGap.format(`YYYY-MM-DDTHH:mm`)}">${increasedGap.format(`HH:mm`)}</time>
+                    <time class="event__end-time" datetime="${dateEnd.format(`YYYY-MM-DDTHH:mm`)}">${dateEnd.format(`HH:mm`)}</time>
           </p>
           <p class="event__duration">${resultIntervalFormat}</p>
         </div>

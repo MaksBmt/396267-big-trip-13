@@ -1,4 +1,4 @@
-import {CITIES, SumPriceOffers, TYPES, OFFERS, DESCRIPTIONS, Price, LengthFoto, LengthDescription, MaxDaysGap} from "../const.js";
+import {CITIES, SumPriceOffers, TYPES, OFFERS, DESCRIPTIONS, Price, LengthFoto, LengthDescription, MaxDaysGap, AddInterval} from "../const.js";
 import {getRandomInteger, shuffle} from "../utils.js";
 import dayjs from "dayjs";
 
@@ -7,12 +7,12 @@ const generateTypes = () => TYPES[getRandomInteger(0, TYPES.length - 1)];
 const generateCities = () => CITIES[getRandomInteger(0, CITIES.length - 1)];
 
 const generateDate = () => {
-
-
   const daysGap = getRandomInteger(1, MaxDaysGap);
 
   return dayjs().add(daysGap, `h`);
 };
+
+const randomMinute = getRandomInteger(AddInterval.MIN, AddInterval.MAX);
 
 const generateDescription = () => {
   const randomIndex = getRandomInteger(0, DESCRIPTIONS.length - 1);
@@ -53,6 +53,7 @@ const sumRandomOfferPrice = (offers) => {
 export const generatePoint = () => {
   const resultGenerateType = generateTypes();
   const resultGenerateOffer = filterOffers(resultGenerateType);
+  const resultGenerateDate = generateDate();
   return {
     type: resultGenerateType,
     city: generateCities(),
@@ -64,7 +65,8 @@ export const generatePoint = () => {
     price: Math.round(getRandomInteger(Price.MIN, Price.MAX)),
     priceOffersCheck: sumRandomOfferPrice(resultGenerateOffer),
     isFavorite: Boolean(getRandomInteger(0, 1)),
-    dueDate: generateDate(),
+    dueDate: resultGenerateDate,
+    dateEnd: resultGenerateDate.add(randomMinute, `minute`),
   };
 };
 
