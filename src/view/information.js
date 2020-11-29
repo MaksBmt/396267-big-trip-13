@@ -1,4 +1,4 @@
-
+import {createElement} from "../utils.js";
 
 const correctsListCities = (cities) => {
   const listCities = [];
@@ -8,7 +8,7 @@ const correctsListCities = (cities) => {
 };
 
 
-export const createInformationTemplate = (informationCity) => {
+const createInformationTemplate = (informationCity) => {
 
   const infoCity = informationCity.length < 3
     ? informationCity.join(` &mdash; `)
@@ -23,3 +23,27 @@ export const createInformationTemplate = (informationCity) => {
   </section>
     `);
 };
+
+export default class Information {
+  constructor(informationCity) {
+    this._element = null;
+    this.informationCity = informationCity;
+  }
+
+  getTemplate() {
+    return createInformationTemplate(this.informationCity);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate(this.informationCity));
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+

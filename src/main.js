@@ -1,8 +1,10 @@
-import {createInformationTemplate} from "./view/information.js";
+// import {createInformationTemplate} from "./view/information.js";
+import Information from "./view/information.js";
 import {createPriceTotalTemplate} from "./view/price-total.js";
 // import {createHeaderMenuTemplate} from "./view/header-menu.js";
 import HeaderMenu from "./view/header-menu.js";
-import {createFilterEventsTemplate} from "./view/filter-events.js";
+// import {createFilterEventsTemplate} from "./view/filter-events.js";
+import FilterEvents from "./view/filter-events.js";
 import {createFilterSortTemplate} from "./view/filter-sort.js";
 import {createEventListTemplate} from "./view/event-list.js";
 import {createFormEvent} from "./view/form-event.js";
@@ -39,20 +41,22 @@ const totalPrice = pointPrice.reduce((sum, current) => sum + current, 0) + total
 
 const informationCity = points.map((point) => point.city);
 
-renderHtml(headerMain, createInformationTemplate(informationCity), `afterbegin`);
+// renderHtml(headerMain, createInformationTemplate(informationCity), `afterbegin`);
+renderElement(headerMain, new Information(informationCity).getElement(), RenderPosition.AFTERBEGIN);
 
 const headerInformation = headerMain.querySelector(`.trip-info`);
 renderHtml(headerInformation, createPriceTotalTemplate(totalPrice), `beforeend`);
 
 const headerControl = headerMain.querySelector(`.trip-controls`);
 export const headerTitle = headerControl.querySelectorAll(`h2`);
-// console.log('headerT ', headerTitle)
+
 // renderHtml(headerTitle[0], createHeaderMenuTemplate(), `afterend`);
 // renderElement(headerControl, new HeaderMenu().getElement(), RenderPosition.AFTERBEGIN);
 // renderElement(headerTitle[0], new HeaderMenu().getElement(), RenderPosition.AFTEREND);
 new HeaderMenu().getElement();
 
-renderHtml(headerTitle[1], createFilterEventsTemplate(), `afterend`);
+// renderHtml(headerTitle[1], createFilterEventsTemplate(), `afterend`);
+new FilterEvents().getElement();
 
 const container = document.querySelector(`.trip-events`);
 renderHtml(container, createFilterSortTemplate(), `beforeend`);
