@@ -1,6 +1,7 @@
 
-const listCities = [];
+
 const correctsListCities = (cities) => {
+  const listCities = [];
   listCities.push(cities.shift());
   listCities.push(cities.pop());
   return listCities.join(` &mdash; ...  &mdash; `);
