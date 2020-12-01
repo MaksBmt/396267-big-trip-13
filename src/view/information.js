@@ -1,4 +1,5 @@
-import {createElement} from "../utils.js";
+import {createElement, renderHtml} from "../utils.js";
+import {headerMain} from "../main.js";
 
 const correctsListCities = (cities) => {
   const listCities = [];
@@ -27,16 +28,17 @@ const createInformationTemplate = (informationCity) => {
 export default class Information {
   constructor(informationCity) {
     this._element = null;
-    this.informationCity = informationCity;
+    this._informationCity = informationCity;
   }
 
   getTemplate() {
-    return createInformationTemplate(this.informationCity);
+    return createInformationTemplate(this._informationCity);
   }
 
   getElement() {
     if (!this._element) {
-      this._element = createElement(this.getTemplate(this.informationCity));
+      this._element = createElement(this.getTemplate());
+      // this._element = renderHtml(headerMain, this.getTemplate(), `afterbegin`);
     }
 
     return this._element;

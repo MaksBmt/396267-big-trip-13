@@ -1,4 +1,3 @@
-// import {RenderPosition} from "./const.js";
 
 export const RenderPosition = {
   AFTERBEGIN: `afterbegin`,

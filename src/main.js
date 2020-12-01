@@ -1,12 +1,11 @@
-// import {createInformationTemplate} from "./view/information.js";
+
 import Information from "./view/information.js";
-import {createPriceTotalTemplate} from "./view/price-total.js";
-// import {createHeaderMenuTemplate} from "./view/header-menu.js";
+import PriceTotal from "./view/price-total.js";
 import HeaderMenu from "./view/header-menu.js";
-// import {createFilterEventsTemplate} from "./view/filter-events.js";
 import FilterEvents from "./view/filter-events.js";
-import {createFilterSortTemplate} from "./view/filter-sort.js";
-import {createEventListTemplate} from "./view/event-list.js";
+import FilterSort from "./view/filter-sort.js";
+// import {createEventListTemplate} from "./view/event-list.js";
+import EventList from "./view/event-list.js";
 import {createFormEvent} from "./view/form-event.js";
 import {createEventItem} from "./view/event-item.js";
 import {generatePoint} from "./mock/point.js";
@@ -18,8 +17,7 @@ const POINT_COUNT = 5;
 const points = new Array(POINT_COUNT).fill().map(generatePoint);
 
 const header = document.querySelector(`.page-header`);
-const headerMain = header.querySelector(`.trip-main`);
-
+export const headerMain = header.querySelector(`.trip-main`);
 const pointPrice = points.map((point) => point.price);
 
 
@@ -43,9 +41,11 @@ const informationCity = points.map((point) => point.city);
 
 // renderHtml(headerMain, createInformationTemplate(informationCity), `afterbegin`);
 renderElement(headerMain, new Information(informationCity).getElement(), RenderPosition.AFTERBEGIN);
+// new Information(informationCity).getElement();
 
-const headerInformation = headerMain.querySelector(`.trip-info`);
-renderHtml(headerInformation, createPriceTotalTemplate(totalPrice), `beforeend`);
+export const headerInformation = headerMain.querySelector(`.trip-info`);
+new PriceTotal(totalPrice).getElement();
+// renderHtml(headerInformation, createPriceTotalTemplate(totalPrice), `beforeend`);
 
 const headerControl = headerMain.querySelector(`.trip-controls`);
 export const headerTitle = headerControl.querySelectorAll(`h2`);
@@ -58,12 +58,17 @@ new HeaderMenu().getElement();
 // renderHtml(headerTitle[1], createFilterEventsTemplate(), `afterend`);
 new FilterEvents().getElement();
 
-const container = document.querySelector(`.trip-events`);
-renderHtml(container, createFilterSortTemplate(), `beforeend`);
+export const containerContent = document.querySelector(`.trip-events`);
+new FilterSort().getElement();
 
-renderHtml(container, createEventListTemplate(), `beforeend`);
+new EventList().getElement();
+// renderElement(containerContent, new FilterSort().getElement(), RenderPosition.BEFOREEND);
+// renderHtml(container, createFilterSortTemplate(), `beforeend`);
 
-const eventList = container.querySelector(`.trip-events__list`);
+// renderHtml(containerContent, createEventListTemplate(), `beforeend`);
+// renderElement(containerContent, new EventList().getElement(), RenderPosition.BEFOREEND);
+
+const eventList = containerContent.querySelector(`.trip-events__list`);
 renderHtml(eventList, createFormEvent(points[0]), `beforeend`);
 
 for (const point of points) {
