@@ -1,5 +1,5 @@
-import {createElement, renderHtml} from "../utils.js";
-import {headerMain} from "../main.js";
+import {createElement} from "../utils.js";
+
 
 const correctsListCities = (cities) => {
   const listCities = [];
@@ -14,8 +14,7 @@ const createInformationTemplate = (informationCity) => {
   const infoCity = informationCity.length < 3
     ? informationCity.join(` &mdash; `)
     : correctsListCities(informationCity);
-  return (`
-    <section class="trip-main__trip-info  trip-info">
+  return (`<section class="trip-main__trip-info  trip-info">
     <div class="trip-info__main">
       <h1 class="trip-info__title">${infoCity}</h1>
 
@@ -38,9 +37,7 @@ export default class Information {
   getElement() {
     if (!this._element) {
       this._element = createElement(this.getTemplate());
-      // this._element = renderHtml(headerMain, this.getTemplate(), `afterbegin`);
     }
-
     return this._element;
   }
 

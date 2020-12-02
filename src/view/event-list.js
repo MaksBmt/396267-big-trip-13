@@ -1,9 +1,8 @@
-import {createElement, renderHtml} from "../utils.js";
-import {containerContent} from "../main.js";
+import {createElement} from "../utils.js";
+
 
 const createEventListTemplate = () => {
-  return `
-  <ul class="trip-events__list">   
+  return `<ul class="trip-events__list">  
   </ul>`;
 };
 
@@ -18,8 +17,7 @@ export default class EventList {
 
   getElement() {
     if (!this._element) {
-      // this._element = createElement(this.getTemplate());
-      this._element = renderHtml(containerContent, this.getTemplate(), `beforeend`);
+      this._element = createElement(this.getTemplate());
     }
 
     return this._element;

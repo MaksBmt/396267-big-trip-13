@@ -4,12 +4,11 @@ import PriceTotal from "./view/price-total.js";
 import HeaderMenu from "./view/header-menu.js";
 import FilterEvents from "./view/filter-events.js";
 import FilterSort from "./view/filter-sort.js";
-// import {createEventListTemplate} from "./view/event-list.js";
 import EventList from "./view/event-list.js";
-import {createFormEvent} from "./view/form-event.js";
-import {createEventItem} from "./view/event-item.js";
+import FormEvent from "./view/form-event.js";
+import EventItem from "./view/event-item.js";
 import {generatePoint} from "./mock/point.js";
-import {renderHtml, renderElement} from "./utils.js";
+import {renderElement} from "./utils.js";
 import {RenderPosition} from "./utils.js";
 
 const POINT_COUNT = 5;
@@ -17,7 +16,7 @@ const POINT_COUNT = 5;
 const points = new Array(POINT_COUNT).fill().map(generatePoint);
 
 const header = document.querySelector(`.page-header`);
-export const headerMain = header.querySelector(`.trip-main`);
+const headerMain = header.querySelector(`.trip-main`);
 const pointPrice = points.map((point) => point.price);
 
 
@@ -39,39 +38,51 @@ const totalPrice = pointPrice.reduce((sum, current) => sum + current, 0) + total
 
 const informationCity = points.map((point) => point.city);
 
-// renderHtml(headerMain, createInformationTemplate(informationCity), `afterbegin`);
 renderElement(headerMain, new Information(informationCity).getElement(), RenderPosition.AFTERBEGIN);
-// new Information(informationCity).getElement();
 
-export const headerInformation = headerMain.querySelector(`.trip-info`);
-new PriceTotal(totalPrice).getElement();
-// renderHtml(headerInformation, createPriceTotalTemplate(totalPrice), `beforeend`);
+const headerInformation = headerMain.querySelector(`.trip-info`);
+
+renderElement(headerInformation, new PriceTotal(totalPrice).getElement(), RenderPosition.BEFOREEND);
 
 const headerControl = headerMain.querySelector(`.trip-controls`);
-export const headerTitle = headerControl.querySelectorAll(`h2`);
+const headerTitle = headerControl.querySelectorAll(`h2`);
 
-// renderHtml(headerTitle[0], createHeaderMenuTemplate(), `afterend`);
-// renderElement(headerControl, new HeaderMenu().getElement(), RenderPosition.AFTERBEGIN);
-// renderElement(headerTitle[0], new HeaderMenu().getElement(), RenderPosition.AFTEREND);
-new HeaderMenu().getElement();
+renderElement(headerTitle[0], new HeaderMenu().getElement(), RenderPosition.AFTEREND);
 
-// renderHtml(headerTitle[1], createFilterEventsTemplate(), `afterend`);
-new FilterEvents().getElement();
+renderElement(headerTitle[1], new FilterEvents().getElement(), RenderPosition.AFTEREND);
 
-export const containerContent = document.querySelector(`.trip-events`);
-new FilterSort().getElement();
+const containerContent = document.querySelector(`.trip-events`);
 
-new EventList().getElement();
-// renderElement(containerContent, new FilterSort().getElement(), RenderPosition.BEFOREEND);
-// renderHtml(container, createFilterSortTemplate(), `beforeend`);
+renderElement(containerContent, new FilterSort().getElement(), RenderPosition.BEFOREEND);
 
-// renderHtml(containerContent, createEventListTemplate(), `beforeend`);
-// renderElement(containerContent, new EventList().getElement(), RenderPosition.BEFOREEND);
+const listContent = new EventList();
+renderElement(containerContent, listContent.getElement(), RenderPosition.BEFOREEND);
 
-const eventList = containerContent.querySelector(`.trip-events__list`);
-renderHtml(eventList, createFormEvent(points[0]), `beforeend`);
+const renderPoint = (listElement, point) => {
+  const formEvent = new FormEvent(point);
+  const itemEvent = new EventItem(point);
+
+  const replaceCardToForm = () => {
+    listElement.replaceChild(formEvent.getElement(), itemEvent.getElement());
+  };
+
+  const replaceFormToCard = () => {
+    listElement.replaceChild(itemEvent.getElement(), formEvent.getElement());
+  };
+
+  itemEvent.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
+    replaceCardToForm();
+  });
+
+  formEvent.getElement().querySelector(`.event--edit`).addEventListener(`submit`, (evt) => {
+    evt.preventDefault();
+    replaceFormToCard();
+  });
+
+  renderElement(listElement, itemEvent.getElement(), RenderPosition.BEFOREEND);
+};
 
 for (const point of points) {
-  renderHtml(eventList, createEventItem(point), `beforeend`);
+  renderPoint(listContent.getElement(), point);
 }
 

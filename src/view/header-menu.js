@@ -1,6 +1,4 @@
-// import {createElement} from "../utils.js";
-import {renderHtml} from "../utils.js";
-import {headerTitle} from "../main.js";
+import {createElement} from "../utils.js";
 
 const createHeaderMenuTemplate = () => {
   return (`<nav class="trip-controls__trip-tabs  trip-tabs">
@@ -20,10 +18,8 @@ export default class HeaderMenu {
 
   getElement() {
     if (!this._element) {
-      // this._element = createElement(this.getTemplate());
-      this._element = renderHtml(headerTitle[0], this.getTemplate(), `afterend`);
+      this._element = createElement(this.getTemplate());
     }
-
     return this._element;
   }
 

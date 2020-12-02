@@ -1,9 +1,7 @@
-import {headerInformation} from "../main.js";
-import {renderHtml} from "../utils.js";
+import {createElement} from "../utils.js";
 
 const createPriceTotalTemplate = (totalPrice) => {
-  return (`
-  <p class="trip-info__cost">
+  return (`<p class="trip-info__cost">
     Total: &euro;&nbsp;<span class="trip-info__cost-value">${totalPrice}</span>
    </p>
   `);
@@ -21,9 +19,8 @@ export default class PriceTotal {
 
   getElement() {
     if (!this._element) {
-      this._element = renderHtml(headerInformation, this.getTemplate(), `beforeend`);
+      this._element = createElement(this.getTemplate());
     }
-
     return this._element;
   }
 
