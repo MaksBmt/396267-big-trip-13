@@ -2,10 +2,10 @@ import {CITIES} from "../const.js";
 import {TYPES} from "../const.js";
 import {getRandomInteger} from "../utils.js";
 import {AddInterval} from "../const.js";
+import {createElement} from "../utils.js";
 
 const createListDestination = () => {
-  return (`
-  <datalist id="destination-list-1">
+  return (`<datalist id="destination-list-1"> 
  ${CITIES.map((city) => `<option value="${city}"></option>`).join(``)}
   </datalist>`
   );
@@ -28,8 +28,7 @@ const layoutOffers = (offers) => {
 };
 
 const createListOffers = (offers) => {
-  return (`
-       <section class="event__section  event__section--offers">
+  return (`<section class="event__section  event__section--offers">    
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
          <div class="event__available-offers">
          ${layoutOffers(offers)}
@@ -39,8 +38,7 @@ const createListOffers = (offers) => {
 };
 
 const createItemsType = () => {
-  return TYPES.map((type) => `
-  <div class="event__type-item" >
+  return TYPES.map((type) => `<div class="event__type-item" >
     <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}">
       <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type}</label>
   </div>`
@@ -51,9 +49,10 @@ const createDestinationPhotos = (srcImg) => {
   return srcImg.map((foto) => `<img class="event__photo" src = "${foto}" alt = "Event photo">`).join(``);
 };
 
-export const createFormEvent = (point = {}) => {
+const createFormEvent = (point = {}) => {
   const {type, city, price, offers, destination: {descriptions, srcImg}, dueDate
   } = point;
+
   const randomMinute = getRandomInteger(AddInterval.MIN, AddInterval.MAX);
 
   const increasedGap = dueDate.add(randomMinute, `minute`);
@@ -120,3 +119,25 @@ export const createFormEvent = (point = {}) => {
    </form>
 </li>`);
 };
+
+export default class FormEvent {
+  constructor(point = {}) {
+    this._element = null;
+    this._point = point;
+  }
+
+  getTemplate() {
+    return createFormEvent(this._point);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

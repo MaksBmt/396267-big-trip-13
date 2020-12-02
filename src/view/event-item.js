@@ -1,18 +1,18 @@
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import {createElement} from "../utils.js";
 
 dayjs.extend(utc);
 
 const createResultOffers = (offers) => {
-  return offers.map((offer) =>
-    `<li  class= "event__offer" >
+  return offers.map((offer) => `<li  class= "event__offer" > 
     <span class="event__offer-title">${offer.name}</span>
     &plus;&euro;&nbsp;
   <span class="event__offer-price">${offer.price}</span>
 </li>`).join(``);
 };
 
-export const createEventItem = ({type, city, price, isFavorite, dueDate, offers, dateEnd}) => {
+const createEventItem = ({type, city, price, isFavorite, dueDate, offers, dateEnd}) => {
   const intervalDate = dateEnd.diff(dueDate);
 
   const hoursInterval = dayjs(new Date(intervalDate));
@@ -22,8 +22,7 @@ export const createEventItem = ({type, city, price, isFavorite, dueDate, offers,
     ? `event__favorite-btn  event__favorite-btn--active`
     : `event__favorite-btn`;
 
-  return (`
-  <li class="trip-events__item" >
+  return (`<li class="trip-events__item" >
     <div class="event">
       <time class="event__date" datetime="${dueDate.format(`YYYY-MM-DD`)}">${dueDate.format(`MMM D`)}</time>
       <div class="event__type">
@@ -58,3 +57,25 @@ export const createEventItem = ({type, city, price, isFavorite, dueDate, offers,
             </li>
 `);
 };
+
+export default class EventItem {
+  constructor(point) {
+    this._element = null;
+    this._point = point;
+  }
+
+  getTemplate() {
+    return createEventItem(this._point);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

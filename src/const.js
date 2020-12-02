@@ -1,4 +1,4 @@
-import {getRandomInteger} from "./utils.js";
+import {booleanRandom} from "./utils.js";
 
 export const Price = {
   MIN: 20,
@@ -22,6 +22,13 @@ export const AddInterval = {
   MAX: 300,
 };
 
+export const RenderPosition = {
+  AFTERBEGIN: `afterbegin`,
+  BEFOREEND: `beforeend`,
+  BEFOREBEGIN: `beforebegin`,
+  AFTEREND: `afterend`,
+};
+
 export const CITIES = [`Sofia`, `Burgas`, `Blagoevgrad`, `Razlog`, `Primorsko`];
 
 export const DESCRIPTIONS = [
@@ -43,48 +50,48 @@ export const OFFERS = [
     name: `Rent a car`,
     price: 75,
     type: [`Sightseeing`, `Restaurant`, `Train`],
-    isChecked: Boolean(getRandomInteger(0, 1)),
+    isChecked: booleanRandom(),
   },
   {
     name: `Order Uber`,
     price: 50,
     type: [`Train`, `Ship`, ` Transport`, `Drive`, `Flight`],
-    isChecked: Boolean(getRandomInteger()),
+    isChecked: booleanRandom(),
   },
   {
     name: `Add luggage`,
     price: 30,
     type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`],
-    isChecked: Boolean(getRandomInteger(0, 1)),
+    isChecked: booleanRandom(),
   },
   {
     name: `Switch to comfort`,
     price: 45,
     type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`],
-    isChecked: Boolean(getRandomInteger(0, 1)),
+    isChecked: booleanRandom(),
   },
   {
     name: `Add breakfast`,
     price: 25,
     type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`],
-    isChecked: Boolean(getRandomInteger(0, 1)),
+    isChecked: booleanRandom(),
   },
   {
     name: `Book tickets`,
     price: 10,
     type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`],
-    isChecked: Boolean(getRandomInteger(0, 1)),
+    isChecked: booleanRandom(),
   },
   {
     name: `Lunch in city`,
     price: 25,
     type: [`Transport`, `Drive`],
-    isChecked: Boolean(getRandomInteger(0, 1)),
+    isChecked: booleanRandom(),
   },
   {
     name: `Add meal`,
     price: 28,
     type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`],
-    isChecked: Boolean(getRandomInteger(0, 1)),
+    isChecked: booleanRandom(),
   },
 ];

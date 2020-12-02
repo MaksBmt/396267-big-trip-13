@@ -1,19 +1,20 @@
+import {createElement} from "../utils.js";
 
-const listCities = [];
+
 const correctsListCities = (cities) => {
+  const listCities = [];
   listCities.push(cities.shift());
   listCities.push(cities.pop());
   return listCities.join(` &mdash; ...  &mdash; `);
 };
 
 
-export const createInformationTemplate = (informationCity) => {
+const createInformationTemplate = (informationCity) => {
 
   const infoCity = informationCity.length < 3
     ? informationCity.join(` &mdash; `)
     : correctsListCities(informationCity);
-  return (`
-    <section class="trip-main__trip-info  trip-info">
+  return (`<section class="trip-main__trip-info  trip-info">
     <div class="trip-info__main">
       <h1 class="trip-info__title">${infoCity}</h1>
 
@@ -22,3 +23,26 @@ export const createInformationTemplate = (informationCity) => {
   </section>
     `);
 };
+
+export default class Information {
+  constructor(informationCity) {
+    this._element = null;
+    this._informationCity = informationCity;
+  }
+
+  getTemplate() {
+    return createInformationTemplate(this._informationCity);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+
