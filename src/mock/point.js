@@ -1,5 +1,5 @@
 import {CITIES, TYPES, OFFERS, DESCRIPTIONS, Price, LengthFoto, LengthDescription, MaxDaysGap, AddInterval} from "../const.js";
-import {getRandomInteger, booleanRandom} from "../utils.js";
+import {getRandomInteger, getRandomBoolean} from "../utils.js";
 import dayjs from "dayjs";
 
 const generateTypes = () => TYPES[getRandomInteger(0, TYPES.length - 1)];
@@ -51,7 +51,7 @@ export const generatePoint = () => {
     },
     offers: resultGenerateOffer,
     price: Math.round(getRandomInteger(Price.MIN, Price.MAX)),
-    isFavorite: booleanRandom(),
+    isFavorite: getRandomBoolean(),
     dueDate: resultGenerateDate,
     dateEnd: resultGenerateDate.add(randomMinute, `minute`),
   };

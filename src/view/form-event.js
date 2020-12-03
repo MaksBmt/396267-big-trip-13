@@ -49,6 +49,12 @@ const createDestinationPhotos = (srcImg) => {
   return srcImg.map((foto) => `<img class="event__photo" src = "${foto}" alt = "Event photo">`).join(``);
 };
 
+const createButtonFormEdit = () => {
+  return (`<button class="event__rollup-btn" type="button">
+  <span class="visually-hidden">Open event</span>
+</button>`);
+};
+
 const createFormEvent = (point = {}) => {
   const {type, city, price, offers, destination: {descriptions, srcImg}, dueDate
   } = point;
@@ -101,6 +107,7 @@ const createFormEvent = (point = {}) => {
 
                   <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
                   <button class="event__reset-btn" type="reset">Cancel</button>
+                  ${createButtonFormEdit()}
      </header>
                 <section class="event__details">
 
