@@ -1,4 +1,4 @@
-import {booleanRandom} from "./utils.js";
+import {getRandomBoolean} from "./utils.js";
 
 export const Price = {
   MIN: 20,
@@ -50,48 +50,48 @@ export const OFFERS = [
     name: `Rent a car`,
     price: 75,
     type: [`Sightseeing`, `Restaurant`, `Train`],
-    isChecked: booleanRandom(),
+    isChecked: getRandomBoolean(),
   },
   {
     name: `Order Uber`,
     price: 50,
     type: [`Train`, `Ship`, ` Transport`, `Drive`, `Flight`],
-    isChecked: booleanRandom(),
+    isChecked: getRandomBoolean(),
   },
   {
     name: `Add luggage`,
     price: 30,
     type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`],
-    isChecked: booleanRandom(),
+    isChecked: getRandomBoolean(),
   },
   {
     name: `Switch to comfort`,
     price: 45,
     type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`],
-    isChecked: booleanRandom(),
+    isChecked: getRandomBoolean(),
   },
   {
     name: `Add breakfast`,
     price: 25,
     type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`],
-    isChecked: booleanRandom(),
+    isChecked: getRandomBoolean(),
   },
   {
     name: `Book tickets`,
     price: 10,
     type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`],
-    isChecked: booleanRandom(),
+    isChecked: getRandomBoolean(),
   },
   {
     name: `Lunch in city`,
     price: 25,
     type: [`Transport`, `Drive`],
-    isChecked: booleanRandom(),
+    isChecked: getRandomBoolean(),
   },
   {
     name: `Add meal`,
     price: 28,
     type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`],
-    isChecked: booleanRandom(),
+    isChecked: getRandomBoolean(),
   },
 ];

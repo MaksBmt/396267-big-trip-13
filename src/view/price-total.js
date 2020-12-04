@@ -1,4 +1,4 @@
-import {createElement} from "../utils.js";
+import Abstract from "./abstract.js";
 
 const createPriceTotalTemplate = (totalPrice) => {
   return (`<p class="trip-info__cost">
@@ -7,24 +7,13 @@ const createPriceTotalTemplate = (totalPrice) => {
   `);
 };
 
-export default class PriceTotal {
+export default class PriceTotal extends Abstract {
   constructor(totalPrice) {
-    this._element = null;
+    super();
     this._totalPrice = totalPrice;
   }
 
   getTemplate() {
     return createPriceTotalTemplate(this._totalPrice);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

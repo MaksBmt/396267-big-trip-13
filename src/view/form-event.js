@@ -2,7 +2,7 @@ import {CITIES} from "../const.js";
 import {TYPES} from "../const.js";
 import {getRandomInteger} from "../utils.js";
 import {AddInterval} from "../const.js";
-import {createElement} from "../utils.js";
+import Abstract from "./abstract.js";
 
 const createListDestination = () => {
   return (`<datalist id="destination-list-1"> 
@@ -47,6 +47,12 @@ const createItemsType = () => {
 
 const createDestinationPhotos = (srcImg) => {
   return srcImg.map((foto) => `<img class="event__photo" src = "${foto}" alt = "Event photo">`).join(``);
+};
+
+const createButtonFormEdit = () => {
+  return (`<button class="event__rollup-btn" type="button">
+  <span class="visually-hidden">Open event</span>
+</button>`);
 };
 
 const createFormEvent = (point = {}) => {
@@ -101,6 +107,7 @@ const createFormEvent = (point = {}) => {
 
                   <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
                   <button class="event__reset-btn" type="reset">Cancel</button>
+                  ${createButtonFormEdit()}
      </header>
                 <section class="event__details">
 
@@ -120,24 +127,13 @@ const createFormEvent = (point = {}) => {
 </li>`);
 };
 
-export default class FormEvent {
+export default class FormEvent extends Abstract {
   constructor(point = {}) {
-    this._element = null;
+    super();
     this._point = point;
   }
 
   getTemplate() {
     return createFormEvent(this._point);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

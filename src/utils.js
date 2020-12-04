@@ -13,9 +13,8 @@ export const getRandomInteger = (a = 0, b = 1) => {
   return Math.floor(lower + Math.random() * (upper - lower + 1));
 };
 
-export const booleanRandom = () => {
-  return Boolean(getRandomInteger(0, 1));
-};
+export const getRandomBoolean = () => Boolean(getRandomInteger(0, 1));
+
 
 export const shuffle = (gang) => {
   for (let i = gang.length - 1; i > 0; i--) {
