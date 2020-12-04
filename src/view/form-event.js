@@ -2,7 +2,7 @@ import {CITIES} from "../const.js";
 import {TYPES} from "../const.js";
 import {getRandomInteger} from "../utils.js";
 import {AddInterval} from "../const.js";
-import {createElement} from "../utils.js";
+import Abstract from "./abstract.js";
 
 const createListDestination = () => {
   return (`<datalist id="destination-list-1"> 
@@ -127,24 +127,13 @@ const createFormEvent = (point = {}) => {
 </li>`);
 };
 
-export default class FormEvent {
+export default class FormEvent extends Abstract {
   constructor(point = {}) {
-    this._element = null;
+    super();
     this._point = point;
   }
 
   getTemplate() {
     return createFormEvent(this._point);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

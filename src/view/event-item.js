@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import {createElement} from "../utils.js";
+import Abstract from "./abstract.js";
 
 dayjs.extend(utc);
 
@@ -58,24 +58,13 @@ const createEventItem = ({type, city, price, isFavorite, dueDate, offers, dateEn
 `);
 };
 
-export default class EventItem {
+export default class EventItem extends Abstract {
   constructor(point) {
-    this._element = null;
+    super();
     this._point = point;
   }
 
   getTemplate() {
     return createEventItem(this._point);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

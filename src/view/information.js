@@ -1,4 +1,4 @@
-import {createElement} from "../utils.js";
+import Abstract from "./abstract.js";
 
 
 const correctsListCities = (cities) => {
@@ -24,25 +24,14 @@ const createInformationTemplate = (informationCity) => {
     `);
 };
 
-export default class Information {
+export default class Information extends Abstract {
   constructor(informationCity) {
-    this._element = null;
+    super();
     this._informationCity = informationCity;
   }
 
   getTemplate() {
     return createInformationTemplate(this._informationCity);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
 
