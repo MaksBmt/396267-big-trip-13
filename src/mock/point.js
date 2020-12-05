@@ -1,5 +1,5 @@
 import {CITIES, TYPES, OFFERS, DESCRIPTIONS, Price, LengthFoto, LengthDescription, MaxDaysGap, AddInterval} from "../const.js";
-import {getRandomInteger, getRandomBoolean} from "../utils.js";
+import {getRandomInteger, getRandomBoolean} from "../utils/common.js";
 import dayjs from "dayjs";
 
 const generateTypes = () => TYPES[getRandomInteger(0, TYPES.length - 1)];
@@ -11,8 +11,6 @@ const generateDate = () => {
 
   return dayjs().add(daysGap, `h`);
 };
-
-const randomMinute = getRandomInteger(AddInterval.MIN, AddInterval.MAX);
 
 const generateDescription = () => {
   const randomIndex = getRandomInteger(0, DESCRIPTIONS.length - 1);
@@ -39,6 +37,7 @@ const filterOffers = (type) => {
 };
 
 export const generatePoint = () => {
+  const randomMinute = getRandomInteger(AddInterval.MIN, AddInterval.MAX);
   const resultGenerateType = generateTypes();
   const resultGenerateOffer = filterOffers(resultGenerateType);
   const resultGenerateDate = generateDate();
