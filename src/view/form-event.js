@@ -1,6 +1,6 @@
 import {CITIES} from "../const.js";
 import {TYPES} from "../const.js";
-import {getRandomInteger} from "../utils.js";
+import {getRandomInteger} from "../utils/common.js";
 import {AddInterval} from "../const.js";
 import Abstract from "./abstract.js";
 
@@ -131,9 +131,35 @@ export default class FormEvent extends Abstract {
   constructor(point = {}) {
     super();
     this._point = point;
+
+    this._editFormClickHandler = this._editFormClickHandler.bind(this);
+    this._editFormSubmitHandler = this._editFormSubmitHandler.bind(this);
   }
 
   getTemplate() {
     return createFormEvent(this._point);
   }
+
+  _editFormClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.editFormClick();
+  }
+
+  _editFormSubmitHandler(evt) {
+    evt.preventDefault();
+    this._callback.editFormSubmit();
+  }
+
+  setEditSubmitHandler(callback) {
+    this._callback.editFormSubmit = callback;
+
+    this.getElement().querySelector(`.event--edit`).addEventListener(`submit`, this._editFormSubmitHandler);
+  }
+
+  setEditClickHandler(callback) {
+    this._callback.editFormClick = callback;
+
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editFormClickHandler);
+  }
 }
+

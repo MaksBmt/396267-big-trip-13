@@ -9,8 +9,9 @@ import FormEvent from "./view/form-event.js";
 import EventItem from "./view/event-item.js";
 import NoPoint from "./view/no-point.js";
 import {generatePoint} from "./mock/point.js";
-import {renderElement} from "./utils.js";
-import {RenderPosition} from "./utils.js";
+import {renderElement} from "./utils/render.js";
+import {RenderPosition} from "./utils/render.js";
+import {replace} from "./utils/render.js";
 
 const POINT_COUNT = 5;
 
@@ -38,38 +39,38 @@ const informationCity = points.map((point) => point.city);
 const headerControl = headerMain.querySelector(`.trip-controls`);
 const headerTitle = headerControl.querySelectorAll(`h2`);
 
-renderElement(headerTitle[0], new HeaderMenu().getElement(), RenderPosition.AFTEREND);
+renderElement(headerTitle[0], new HeaderMenu(), RenderPosition.AFTEREND);
 
-renderElement(headerTitle[1], new FilterEvents().getElement(), RenderPosition.AFTEREND);
+renderElement(headerTitle[1], new FilterEvents(), RenderPosition.AFTEREND);
 
 const containerContent = document.querySelector(`.trip-events`);
 
 if (POINT_COUNT === 0) {
-  renderElement(containerContent, new NoPoint().getElement(), RenderPosition.BEFOREEND);
+  renderElement(containerContent, new NoPoint(), RenderPosition.BEFOREEND);
 } else {
 
-  renderElement(headerMain, new Information(informationCity).getElement(), RenderPosition.AFTERBEGIN);
+  renderElement(headerMain, new Information(informationCity), RenderPosition.AFTERBEGIN);
 
   const headerInformation = headerMain.querySelector(`.trip-info`);
 
-  renderElement(headerInformation, new PriceTotal(totalPrice).getElement(), RenderPosition.BEFOREEND);
+  renderElement(headerInformation, new PriceTotal(totalPrice), RenderPosition.BEFOREEND);
 
 
-  renderElement(containerContent, new FilterSort().getElement(), RenderPosition.BEFOREEND);
+  renderElement(containerContent, new FilterSort(), RenderPosition.BEFOREEND);
 
   const listContent = new EventList();
-  renderElement(containerContent, listContent.getElement(), RenderPosition.BEFOREEND);
+  renderElement(containerContent, listContent, RenderPosition.BEFOREEND);
 
   const renderPoint = (listElement, point) => {
     const formEvent = new FormEvent(point);
     const itemEvent = new EventItem(point);
 
     const replaceCardToForm = () => {
-      listElement.replaceChild(formEvent.getElement(), itemEvent.getElement());
+      replace(formEvent, itemEvent);
     };
 
     const replaceFormToCard = () => {
-      listElement.replaceChild(itemEvent.getElement(), formEvent.getElement());
+      replace(itemEvent, formEvent);
     };
 
     const onEscKeyDown = (evt) => {
@@ -80,25 +81,24 @@ if (POINT_COUNT === 0) {
       }
     };
 
-    itemEvent.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
+    itemEvent.setPointClickHandler(() => {
       replaceCardToForm();
       document.addEventListener(`keydown`, onEscKeyDown);
     });
 
-    formEvent.getElement().querySelector(`.event--edit`).addEventListener(`submit`, (evt) => {
-      evt.preventDefault();
+    formEvent.setEditSubmitHandler(() => {
       replaceFormToCard();
-      document.addEventListener(`keydown`, onEscKeyDown);
+      document.removeEventListener(`keydown`, onEscKeyDown);
     });
 
-    formEvent.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
+    formEvent.setEditClickHandler(() => {
       replaceFormToCard();
     });
 
-    renderElement(listElement, itemEvent.getElement(), RenderPosition.BEFOREEND);
+    renderElement(listElement, itemEvent, RenderPosition.BEFOREEND);
   };
 
   for (const point of points) {
-    renderPoint(listContent.getElement(), point);
+    renderPoint(listContent, point);
   }
 }

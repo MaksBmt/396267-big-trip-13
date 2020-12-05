@@ -62,9 +62,22 @@ export default class EventItem extends Abstract {
   constructor(point) {
     super();
     this._point = point;
+
+    this._pointClickHandler = this._pointClickHandler.bind(this);
   }
 
   getTemplate() {
     return createEventItem(this._point);
+  }
+
+  _pointClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.pointClick();
+  }
+
+  setPointClickHandler(callback) {
+    this._callback.pointClick = callback;
+
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._pointClickHandler);
   }
 }
