@@ -70,14 +70,14 @@ export default class EventItem extends Abstract {
     return createEventItem(this._point);
   }
 
-  _pointClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.pointClick();
-  }
-
   setPointClickHandler(callback) {
     this._callback.pointClick = callback;
 
     this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._pointClickHandler);
+  }
+
+  _pointClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.pointClick();
   }
 }

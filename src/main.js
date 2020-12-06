@@ -12,6 +12,7 @@ import {generatePoint} from "./mock/point.js";
 import {renderElement} from "./utils/render.js";
 import {RenderPosition} from "./utils/render.js";
 import {replace} from "./utils/render.js";
+// import {getSorting} from "./utils/common.js";
 
 const POINT_COUNT = 5;
 
@@ -55,8 +56,7 @@ if (POINT_COUNT === 0) {
 
   renderElement(headerInformation, new PriceTotal(totalPrice), RenderPosition.BEFOREEND);
 
-
-  renderElement(containerContent, new FilterSort(), RenderPosition.BEFOREEND);
+  // renderElement(containerContent, new FilterSort(), RenderPosition.BEFOREEND);
 
   const listContent = new EventList();
   renderElement(containerContent, listContent, RenderPosition.BEFOREEND);
@@ -86,6 +86,21 @@ if (POINT_COUNT === 0) {
       document.addEventListener(`keydown`, onEscKeyDown);
     });
 
+    const itemFavorite = itemEvent.getElement().querySelector(`.event__favorite-btn`);
+    itemFavorite.addEventListener(`click`, () => {
+      if (point.isFavorite === true) {
+        point.isFavorite = false;
+      } else {
+        point.isFavorite = true;
+      }
+
+      if (itemFavorite.classList.contains(`event__favorite-btn--active`)) {
+        itemFavorite.classList.remove(`event__favorite-btn--active`);
+      } else {
+        itemFavorite.classList.add(`event__favorite-btn--active`);
+      }
+    });
+
     formEvent.setEditSubmitHandler(() => {
       replaceFormToCard();
       document.removeEventListener(`keydown`, onEscKeyDown);
@@ -93,12 +108,40 @@ if (POINT_COUNT === 0) {
 
     formEvent.setEditClickHandler(() => {
       replaceFormToCard();
+      document.removeEventListener(`keydown`, onEscKeyDown);
     });
 
     renderElement(listElement, itemEvent, RenderPosition.BEFOREEND);
   };
 
+
   for (const point of points) {
     renderPoint(listContent, point);
   }
+
+  const titleEventSection = containerContent.querySelector(`h2`);
+
+  const renderFilterSort = () => {
+    const filterSort = new FilterSort();
+
+    filterSort.getElement().querySelector(`.trip-sort__item--price`).addEventListener(`click`, () => {
+
+      points.sort((a, b) => b.price - a.price);
+
+      listContent.getElement().remove();
+      listContent.removeElement();
+
+      renderElement(containerContent, listContent, RenderPosition.BEFOREEND);
+      for (const point of points) {
+        renderPoint(listContent, point);
+      }
+
+    });
+
+    renderElement(titleEventSection, filterSort, RenderPosition.AFTEREND);
+  };
+
+  renderFilterSort();
+
+
 }

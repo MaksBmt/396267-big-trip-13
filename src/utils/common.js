@@ -14,3 +14,8 @@ export const shuffle = (gang) => {
   }
   return gang;
 };
+
+export const getSorting = (gang) => {
+  return gang.sort((a, b) => b - a);
+};
+
