@@ -56,10 +56,12 @@ if (POINT_COUNT === 0) {
 
   renderElement(headerInformation, new PriceTotal(totalPrice), RenderPosition.BEFOREEND);
 
-  // renderElement(containerContent, new FilterSort(), RenderPosition.BEFOREEND);
-
   const listContent = new EventList();
   renderElement(containerContent, listContent, RenderPosition.BEFOREEND);
+
+  points.map((point) => {
+    point.interval = (point.dateEnd).diff(point.dueDate);
+  });
 
   const renderPoint = (listElement, point) => {
     const formEvent = new FormEvent(point);
@@ -87,12 +89,8 @@ if (POINT_COUNT === 0) {
     });
 
     const itemFavorite = itemEvent.getElement().querySelector(`.event__favorite-btn`);
-    itemFavorite.addEventListener(`click`, () => {
-      if (point.isFavorite === true) {
-        point.isFavorite = false;
-      } else {
-        point.isFavorite = true;
-      }
+    itemEvent.setFavoriteClickHandler(() => {
+      point.isFavorite = !point.isFavorite;
 
       if (itemFavorite.classList.contains(`event__favorite-btn--active`)) {
         itemFavorite.classList.remove(`event__favorite-btn--active`);
@@ -114,34 +112,42 @@ if (POINT_COUNT === 0) {
     renderElement(listElement, itemEvent, RenderPosition.BEFOREEND);
   };
 
+  const initRenderPoint = () => {
+    for (const point of points) {
+      renderPoint(listContent, point);
+    }
+  };
 
-  for (const point of points) {
-    renderPoint(listContent, point);
-  }
+  const replacePoints = () => {
+    listContent.getElement().remove();
+    listContent.removeElement();
+
+    renderElement(containerContent, listContent, RenderPosition.BEFOREEND);
+    initRenderPoint();
+  };
 
   const titleEventSection = containerContent.querySelector(`h2`);
 
   const renderFilterSort = () => {
     const filterSort = new FilterSort();
 
-    filterSort.getElement().querySelector(`.trip-sort__item--price`).addEventListener(`click`, () => {
-
+    filterSort.setSortPriceClickHandler(() => {
       points.sort((a, b) => b.price - a.price);
+      replacePoints();
+    });
 
-      listContent.getElement().remove();
-      listContent.removeElement();
+    // points.map((point) => {
+    //   point.interval = (point.dateEnd).diff(point.dueDate);
+    // });
 
-      renderElement(containerContent, listContent, RenderPosition.BEFOREEND);
-      for (const point of points) {
-        renderPoint(listContent, point);
-      }
 
+    filterSort.setSortTimeClickHandler(() => {
+      points.sort((a, b) => b.interval - a.interval);
+      replacePoints();
     });
 
     renderElement(titleEventSection, filterSort, RenderPosition.AFTEREND);
   };
-
+  initRenderPoint();
   renderFilterSort();
-
-
 }

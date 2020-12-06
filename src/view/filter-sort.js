@@ -31,7 +31,35 @@ const createFilterSortTemplate = () => {
 };
 
 export default class FilterSort extends Abstract {
+  constructor() {
+    super();
+
+    this._sortPriceClickHandler = this._sortPriceClickHandler.bind(this);
+    this._sortTimeClickHandler = this._sortTimeClickHandler.bind(this);
+  }
   getTemplate() {
     return createFilterSortTemplate();
+  }
+
+  setSortPriceClickHandler(callback) {
+    this._callback.sortPriceClick = callback;
+
+    this.getElement().querySelector(`.trip-sort__item--price`).addEventListener(`click`, this._sortPriceClickHandler);
+  }
+
+  setSortTimeClickHandler(callback) {
+    this._callback.sortTimeClick = callback;
+
+    this.getElement().querySelector(`.trip-sort__item--time`).addEventListener(`click`, this._sortTimeClickHandler);
+  }
+
+  _sortPriceClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.sortPriceClick();
+  }
+
+  _sortTimeClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.sortTimeClick();
   }
 }
