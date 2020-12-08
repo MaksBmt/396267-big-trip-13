@@ -8,7 +8,7 @@ import {generatePoint} from "./mock/point.js";
 import {renderElement} from "./utils/render.js";
 import {RenderPosition} from "./utils/render.js";
 
-const POINT_COUNT = 5;
+const POINT_COUNT = 6;
 
 const points = new Array(POINT_COUNT).fill().map(generatePoint);
 

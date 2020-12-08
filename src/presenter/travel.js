@@ -1,13 +1,12 @@
 import FilterSort from "../view/filter-sort.js";
 import EventList from "../view/event-list.js";
-import FormEvent from "../view/form-event.js";
-import EventItem from "../view/event-item.js";
 import NoPoint from "../view/no-point.js";
+import Mark from "./mark.js";
 import {renderElement} from "../utils/render.js";
 import {RenderPosition} from "../utils/render.js";
-import {replace} from "../utils/render.js";
 
-const POINT_COUNT = 5;
+
+const POINT_COUNT = 6;
 
 export default class Travel {
   constructor(containerContent) {
@@ -38,46 +37,13 @@ export default class Travel {
   }
 
   _renderListContent() {
-    renderElement(this._containerContent, this.listComponent, RenderPosition.BEFOREEND);
+    renderElement(this._containerContent, this._listComponent, RenderPosition.BEFOREEND);
     this._renderPoints(this.subjects);
   }
 
   _renderPoint(listComponent, subject) {
-    const formEvent = new FormEvent(subject);
-    const itemEvent = new EventItem(subject);
-
-    const replaceCardToForm = () => {
-      replace(formEvent, itemEvent);
-    };
-
-    const replaceFormToCard = () => {
-      replace(itemEvent, formEvent);
-    };
-
-    const onEscKeyDown = (evt) => {
-      if (evt.key === `Escape` || evt.key === `Esc`) {
-        evt.preventDefault();
-        replaceFormToCard();
-        document.removeEventListener(`keydown`, onEscKeyDown);
-      }
-    };
-
-    itemEvent.setPointClickHandler(() => {
-      replaceCardToForm();
-      document.addEventListener(`keydown`, onEscKeyDown);
-    });
-
-    formEvent.setEditSubmitHandler(() => {
-      replaceFormToCard();
-      document.removeEventListener(`keydown`, onEscKeyDown);
-    });
-
-    formEvent.setEditClickHandler(() => {
-      replaceFormToCard();
-      document.removeEventListener(`keydown`, onEscKeyDown);
-    });
-
-    renderElement(listComponent, itemEvent, RenderPosition.BEFOREEND);
+    const mark = new Mark(listComponent);
+    mark.init(subject);
   }
 
   _renderPoints(subjects) {
