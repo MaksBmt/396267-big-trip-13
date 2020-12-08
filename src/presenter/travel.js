@@ -1,11 +1,11 @@
-import FilterSort from "./view/filter-sort.js";
-import EventList from "./view/event-list.js";
-import FormEvent from "./view/form-event.js";
-import EventItem from "./view/event-item.js";
-import NoPoint from "./view/no-point.js";
-import {renderElement} from "./utils/render.js";
-import {RenderPosition} from "./utils/render.js";
-import {replace} from "./utils/render.js";
+import FilterSort from "../view/filter-sort.js";
+import EventList from "../view/event-list.js";
+import FormEvent from "../view/form-event.js";
+import EventItem from "../view/event-item.js";
+import NoPoint from "../view/no-point.js";
+import {renderElement} from "../utils/render.js";
+import {RenderPosition} from "../utils/render.js";
+import {replace} from "../utils/render.js";
 
 const POINT_COUNT = 5;
 
@@ -16,7 +16,6 @@ export default class Travel {
     this._listComponent = new EventList();
     this._sortComponent = new FilterSort();
     this._noComponent = new NoPoint();
-
   }
 
   init(subjects) {
@@ -31,15 +30,15 @@ export default class Travel {
   }
 
   _renderNoPoint() {
-    renderElement(this.containerContent, this._noComponent, RenderPosition.BEFOREEND);
+    renderElement(this._containerContent, this._noComponent, RenderPosition.BEFOREEND);
   }
 
   _renderSort() {
-    renderElement(this.containerContent, this._sortComponent, RenderPosition.BEFOREEND);
+    renderElement(this._containerContent, this._sortComponent, RenderPosition.BEFOREEND);
   }
 
   _renderListContent() {
-    renderElement(this.containerContent, this.listContent, RenderPosition.BEFOREEND);
+    renderElement(this._containerContent, this.listComponent, RenderPosition.BEFOREEND);
     this._renderPoints(this.subjects);
   }
 
