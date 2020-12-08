@@ -42,7 +42,7 @@ export default class Travel {
     this._renderPoints(this.subjects);
   }
 
-  _renderPoint(subject) {
+  _renderPoint(listComponent, subject) {
     const formEvent = new FormEvent(subject);
     const itemEvent = new EventItem(subject);
 
@@ -77,7 +77,7 @@ export default class Travel {
       document.removeEventListener(`keydown`, onEscKeyDown);
     });
 
-    renderElement(this._listComponent, itemEvent, RenderPosition.BEFOREEND);
+    renderElement(listComponent, itemEvent, RenderPosition.BEFOREEND);
   }
 
   _renderPoints(subjects) {
