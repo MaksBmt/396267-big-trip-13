@@ -140,16 +140,6 @@ export default class FormEvent extends Abstract {
     return createFormEvent(this._point);
   }
 
-  _editFormClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.editFormClick();
-  }
-
-  _editFormSubmitHandler(evt) {
-    evt.preventDefault();
-    this._callback.editFormSubmit();
-  }
-
   setEditSubmitHandler(callback) {
     this._callback.editFormSubmit = callback;
 
@@ -160,6 +150,16 @@ export default class FormEvent extends Abstract {
     this._callback.editFormClick = callback;
 
     this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editFormClickHandler);
+  }
+
+  _editFormClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.editFormClick();
+  }
+
+  _editFormSubmitHandler(evt) {
+    evt.preventDefault();
+    this._callback.editFormSubmit();
   }
 }
 
