@@ -3,17 +3,12 @@ import Information from "./view/information.js";
 import PriceTotal from "./view/price-total.js";
 import HeaderMenu from "./view/header-menu.js";
 import FilterEvents from "./view/filter-events.js";
-import FilterSort from "./view/filter-sort.js";
-import EventList from "./view/event-list.js";
-import FormEvent from "./view/form-event.js";
-import EventItem from "./view/event-item.js";
-import NoPoint from "./view/no-point.js";
+import Travel from "./presenter/travel.js";
 import {generatePoint} from "./mock/point.js";
 import {renderElement} from "./utils/render.js";
 import {RenderPosition} from "./utils/render.js";
-import {replace} from "./utils/render.js";
 
-const POINT_COUNT = 5;
+const POINT_COUNT = 6;
 
 const points = new Array(POINT_COUNT).fill().map(generatePoint);
 
@@ -45,8 +40,10 @@ renderElement(headerTitle[1], new FilterEvents(), RenderPosition.AFTEREND);
 
 const containerContent = document.querySelector(`.trip-events`);
 
+const travel = new Travel(containerContent);
+
 if (POINT_COUNT === 0) {
-  renderElement(containerContent, new NoPoint(), RenderPosition.BEFOREEND);
+  travel.init(points);
 } else {
 
   renderElement(headerMain, new Information(informationCity), RenderPosition.AFTERBEGIN);
@@ -55,50 +52,6 @@ if (POINT_COUNT === 0) {
 
   renderElement(headerInformation, new PriceTotal(totalPrice), RenderPosition.BEFOREEND);
 
+  travel.init(points);
 
-  renderElement(containerContent, new FilterSort(), RenderPosition.BEFOREEND);
-
-  const listContent = new EventList();
-  renderElement(containerContent, listContent, RenderPosition.BEFOREEND);
-
-  const renderPoint = (listElement, point) => {
-    const formEvent = new FormEvent(point);
-    const itemEvent = new EventItem(point);
-
-    const replaceCardToForm = () => {
-      replace(formEvent, itemEvent);
-    };
-
-    const replaceFormToCard = () => {
-      replace(itemEvent, formEvent);
-    };
-
-    const onEscKeyDown = (evt) => {
-      if (evt.key === `Escape` || evt.key === `Esc`) {
-        evt.preventDefault();
-        replaceFormToCard();
-        document.removeEventListener(`keydown`, onEscKeyDown);
-      }
-    };
-
-    itemEvent.setPointClickHandler(() => {
-      replaceCardToForm();
-      document.addEventListener(`keydown`, onEscKeyDown);
-    });
-
-    formEvent.setEditSubmitHandler(() => {
-      replaceFormToCard();
-      document.removeEventListener(`keydown`, onEscKeyDown);
-    });
-
-    formEvent.setEditClickHandler(() => {
-      replaceFormToCard();
-    });
-
-    renderElement(listElement, itemEvent, RenderPosition.BEFOREEND);
-  };
-
-  for (const point of points) {
-    renderPoint(listContent, point);
-  }
 }
