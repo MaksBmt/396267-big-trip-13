@@ -62,8 +62,10 @@ export default class EventItem extends Abstract {
   constructor(point) {
     super();
     this._point = point;
+    this.itemFavorite = this.getElement().querySelector(`.event__favorite-btn`);
 
     this._pointClickHandler = this._pointClickHandler.bind(this);
+    this._favoriteClickHadler = this._favoriteClickHadler.bind(this);
   }
 
   getTemplate() {
@@ -76,8 +78,24 @@ export default class EventItem extends Abstract {
     this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._pointClickHandler);
   }
 
+  setFavoriteClickHandler(callback) {
+    this._callback.favoriteClick = callback;
+    this.itemFavorite.addEventListener(`click`, this._favoriteClickHadler);
+  }
+
   _pointClickHandler(evt) {
     evt.preventDefault();
     this._callback.pointClick();
+  }
+
+  _favoriteClickHadler(evt) {
+    evt.preventDefault();
+    this._callback.favoriteClick();
+    // this._point.isFavorite = !this._point.isFavorite;
+    if (this.itemFavorite.classList.contains(`event__favorite-btn--active`)) {
+      this.itemFavorite.classList.remove(`event__favorite-btn--active`);
+    } else {
+      this.itemFavorite.classList.add(`event__favorite-btn--active`);
+    }
   }
 }
