@@ -91,11 +91,5 @@ export default class EventItem extends Abstract {
   _favoriteClickHadler(evt) {
     evt.preventDefault();
     this._callback.favoriteClick();
-    // this._point.isFavorite = !this._point.isFavorite;
-    if (this.itemFavorite.classList.contains(`event__favorite-btn--active`)) {
-      this.itemFavorite.classList.remove(`event__favorite-btn--active`);
-    } else {
-      this.itemFavorite.classList.add(`event__favorite-btn--active`);
-    }
   }
 }
