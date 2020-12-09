@@ -4,13 +4,20 @@ import {renderElement} from "../utils/render.js";
 import {RenderPosition} from "../utils/render.js";
 import {replace, remove} from "../utils/render.js";
 
+const Mode = {
+  DEFAULT: `DEFAULT`,
+  EDITING: `EDITING`
+};
+
 export default class Mark {
-  constructor(markContainer, changeData) {
+  constructor(markContainer, changeData, changeMode) {
     this._markContainer = markContainer;
     this._changeData = changeData;
+    this._changeMode = changeMode;
 
     this._markItem = null;
     this._markForm = null;
+    this._mode = Mode.DEFAULT;
 
     this._handleEditClick = this._handleEditClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
@@ -37,11 +44,11 @@ export default class Mark {
       return;
     }
 
-    if (this._markContainer.getElement().contains(prevMarkItem.getElement())) {
+    if (this._mode === Mode.DEFAULT) {
       replace(this._markItem, prevMarkItem);
     }
 
-    if (this._markContainer.getElement().contains(prevMarkForm.getElement())) {
+    if (this._mode === Mode.EDITING) {
       replace(this._markForm, prevMarkForm);
     }
 
@@ -54,14 +61,23 @@ export default class Mark {
     remove(this._markForm);
   }
 
+  resetView() {
+    if (this._mode !== Mode.DEFAULT) {
+      this._replaceFormToCard();
+    }
+  }
+
   _replaceCardToForm() {
     replace(this._markForm, this._markItem);
     document.addEventListener(`keydown`, this._onEscKeyDown);
+    this._changeMode();
+    this._mode = Mode.EDITING;
   }
 
   _replaceFormToCard() {
     replace(this._markItem, this._markForm);
     document.removeEventListener(`keydown`, this._onEscKeyDown);
+    this._mode = Mode.DEFAULT;
   }
 
   _onEscKeyDown(evt) {

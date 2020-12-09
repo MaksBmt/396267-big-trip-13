@@ -19,6 +19,7 @@ export default class Travel {
     this._noComponent = new NoPoint();
 
     this._handlePointChange = this._handlePointChange.bind(this);
+    this._handleModeChange = this._handleModeChange.bind(this);
   }
 
   init(subjects) {
@@ -45,13 +46,8 @@ export default class Travel {
     this._renderPoints(this._subjects);
   }
 
-  _handlePointChange(updatedSubject) {
-    this._subjects = updateItem(this._subjects, updatedSubject);
-    this._mark[updatedSubject.id].init(updatedSubject);
-  }
-
   _renderPoint(listComponent, subject) {
-    const mark = new Mark(listComponent, this._handlePointChange);
+    const mark = new Mark(listComponent, this._handlePointChange, this._handleModeChange);
     mark.init(subject);
     this._mark[subject.id] = mark;
   }
@@ -67,5 +63,16 @@ export default class Travel {
       .values(this._mark)
       .forEach((presenter) => presenter.destroy());
     this._mark = {};
+  }
+
+  _handlePointChange(updatedSubject) {
+    this._subjects = updateItem(this._subjects, updatedSubject);
+    this._mark[updatedSubject.id].init(updatedSubject);
+  }
+
+  _handleModeChange() {
+    Object
+      .values(this._mark)
+      .forEach((presenter) => presenter.resetView());
   }
 }
