@@ -4,8 +4,8 @@ import NoPoint from "../view/no-point.js";
 import Mark from "./mark.js";
 import {renderElement} from "../utils/render.js";
 import {RenderPosition} from "../utils/render.js";
-import {updateItem} from "../utils/common.js";
-
+import {updateItem, priceSortPoints, intervalSortPoints} from "../utils/common.js";
+import {SortType} from "../const.js";
 
 const POINT_COUNT = 6;
 
@@ -13,6 +13,7 @@ export default class Travel {
   constructor(containerContent) {
     this._containerContent = containerContent;
     this._mark = {};
+    this._currentSortType = SortType.DEFAULT;
 
     this._listComponent = new EventList();
     this._sortComponent = new FilterSort();
@@ -20,10 +21,12 @@ export default class Travel {
 
     this._handlePointChange = this._handlePointChange.bind(this);
     this._handleModeChange = this._handleModeChange.bind(this);
+    this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
   }
 
   init(subjects) {
     this._subjects = subjects.slice();
+    this._sourceSubjects = subjects.slice();
 
     if (POINT_COUNT === 0) {
       this._renderNoPoint();
@@ -39,6 +42,7 @@ export default class Travel {
 
   _renderSort() {
     renderElement(this._containerContent, this._sortComponent, RenderPosition.BEFOREEND);
+    this._sortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
   }
 
   _renderListContent() {
@@ -68,6 +72,31 @@ export default class Travel {
   _handlePointChange(updatedSubject) {
     this._subjects = updateItem(this._subjects, updatedSubject);
     this._mark[updatedSubject.id].init(updatedSubject);
+  }
+
+  _sortTasks(sortType) {
+    switch (sortType) {
+      case SortType.PRICE:
+        this._subjects.sort(priceSortPoints);
+        break;
+      case SortType.INTERVAL:
+        this._subjects.sort(intervalSortPoints);
+        break;
+      default:
+        this._subjects = this._sourceSubjects.slice();
+    }
+
+    this._currentSortType = sortType;
+  }
+
+  _handleSortTypeChange(sortType) {
+    if (this._currentSortType === sortType) {
+      return;
+    }
+
+    this._sortTasks(sortType);
+    this._clearPointList();
+    this._renderListContent();
   }
 
   _handleModeChange() {

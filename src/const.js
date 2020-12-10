@@ -29,6 +29,12 @@ export const RenderPosition = {
   AFTEREND: `afterend`,
 };
 
+export const SortType = {
+  DEFAULT: `default`,
+  INTERVAL: `interval`,
+  PRICE: `price`
+};
+
 export const CITIES = [`Sofia`, `Burgas`, `Blagoevgrad`, `Razlog`, `Primorsko`];
 
 export const DESCRIPTIONS = [
