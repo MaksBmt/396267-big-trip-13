@@ -1,3 +1,5 @@
+import dayjs from "dayjs";
+
 export const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
   const upper = Math.floor(Math.max(a, b));
@@ -27,4 +29,16 @@ export const updateItem = (items, update) => {
     update,
     ...items.slice(index + 1)
   ];
+};
+
+export const defaultSortPoints = (points) => {
+  points.sort((a, b) => +dayjs(a.dueDate) - +dayjs(b.dueDate));
+};
+
+export const priceSortPoints = (pointA, pointB) => {
+  return pointB.price - pointA.price;
+};
+
+export const intervalSortPoints = (pointA, pointB) => {
+  return pointB.dateEnd.diff(pointB.dueDate) - pointA.dateEnd.diff(pointA.dueDate);
 };

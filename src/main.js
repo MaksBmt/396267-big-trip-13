@@ -7,11 +7,13 @@ import Travel from "./presenter/travel.js";
 import {generatePoint} from "./mock/point.js";
 import {renderElement} from "./utils/render.js";
 import {RenderPosition} from "./utils/render.js";
+import {defaultSortPoints} from "./utils/common.js";
 
 const POINT_COUNT = 6;
 
 const points = new Array(POINT_COUNT).fill().map(generatePoint);
 
+defaultSortPoints(points);
 const header = document.querySelector(`.page-header`);
 const headerMain = header.querySelector(`.trip-main`);
 const pointPrice = points.map((point) => point.price);
@@ -42,16 +44,13 @@ const containerContent = document.querySelector(`.trip-events`);
 
 const travel = new Travel(containerContent);
 
-if (POINT_COUNT === 0) {
-  travel.init(points);
-} else {
+travel.init(points);
+
+if (POINT_COUNT !== 0) {
 
   renderElement(headerMain, new Information(informationCity), RenderPosition.AFTERBEGIN);
 
   const headerInformation = headerMain.querySelector(`.trip-info`);
 
   renderElement(headerInformation, new PriceTotal(totalPrice), RenderPosition.BEFOREEND);
-
-  travel.init(points);
-
 }
