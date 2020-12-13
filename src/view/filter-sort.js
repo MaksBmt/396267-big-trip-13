@@ -54,6 +54,7 @@ export default class FilterSort extends Abstract {
     }
 
     evt.preventDefault();
+    document.getElementById(evt.target.htmlFor).checked = true;
     this._callback.sortTypeChange(evt.target.dataset.sortType);
   }
 }

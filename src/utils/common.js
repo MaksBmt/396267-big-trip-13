@@ -35,10 +35,6 @@ export const defaultSortPoints = (points) => {
   points.sort((a, b) => +dayjs(a.dueDate) - +dayjs(b.dueDate));
 };
 
-export const priceSortPoints = (pointA, pointB) => {
-  return pointB.price - pointA.price;
-};
+export const priceSortPoints = (pointA, pointB) => pointB.price - pointA.price;
 
-export const intervalSortPoints = (pointA, pointB) => {
-  return pointB.dateEnd.diff(pointB.dueDate) - pointA.dateEnd.diff(pointA.dueDate);
-};
+export const intervalSortPoints = (pointA, pointB) => pointB.dateEnd.diff(pointB.dueDate) - pointA.dateEnd.diff(pointA.dueDate);

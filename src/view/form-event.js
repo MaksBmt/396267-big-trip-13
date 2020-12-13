@@ -55,13 +55,34 @@ const createButtonFormEdit = () => {
 </button>`);
 };
 
-const createFormEvent = (point = {}) => {
+const isDestination = (param) => {
+  return param === `` ? false : true;
+};
+
+const createDestinationSection = (descriptions, srcImg) => {
+  return `<section class="event__section  event__section--destination">
+             <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+                <p class="event__destination-description">${descriptions}</p>
+
+                    <div class="event__photos-container">
+                     <div class="event__photos-tape">
+                ${createDestinationPhotos(srcImg)}
+                     </div>
+                    </div>
+           </section>`;
+};
+
+const createFormEvent = (data = {}) => {
   const {type, city, price, offers, destination: {descriptions, srcImg}, dueDate
-  } = point;
+  } = data;
 
   const randomMinute = getRandomInteger(AddInterval.MIN, AddInterval.MAX);
 
   const increasedGap = dueDate.add(randomMinute, `minute`);
+
+  const sectionDestination = isDestination(city)
+    ? createDestinationSection(descriptions, srcImg)
+    : ``;
 
   return (`<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
@@ -112,16 +133,8 @@ const createFormEvent = (point = {}) => {
                 <section class="event__details">
 
                   ${createListOffers(offers)}
-                  <section class="event__section  event__section--destination">
-                    <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-                    <p class="event__destination-description">${descriptions}</p>
-
-                    <div class="event__photos-container">
-                      <div class="event__photos-tape">
-                        ${createDestinationPhotos(srcImg)}
-                      </div>
-                    </div>
-                  </section>
+                 
+                  ${sectionDestination}
                 </section>
    </form>
 </li>`);
@@ -130,14 +143,59 @@ const createFormEvent = (point = {}) => {
 export default class FormEvent extends Abstract {
   constructor(point = {}) {
     super();
-    this._point = point;
+    // this.point = point;
+    this.data = FormEvent.parsePointToData(point);
+
+    window.__data__ = this.data;
 
     this._editFormClickHandler = this._editFormClickHandler.bind(this);
     this._editFormSubmitHandler = this._editFormSubmitHandler.bind(this);
+    this._typeChangeClickHandler = this._typeChangeClickHandler.bind(this);
+
+    this.getElement().querySelector(`.event__type-group`).addEventListener(`click`, this._typeChangeClickHandler);
+    this._setInnerHandlers();
   }
 
   getTemplate() {
-    return createFormEvent(this._point);
+    return createFormEvent(this.data);
+  }
+
+  updateData(update, justDataUpdating) {
+    if (!update) {
+      return;
+    }
+
+    this._data = Object.assign({}, this.data, update);
+
+    if (justDataUpdating) {
+      return;
+    }
+
+    this.updateElement();
+  }
+
+  updateElement() {
+    let prevElement = this.getElement();
+    const parent = prevElement.parentElement;
+    this.removeElement();
+
+    const newElement = this.getElement();
+
+    parent.replaceChild(newElement, prevElement);
+
+    this.restoreHandlers();
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setEditSubmitHandler(this._callback.editFormSubmit);
+    this.setEditClickHandler(this._callback.editFormClick);
+  }
+
+  _setInnerHandlers() {
+    this.getElement()
+      .querySelector(`.event__type-group`)
+      .addEventListener(`click`, this.typeChangeClickHandler);
   }
 
   setEditSubmitHandler(callback) {
@@ -152,6 +210,16 @@ export default class FormEvent extends Abstract {
     this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editFormClickHandler);
   }
 
+  static parsePointToData(point) {
+    let data = Object.assign({}, point);
+    return data;
+  }
+
+  static parseDataToPoint(data) {
+    let point = Object.assign({}, data);
+    return point;
+  }
+
   _editFormClickHandler(evt) {
     evt.preventDefault();
     this._callback.editFormClick();
@@ -160,6 +228,15 @@ export default class FormEvent extends Abstract {
   _editFormSubmitHandler(evt) {
     evt.preventDefault();
     this._callback.editFormSubmit();
+  }
+
+  _typeChangeClickHandler(evt) {
+    evt.preventDefault();
+    const newType = this.getElement().querySelector(`.event__type-output`).textContent = this.getElement().querySelector(`#${evt.target.htmlFor}`).value;
+
+    this.updateData({
+      type: newType
+    });
   }
 }
 
