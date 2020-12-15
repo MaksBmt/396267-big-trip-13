@@ -2,17 +2,7 @@ import {CITIES, TYPES, OFFERS, DESCRIPTIONS, Price, LengthFoto, LengthDescriptio
 import {getRandomInteger, getRandomBoolean} from "../utils/common.js";
 import dayjs from "dayjs";
 
-const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
-
-const generateTypes = () => TYPES[getRandomInteger(0, TYPES.length - 1)];
-
 const generateCities = () => CITIES[getRandomInteger(0, CITIES.length - 1)];
-
-const generateDate = () => {
-  const daysGap = getRandomInteger(1, MaxDaysGap);
-
-  return dayjs().add(daysGap, `h`);
-};
 
 const generateDescription = () => {
   const randomIndex = getRandomInteger(0, DESCRIPTIONS.length - 1);
@@ -34,22 +24,85 @@ const generateSrc = () => {
   return pictures;
 };
 
-const filterOffers = (type) => {
+const generateTypes = () => TYPES[getRandomInteger(0, TYPES.length - 1)];
+
+const citiesData = [
+  {
+    name: generateCities(),
+    description: generateDescription(),
+    photos: generateSrc(),
+    type: generateTypes(),
+  },
+  {
+    name: generateCities(),
+    description: generateDescription(),
+    photos: generateSrc(),
+    type: generateTypes(),
+  },
+  {
+    name: generateCities(),
+    description: generateDescription(),
+    photos: generateSrc(),
+    type: generateTypes(),
+  },
+  {
+    name: generateCities(),
+    description: generateDescription(),
+    photos: generateSrc(),
+    type: generateTypes(),
+  },
+  {
+    name: generateCities(),
+    description: generateDescription(),
+    photos: generateSrc(),
+    type: generateTypes(),
+  },
+  {
+    name: generateCities(),
+    description: generateDescription(),
+    photos: generateSrc(),
+    type: generateTypes(),
+  },
+  {
+    name: generateCities(),
+    description: generateDescription(),
+    photos: generateSrc(),
+    type: generateTypes(),
+  },
+  {
+    name: generateCities(),
+    description: generateDescription(),
+    photos: generateSrc(),
+    type: generateTypes(),
+  },
+];
+
+const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
+
+const generateDate = () => {
+  const daysGap = getRandomInteger(1, MaxDaysGap);
+
+  return dayjs().add(daysGap, `h`);
+};
+
+export const filterOffers = (type) => {
   return OFFERS.filter((offer) => offer.type.includes(type));
 };
 
 export const generatePoint = () => {
   const randomMinute = getRandomInteger(AddInterval.MIN, AddInterval.MAX);
-  const resultGenerateType = generateTypes();
-  const resultGenerateOffer = filterOffers(resultGenerateType);
   const resultGenerateDate = generateDate();
+  const resultGenerateCity = citiesData[getRandomInteger(0, citiesData.length - 1)];
+  const resultGenerateType = resultGenerateCity.type;
+  const resultGenerateOffer = filterOffers(resultGenerateType);
+
   return {
     id: generateId(),
     type: resultGenerateType,
-    city: generateCities(),
+    city: resultGenerateCity.name,
     destination: {
-      descriptions: generateDescription(),
-      srcImg: generateSrc(),
+      descriptions: resultGenerateCity.description,
+      srcImg: resultGenerateCity.photos,
     },
     offers: resultGenerateOffer,
     price: Math.round(getRandomInteger(Price.MIN, Price.MAX)),
@@ -58,4 +111,3 @@ export const generatePoint = () => {
     dateEnd: resultGenerateDate.add(randomMinute, `minute`),
   };
 };
-

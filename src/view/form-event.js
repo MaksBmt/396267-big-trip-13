@@ -1,6 +1,7 @@
 import {CITIES} from "../const.js";
-import {TYPES} from "../const.js";
+import {TYPES, OFFERS} from "../const.js";
 import {getRandomInteger} from "../utils/common.js";
+import {filterOffers} from "../mock/point.js";
 import {AddInterval} from "../const.js";
 import Abstract from "./abstract.js";
 
@@ -90,7 +91,7 @@ const createFormEvent = (data = {}) => {
       <div class="event__type-wrapper">
         <label class="event__type  event__type-btn" for="event-type-toggle-1">
           <span class="visually-hidden">Choose event type</span>
-          <img class="event__type-icon" width="17" height="17" src="img/icons/flight.png" alt="Event type icon">
+          <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
           </label>
           <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -144,9 +145,7 @@ export default class FormEvent extends Abstract {
   constructor(point = {}) {
     super();
     // this.point = point;
-    this.data = FormEvent.parsePointToData(point);
-
-    window.__data__ = this.data;
+    this._data = FormEvent.parsePointToData(point);
 
     this._editFormClickHandler = this._editFormClickHandler.bind(this);
     this._editFormSubmitHandler = this._editFormSubmitHandler.bind(this);
@@ -157,19 +156,19 @@ export default class FormEvent extends Abstract {
   }
 
   getTemplate() {
-    return createFormEvent(this.data);
+    return createFormEvent(this._data);
   }
 
-  updateData(update, justDataUpdating) {
+  updateData(update) {
     if (!update) {
       return;
     }
 
-    this._data = Object.assign({}, this.data, update);
+    this._data = Object.assign({}, this._data, update);
 
-    if (justDataUpdating) {
-      return;
-    }
+    // if (justDataUpdating) {
+    //   return;
+    // }
 
     this.updateElement();
   }
@@ -180,7 +179,7 @@ export default class FormEvent extends Abstract {
     this.removeElement();
 
     const newElement = this.getElement();
-
+    // console.log('new ', newElement)
     parent.replaceChild(newElement, prevElement);
 
     this.restoreHandlers();
@@ -193,9 +192,10 @@ export default class FormEvent extends Abstract {
   }
 
   _setInnerHandlers() {
+
     this.getElement()
       .querySelector(`.event__type-group`)
-      .addEventListener(`click`, this.typeChangeClickHandler);
+      .addEventListener(`click`, this._typeChangeClickHandler);
   }
 
   setEditSubmitHandler(callback) {
@@ -211,7 +211,7 @@ export default class FormEvent extends Abstract {
   }
 
   static parsePointToData(point) {
-    let data = Object.assign({}, point);
+    let data = Object.assign({}, point, {type: point.type, offers: point.offers});
     return data;
   }
 
@@ -222,20 +222,20 @@ export default class FormEvent extends Abstract {
 
   _editFormClickHandler(evt) {
     evt.preventDefault();
-    this._callback.editFormClick();
+    this._callback.editFormClick(FormEvent.parseDataToPoint(this._data));
   }
 
   _editFormSubmitHandler(evt) {
     evt.preventDefault();
-    this._callback.editFormSubmit();
+    this._callback.editFormSubmit(FormEvent.parseDataToPoint(this._data));
   }
 
   _typeChangeClickHandler(evt) {
     evt.preventDefault();
-    const newType = this.getElement().querySelector(`.event__type-output`).textContent = this.getElement().querySelector(`#${evt.target.htmlFor}`).value;
-
+    const typeUpdate = this.getElement().querySelector(`.event__type-output`).textContent = this.getElement().querySelector(`#${evt.target.htmlFor}`).value;
     this.updateData({
-      type: newType
+      type: typeUpdate,
+      offers: filterOffers(typeUpdate),
     });
   }
 }
