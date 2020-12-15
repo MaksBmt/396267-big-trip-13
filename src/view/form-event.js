@@ -1,5 +1,5 @@
 import {CITIES} from "../const.js";
-import {TYPES, OFFERS} from "../const.js";
+import {TYPES} from "../const.js";
 import {getRandomInteger} from "../utils/common.js";
 import {filterOffers} from "../mock/point.js";
 import {AddInterval} from "../const.js";
