@@ -56,8 +56,8 @@ const createButtonFormEdit = () => {
 </button>`);
 };
 
-const isDestination = (param) => {
-  return param === `` ? false : true;
+const hasDestination = (param) => {
+  return param !== ``;
 };
 
 const createDestinationSection = (descriptions, srcImg) => {
@@ -81,7 +81,7 @@ const createFormEvent = (data = {}) => {
 
   const increasedGap = dueDate.add(randomMinute, `minute`);
 
-  const sectionDestination = isDestination(city)
+  const sectionDestination = hasDestination(city)
     ? createDestinationSection(descriptions, srcImg)
     : ``;
 
@@ -144,14 +144,14 @@ const createFormEvent = (data = {}) => {
 export default class FormEvent extends Abstract {
   constructor(point = {}) {
     super();
-    // this.point = point;
+    this._point = point;
     this._data = FormEvent.parsePointToData(point);
 
     this._editFormClickHandler = this._editFormClickHandler.bind(this);
     this._editFormSubmitHandler = this._editFormSubmitHandler.bind(this);
     this._typeChangeClickHandler = this._typeChangeClickHandler.bind(this);
+    this._cityInputHandler = this._cityInputHandler.bind(this);
 
-    this.getElement().querySelector(`.event__type-group`).addEventListener(`click`, this._typeChangeClickHandler);
     this._setInnerHandlers();
   }
 
@@ -159,16 +159,16 @@ export default class FormEvent extends Abstract {
     return createFormEvent(this._data);
   }
 
-  updateData(update) {
+  updateData(update, justDataUpdating) {
     if (!update) {
       return;
     }
 
     this._data = Object.assign({}, this._data, update);
 
-    // if (justDataUpdating) {
-    //   return;
-    // }
+    if (justDataUpdating) {
+      return;
+    }
 
     this.updateElement();
   }
@@ -179,7 +179,6 @@ export default class FormEvent extends Abstract {
     this.removeElement();
 
     const newElement = this.getElement();
-    // console.log('new ', newElement)
     parent.replaceChild(newElement, prevElement);
 
     this.restoreHandlers();
@@ -192,10 +191,12 @@ export default class FormEvent extends Abstract {
   }
 
   _setInnerHandlers() {
-
     this.getElement()
       .querySelector(`.event__type-group`)
       .addEventListener(`click`, this._typeChangeClickHandler);
+    this.getElement()
+      .querySelector(`.event__input--destination`)
+      .addEventListener(`input`, this._cityInputHandler);
   }
 
   setEditSubmitHandler(callback) {
@@ -211,23 +212,31 @@ export default class FormEvent extends Abstract {
   }
 
   static parsePointToData(point) {
-    let data = Object.assign({}, point, {type: point.type, offers: point.offers});
-    return data;
+    return Object.assign({}, point, {type: point.type, offers: point.offers});
   }
 
   static parseDataToPoint(data) {
-    let point = Object.assign({}, data);
-    return point;
+    return Object.assign({}, data);
   }
 
   _editFormClickHandler(evt) {
     evt.preventDefault();
-    this._callback.editFormClick(FormEvent.parseDataToPoint(this._data));
+    this._callback.editFormClick(FormEvent.parseDataToPoint(this._point));
   }
 
   _editFormSubmitHandler(evt) {
     evt.preventDefault();
     this._callback.editFormSubmit(FormEvent.parseDataToPoint(this._data));
+    const valueCity = evt.target.querySelector(`.event__input--destination`).value;
+    evt.target.querySelector(`.event__input--destination`).setCustomValidity(``);
+
+    const selectionCity = CITIES.find((item) => item === valueCity);
+
+    if (selectionCity === undefined) {
+      evt.target.querySelector(`.event__input--destination`).setCustomValidity(`Лучше выбрать из списка - доберешься быстрее`);
+    }
+    evt.target.querySelector(`.event__input--destination`).setCustomValidity(``);
+    evt.target.reportValidity();
   }
 
   _typeChangeClickHandler(evt) {
@@ -237,6 +246,33 @@ export default class FormEvent extends Abstract {
       type: typeUpdate,
       offers: filterOffers(typeUpdate),
     });
+  }
+
+  _cityInputHandler(evt) {
+    evt.preventDefault();
+    // this.updateData({
+    //   city: evt.target.value
+    // }, true);
+    evt.target.setCustomValidity(``);
+    if (evt.target.value !== ``) {
+      if (evt.target.value.match(/[a-z]/ig) !== null) {
+        if (evt.target.value !== (evt.target.value.match(/[a-z]/ig).join(``))) {
+          evt.target.setCustomValidity(`Чувак, надо писать город, а не номер телефона соседки!`);
+        } else {
+          evt.target.setCustomValidity(``);
+
+          this.updateData({
+            city: evt.target.value
+          }, true);
+        }
+      } else {
+        evt.target.setCustomValidity(`Пора взяться за ум и начать писать правильно!`);
+      }
+    } else {
+      evt.target.setCustomValidity(`Зеро не всегда выигрывает - надо бы заполнить!`);
+    }
+
+    this.getElement().querySelector(`form`).reportValidity();
   }
 }
 

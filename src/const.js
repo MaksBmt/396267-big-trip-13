@@ -35,7 +35,7 @@ export const SortType = {
   PRICE: `price`
 };
 
-export const CITIES = [`Sofia`, `Burgas`, `Blagoevgrad`, `Razlog`, `Primorsko`];
+export const CITIES = [`Sofia`, `Burgas`, `Blagoevgrad`, `Razlog`, `Primorsko`, `Stara Zagora`, `Veliko Tarnovo`, `Asenovgrad`, `Smolyan`];
 
 export const DESCRIPTIONS = [
   `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,

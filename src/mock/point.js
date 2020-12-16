@@ -1,8 +1,8 @@
-import {CITIES, TYPES, OFFERS, DESCRIPTIONS, Price, LengthFoto, LengthDescription, MaxDaysGap, AddInterval} from "../const.js";
+import {TYPES, OFFERS, DESCRIPTIONS, Price, LengthFoto, LengthDescription, MaxDaysGap, AddInterval} from "../const.js";
 import {getRandomInteger, getRandomBoolean} from "../utils/common.js";
 import dayjs from "dayjs";
 
-const generateCities = () => CITIES[getRandomInteger(0, CITIES.length - 1)];
+// const generateCities = () => CITIES[getRandomInteger(0, CITIES.length - 1)];
 
 const generateDescription = () => {
   const randomIndex = getRandomInteger(0, DESCRIPTIONS.length - 1);
@@ -28,52 +28,49 @@ const generateTypes = () => TYPES[getRandomInteger(0, TYPES.length - 1)];
 
 const citiesData = [
   {
-    name: generateCities(),
+    name: `Sofia`,
     description: generateDescription(),
     photos: generateSrc(),
-    type: generateTypes(),
   },
   {
-    name: generateCities(),
+    name: `Burgas`,
     description: generateDescription(),
     photos: generateSrc(),
-    type: generateTypes(),
   },
   {
-    name: generateCities(),
+    name: `Blagoevgrad`,
     description: generateDescription(),
     photos: generateSrc(),
-    type: generateTypes(),
   },
   {
-    name: generateCities(),
+    name: `Razlog`,
     description: generateDescription(),
     photos: generateSrc(),
-    type: generateTypes(),
   },
   {
-    name: generateCities(),
+    name: `Primorsko`,
     description: generateDescription(),
     photos: generateSrc(),
-    type: generateTypes(),
   },
   {
-    name: generateCities(),
+    name: `Stara Zagora`,
     description: generateDescription(),
     photos: generateSrc(),
-    type: generateTypes(),
   },
   {
-    name: generateCities(),
+    name: `Veliko Tarnovo`,
     description: generateDescription(),
     photos: generateSrc(),
-    type: generateTypes(),
   },
   {
-    name: generateCities(),
+    name: `Asenovgrad`,
     description: generateDescription(),
     photos: generateSrc(),
-    type: generateTypes(),
+  },
+  {
+    name: `Smolyan`,
+    description: generateDescription(),
+    photos: generateSrc(),
   },
 ];
 
@@ -93,7 +90,7 @@ export const generatePoint = () => {
   const randomMinute = getRandomInteger(AddInterval.MIN, AddInterval.MAX);
   const resultGenerateDate = generateDate();
   const resultGenerateCity = citiesData[getRandomInteger(0, citiesData.length - 1)];
-  const resultGenerateType = resultGenerateCity.type;
+  const resultGenerateType = generateTypes();
   const resultGenerateOffer = filterOffers(resultGenerateType);
 
   return {
