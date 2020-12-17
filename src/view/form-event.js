@@ -1,9 +1,10 @@
 import {CITIES} from "../const.js";
 import {TYPES} from "../const.js";
 import {getRandomInteger} from "../utils/common.js";
-import {filterOffers} from "../mock/point.js";
+import {filterOffers, citiesData} from "../mock/point.js";
 import {AddInterval} from "../const.js";
-import Abstract from "./abstract.js";
+// import Abstract from "./abstract.js";
+import Smart from "./smart.js";
 
 const createListDestination = () => {
   return (`<datalist id="destination-list-1"> 
@@ -60,6 +61,10 @@ const hasDestination = (param) => {
   return param !== ``;
 };
 
+const hasOffers = (param) => {
+  return param.length !== 0;
+};
+
 const createDestinationSection = (descriptions, srcImg) => {
   return `<section class="event__section  event__section--destination">
              <h3 class="event__section-title  event__section-title--destination">Destination</h3>
@@ -85,6 +90,10 @@ const createFormEvent = (data = {}) => {
     ? createDestinationSection(descriptions, srcImg)
     : ``;
 
+  const sectionOffers = hasOffers(offers)
+    ? createListOffers(offers)
+    : ``;
+
   return (`<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
     <header class="event__header">
@@ -108,7 +117,7 @@ const createFormEvent = (data = {}) => {
             <label class="event__label  event__type-output" for="event-destination-1">
               ${type}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1">
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1" required>
               ${createListDestination(CITIES)}
         </div>
             <div class="event__field-group  event__field-group--time">
@@ -124,7 +133,7 @@ const createFormEvent = (data = {}) => {
                     <span class="visually-hidden">Price</span>
                          &euro;
           </label>
-                  <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+                  <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}" required>
         </div>
 
                   <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -133,7 +142,7 @@ const createFormEvent = (data = {}) => {
      </header>
                 <section class="event__details">
 
-                  ${createListOffers(offers)}
+                  ${sectionOffers}
                  
                   ${sectionDestination}
                 </section>
@@ -141,47 +150,27 @@ const createFormEvent = (data = {}) => {
 </li>`);
 };
 
-export default class FormEvent extends Abstract {
+export default class FormEvent extends Smart {
   constructor(point = {}) {
     super();
     this._point = point;
-    this._data = FormEvent.parsePointToData(point);
+    this._data = FormEvent.parsePointToData(this._point);
 
     this._editFormClickHandler = this._editFormClickHandler.bind(this);
     this._editFormSubmitHandler = this._editFormSubmitHandler.bind(this);
     this._typeChangeClickHandler = this._typeChangeClickHandler.bind(this);
     this._cityInputHandler = this._cityInputHandler.bind(this);
+    this._priceInputHandler = this._priceInputHandler.bind(this);
 
     this._setInnerHandlers();
   }
 
+  reset(item) {
+    this.updateData(FormEvent.parsePointToData(item));
+  }
+
   getTemplate() {
     return createFormEvent(this._data);
-  }
-
-  updateData(update, justDataUpdating) {
-    if (!update) {
-      return;
-    }
-
-    this._data = Object.assign({}, this._data, update);
-
-    if (justDataUpdating) {
-      return;
-    }
-
-    this.updateElement();
-  }
-
-  updateElement() {
-    let prevElement = this.getElement();
-    const parent = prevElement.parentElement;
-    this.removeElement();
-
-    const newElement = this.getElement();
-    parent.replaceChild(newElement, prevElement);
-
-    this.restoreHandlers();
   }
 
   restoreHandlers() {
@@ -197,6 +186,9 @@ export default class FormEvent extends Abstract {
     this.getElement()
       .querySelector(`.event__input--destination`)
       .addEventListener(`input`, this._cityInputHandler);
+    this.getElement()
+      .querySelector(`.event__input--price`)
+      .addEventListener(`input`, this._priceInputHandler);
   }
 
   setEditSubmitHandler(callback) {
@@ -212,7 +204,7 @@ export default class FormEvent extends Abstract {
   }
 
   static parsePointToData(point) {
-    return Object.assign({}, point, {type: point.type, offers: point.offers});
+    return Object.assign({}, point, {type: point.type, offers: point.offers, city: point.city, description: point.destination.description, point: point.price});
   }
 
   static parseDataToPoint(data) {
@@ -226,17 +218,17 @@ export default class FormEvent extends Abstract {
 
   _editFormSubmitHandler(evt) {
     evt.preventDefault();
-    this._callback.editFormSubmit(FormEvent.parseDataToPoint(this._data));
-    const valueCity = evt.target.querySelector(`.event__input--destination`).value;
-    evt.target.querySelector(`.event__input--destination`).setCustomValidity(``);
+    const inputTargetDestination = evt.target.querySelector(`.event__input--destination`);
+    const cityValue = evt.target.querySelector(`.event__input--destination`).value;
+    inputTargetDestination.setCustomValidity(``);
 
-    const selectionCity = CITIES.find((item) => item === valueCity);
-
-    if (selectionCity === undefined) {
-      evt.target.querySelector(`.event__input--destination`).setCustomValidity(`Лучше выбрать из списка - доберешься быстрее`);
+    if (!CITIES.includes(cityValue)) {
+      inputTargetDestination.setCustomValidity(`Лучше выбрать из списка - доберешься быстрее`);
+      inputTargetDestination.reportValidity();
+    } else {
+      inputTargetDestination.setCustomValidity(``);
+      this._callback.editFormSubmit(FormEvent.parseDataToPoint(this._data));
     }
-    evt.target.querySelector(`.event__input--destination`).setCustomValidity(``);
-    evt.target.reportValidity();
   }
 
   _typeChangeClickHandler(evt) {
@@ -250,29 +242,46 @@ export default class FormEvent extends Abstract {
 
   _cityInputHandler(evt) {
     evt.preventDefault();
-    // this.updateData({
-    //   city: evt.target.value
-    // }, true);
     evt.target.setCustomValidity(``);
-    if (evt.target.value !== ``) {
-      if (evt.target.value.match(/[a-z]/ig) !== null) {
-        if (evt.target.value !== (evt.target.value.match(/[a-z]/ig).join(``))) {
-          evt.target.setCustomValidity(`Чувак, надо писать город, а не номер телефона соседки!`);
-        } else {
-          evt.target.setCustomValidity(``);
 
-          this.updateData({
-            city: evt.target.value
-          }, true);
-        }
+    if (evt.target.value.match(/[a-z]/ig) !== null) {
+      if (evt.target.value !== (evt.target.value.match(/[a-z\s-]/ig).join(``))) {
+        evt.target.setCustomValidity(`Чувак, надо писать город, а не номер телефона соседки!`);
       } else {
-        evt.target.setCustomValidity(`Пора взяться за ум и начать писать правильно!`);
+        evt.target.setCustomValidity(``);
+        const distinationCity = citiesData.find((item) => (item.name = evt.target.value));
+        this.updateData({
+          // city: evt.target.value
+          city: distinationCity.name,
+          description: distinationCity.description
+        }, true);
       }
     } else {
-      evt.target.setCustomValidity(`Зеро не всегда выигрывает - надо бы заполнить!`);
+      evt.target.setCustomValidity(`Пора взяться за ум и начать писать правильно!`);
     }
+    evt.target.reportValidity();
+  }
 
-    this.getElement().querySelector(`form`).reportValidity();
+  _priceInputHandler(evt) {
+    evt.preventDefault();
+
+    const priceTargetValue = evt.target.value;
+    const priceTarget = evt.target;
+    priceTarget.setCustomValidity(``);
+
+    if (priceTargetValue.match(/[0-9]/ig) !== null) {
+      if (priceTargetValue !== (priceTargetValue.match(/[0-9]/ig).join(``))) {
+        priceTarget.setCustomValidity(`необходимо ввести целое положительное число!`);
+      } else {
+        priceTarget.setCustomValidity(``);
+        this.updateData({
+          price: priceTargetValue,
+        }, true);
+      }
+    } else {
+      priceTarget.setCustomValidity(`Все-таки лучше цифры!`);
+    }
+    priceTarget.reportValidity();
   }
 }
 

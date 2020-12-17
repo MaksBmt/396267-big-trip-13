@@ -26,7 +26,7 @@ const generateSrc = () => {
 
 const generateTypes = () => TYPES[getRandomInteger(0, TYPES.length - 1)];
 
-const citiesData = [
+export const citiesData = [
   {
     name: `Sofia`,
     description: generateDescription(),
@@ -49,8 +49,9 @@ const citiesData = [
   },
   {
     name: `Primorsko`,
-    description: generateDescription(),
-    photos: generateSrc(),
+    // description: generateDescription(),
+    description: `13`,
+    photos: [`img/photos/1.jpg`, `img/photos/2.jpg`, `img/photos/3.jpg`, `img/photos/4.jpg`, `img/photos/5.jpg`],
   },
   {
     name: `Stara Zagora`,
