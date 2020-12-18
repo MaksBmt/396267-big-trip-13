@@ -133,7 +133,7 @@ const createFormEvent = (data = {}) => {
                     <span class="visually-hidden">Price</span>
                          &euro;
           </label>
-                  <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}" required>
+                  <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${price}" required>
         </div>
 
                   <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -204,7 +204,7 @@ export default class FormEvent extends Smart {
   }
 
   static parsePointToData(point) {
-    return Object.assign({}, point, {type: point.type, offers: point.offers, city: point.city, description: point.destination.description, point: point.price});
+    return Object.assign({}, point, {type: point.type, offers: point.offers, city: point.city, descriptions: point.destination.descriptions, srcImg: point.destination.srcImg, point: point.price});
   }
 
   static parseDataToPoint(data) {
@@ -248,13 +248,20 @@ export default class FormEvent extends Smart {
       if (evt.target.value !== (evt.target.value.match(/[a-z\s-]/ig).join(``))) {
         evt.target.setCustomValidity(`Чувак, надо писать город, а не номер телефона соседки!`);
       } else {
-        evt.target.setCustomValidity(``);
-        const distinationCity = citiesData.find((item) => (item.name = evt.target.value));
-        this.updateData({
-          // city: evt.target.value
-          city: distinationCity.name,
-          description: distinationCity.description
-        }, true);
+
+        const distinationCity = citiesData.find((item) => (item.name === evt.target.value));
+
+        if (distinationCity) {
+          evt.target.setCustomValidity(``);
+
+          this.updateData({
+            city: distinationCity.name,
+            destination: {
+              descriptions: distinationCity.description,
+              srcImg: distinationCity.photos,
+            },
+          }, true);
+        }
       }
     } else {
       evt.target.setCustomValidity(`Пора взяться за ум и начать писать правильно!`);
@@ -265,23 +272,9 @@ export default class FormEvent extends Smart {
   _priceInputHandler(evt) {
     evt.preventDefault();
 
-    const priceTargetValue = evt.target.value;
-    const priceTarget = evt.target;
-    priceTarget.setCustomValidity(``);
-
-    if (priceTargetValue.match(/[0-9]/ig) !== null) {
-      if (priceTargetValue !== (priceTargetValue.match(/[0-9]/ig).join(``))) {
-        priceTarget.setCustomValidity(`необходимо ввести целое положительное число!`);
-      } else {
-        priceTarget.setCustomValidity(``);
-        this.updateData({
-          price: priceTargetValue,
-        }, true);
-      }
-    } else {
-      priceTarget.setCustomValidity(`Все-таки лучше цифры!`);
-    }
-    priceTarget.reportValidity();
+    this.updateData({
+      price: evt.target.value,
+    }, true);
   }
 }
 

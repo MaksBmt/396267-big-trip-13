@@ -49,9 +49,8 @@ export const citiesData = [
   },
   {
     name: `Primorsko`,
-    // description: generateDescription(),
-    description: `13`,
-    photos: [`img/photos/1.jpg`, `img/photos/2.jpg`, `img/photos/3.jpg`, `img/photos/4.jpg`, `img/photos/5.jpg`],
+    description: generateDescription(),
+    photos: generateSrc(),
   },
   {
     name: `Stara Zagora`,
