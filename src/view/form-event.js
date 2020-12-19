@@ -241,12 +241,13 @@ export default class FormEvent extends Smart {
   _cityInputHandler(evt) {
     evt.preventDefault();
 
-    const validationMessage = this._validateCity(evt.target.value);
+    const cityTargetValue = evt.target.value.trim();
+    const validationMessage = this._validateCity(cityTargetValue);
 
     evt.target.setCustomValidity(validationMessage);
 
     if (validationMessage === ``) {
-      const destinationCity = citiesData.find((item) => (item.name === evt.target.value));
+      const destinationCity = citiesData.find((item) => (item.name === cityTargetValue));
 
       if (destinationCity) {
         this.updateData({
