@@ -83,6 +83,7 @@ export default class Mark {
   _onEscKeyDown(evt) {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       evt.preventDefault();
+      this._markForm.reset(this._subject);
       this._replaceFormToCard();
       document.removeEventListener(`keydown`, this._onEscKeyDown);
     }
@@ -96,8 +97,8 @@ export default class Mark {
     this._changeData(Object.assign({}, this._subject, {isFavorite: !this._subject.isFavorite}));
   }
 
-  _handleFormSubmit() {
-    this._changeData(this._subject);
+  _handleFormSubmit(item) {
+    this._changeData(item);
     this._replaceFormToCard();
   }
 }
