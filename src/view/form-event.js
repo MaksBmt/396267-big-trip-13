@@ -100,7 +100,7 @@ const createFormEvent = (data = {}) => {
       <div class="event__type-wrapper">
         <label class="event__type  event__type-btn" for="event-type-toggle-1">
           <span class="visually-hidden">Choose event type</span>
-          <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
+          <img class="event__type-icon" width="17" height="17" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
           </label>
           <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -179,18 +179,6 @@ export default class FormEvent extends Smart {
     this.setEditClickHandler(this._callback.editFormClick);
   }
 
-  _setInnerHandlers() {
-    this.getElement()
-      .querySelector(`.event__type-group`)
-      .addEventListener(`click`, this._typeChangeClickHandler);
-    this.getElement()
-      .querySelector(`.event__input--destination`)
-      .addEventListener(`input`, this._cityInputHandler);
-    this.getElement()
-      .querySelector(`.event__input--price`)
-      .addEventListener(`input`, this._priceInputHandler);
-  }
-
   setEditSubmitHandler(callback) {
     this._callback.editFormSubmit = callback;
 
@@ -203,12 +191,32 @@ export default class FormEvent extends Smart {
     this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editFormClickHandler);
   }
 
-  static parsePointToData(point) {
-    return Object.assign({}, point, {type: point.type, offers: point.offers, city: point.city, descriptions: point.destination.descriptions, srcImg: point.destination.srcImg, point: point.price});
+  _validateCity(cityValue) {
+    if (cityValue.match(/[a-z]/ig) === null) {
+      return `Пора взяться за ум и начать писать правильно!`;
+    }
+
+    if (cityValue.match(/[a-z\s-]/ig).length !== cityValue.length) {
+      return `Чувак, надо писать город, а не номер телефона соседки!`;
+    }
+
+    if (!CITIES.includes(cityValue)) {
+      return `Лучше выбрать из списка - доберешься быстрее`;
+    }
+
+    return ``;
   }
 
-  static parseDataToPoint(data) {
-    return Object.assign({}, data);
+  _setInnerHandlers() {
+    this.getElement()
+      .querySelector(`.event__type-group`)
+      .addEventListener(`click`, this._typeChangeClickHandler);
+    this.getElement()
+      .querySelector(`.event__input--destination`)
+      .addEventListener(`input`, this._cityInputHandler);
+    this.getElement()
+      .querySelector(`.event__input--price`)
+      .addEventListener(`input`, this._priceInputHandler);
   }
 
   _editFormClickHandler(evt) {
@@ -218,17 +226,7 @@ export default class FormEvent extends Smart {
 
   _editFormSubmitHandler(evt) {
     evt.preventDefault();
-    const inputTargetDestination = evt.target.querySelector(`.event__input--destination`);
-    const cityValue = evt.target.querySelector(`.event__input--destination`).value;
-    inputTargetDestination.setCustomValidity(``);
-
-    if (!CITIES.includes(cityValue)) {
-      inputTargetDestination.setCustomValidity(`Лучше выбрать из списка - доберешься быстрее`);
-      inputTargetDestination.reportValidity();
-    } else {
-      inputTargetDestination.setCustomValidity(``);
-      this._callback.editFormSubmit(FormEvent.parseDataToPoint(this._data));
-    }
+    this._callback.editFormSubmit(FormEvent.parseDataToPoint(this._data));
   }
 
   _typeChangeClickHandler(evt) {
@@ -242,30 +240,25 @@ export default class FormEvent extends Smart {
 
   _cityInputHandler(evt) {
     evt.preventDefault();
-    evt.target.setCustomValidity(``);
 
-    if (evt.target.value.match(/[a-z]/ig) !== null) {
-      if (evt.target.value !== (evt.target.value.match(/[a-z\s-]/ig).join(``))) {
-        evt.target.setCustomValidity(`Чувак, надо писать город, а не номер телефона соседки!`);
-      } else {
+    const validationMessage = this._validateCity(evt.target.value);
 
-        const distinationCity = citiesData.find((item) => (item.name === evt.target.value));
+    evt.target.setCustomValidity(validationMessage);
 
-        if (distinationCity) {
-          evt.target.setCustomValidity(``);
+    if (validationMessage === ``) {
+      const destinationCity = citiesData.find((item) => (item.name === evt.target.value));
 
-          this.updateData({
-            city: distinationCity.name,
-            destination: {
-              descriptions: distinationCity.description,
-              srcImg: distinationCity.photos,
-            },
-          }, true);
-        }
+      if (destinationCity) {
+        this.updateData({
+          city: destinationCity.name,
+          destination: {
+            descriptions: destinationCity.description,
+            srcImg: destinationCity.photos,
+          },
+        });
       }
-    } else {
-      evt.target.setCustomValidity(`Пора взяться за ум и начать писать правильно!`);
     }
+
     evt.target.reportValidity();
   }
 
@@ -275,6 +268,14 @@ export default class FormEvent extends Smart {
     this.updateData({
       price: evt.target.value,
     }, true);
+  }
+
+  static parsePointToData(point) {
+    return Object.assign({}, point, {type: point.type, offers: point.offers, city: point.city, descriptions: point.destination.descriptions, srcImg: point.destination.srcImg, point: point.price});
+  }
+
+  static parseDataToPoint(data) {
+    return Object.assign({}, data);
   }
 }
 

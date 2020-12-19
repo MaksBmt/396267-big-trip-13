@@ -2,8 +2,6 @@ import {TYPES, OFFERS, DESCRIPTIONS, Price, LengthFoto, LengthDescription, MaxDa
 import {getRandomInteger, getRandomBoolean} from "../utils/common.js";
 import dayjs from "dayjs";
 
-// const generateCities = () => CITIES[getRandomInteger(0, CITIES.length - 1)];
-
 const generateDescription = () => {
   const randomIndex = getRandomInteger(0, DESCRIPTIONS.length - 1);
   const randomLength = getRandomInteger(LengthDescription.MIN, LengthDescription.MAX);
@@ -24,7 +22,7 @@ const generateSrc = () => {
   return pictures;
 };
 
-const generateTypes = () => TYPES[getRandomInteger(0, TYPES.length - 1)];
+const generateType = () => TYPES[getRandomInteger(0, TYPES.length - 1)];
 
 export const citiesData = [
   {
@@ -90,7 +88,7 @@ export const generatePoint = () => {
   const randomMinute = getRandomInteger(AddInterval.MIN, AddInterval.MAX);
   const resultGenerateDate = generateDate();
   const resultGenerateCity = citiesData[getRandomInteger(0, citiesData.length - 1)];
-  const resultGenerateType = generateTypes();
+  const resultGenerateType = generateType();
   const resultGenerateOffer = filterOffers(resultGenerateType);
 
   return {
