@@ -72,7 +72,7 @@ export const citiesData = [
   },
 ];
 
-const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
+export const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
 
 const generateDate = () => {
   const daysGap = getRandomInteger(-120, MaxDaysGap);

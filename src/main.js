@@ -9,7 +9,7 @@ import {generatePoint} from "./mock/point.js";
 import {renderElement} from "./utils/render.js";
 import {RenderPosition} from "./utils/render.js";
 import PointsModel from "./model/points.js";
-import FilterModel from "./model/points.js";
+import FilterModel from "./model/filter.js";
 import {defaultSortPoints} from "./utils/common.js";
 
 // import dayjs from "dayjs";
@@ -73,7 +73,7 @@ filterPresenter.init();
 
 const containerContent = document.querySelector(`.trip-events`);
 
-const travel = new Travel(containerContent, pointsModel);
+const travel = new Travel(containerContent, pointsModel, filterModel);
 
 travel.init();
 
@@ -85,3 +85,8 @@ if (POINT_COUNT !== 0) {
 
   renderElement(headerInformation, new PriceTotal(totalPrice), RenderPosition.BEFOREEND);
 }
+
+document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, (evt) => {
+  evt.preventDefault();
+  travel.createPoint();
+});

@@ -2,11 +2,12 @@ import FilterSort from "../view/filter-sort.js";
 import EventList from "../view/event-list.js";
 import NoPoint from "../view/no-point.js";
 import Mark from "./mark.js";
+import PointNewPresenter from "./point-new.js";
 import {renderElement} from "../utils/render.js";
 import {RenderPosition, remove} from "../utils/render.js";
 import {priceSortPoints, intervalSortPoints} from "../utils/common.js";
 import {filter} from "../utils/filter.js";
-import {SortType, UpdateType, UserAction} from "../const.js";
+import {SortType, UpdateType, UserAction, FilterType} from "../const.js";
 
 const POINT_COUNT = 11;
 
@@ -30,6 +31,8 @@ export default class Travel {
 
     this._pointsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
+
+    this._pointNewPresenter = new PointNewPresenter(this._listComponent, this._handleViewAction);
   }
 
   init() {
@@ -86,6 +89,12 @@ export default class Travel {
     }
   }
 
+  createPoint() {
+    this._currentSortType = SortType.DEFAULT;
+    this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this._pointNewPresenter.init();
+  }
+
   // _renderPoints(points) {
   //   for (const subject of points) {
   //     this._renderPoint(this._listComponent, subject);
@@ -102,6 +111,7 @@ export default class Travel {
   _clearListContent({resetRenderedPointCount = false, resetSortType = false} = {}) {
     const pointCount = this._getPoints().length;
 
+    this._pointNewPresenter.destroy();
     Object
       .values(this._mark)
       .forEach((presenter) => presenter.destroy());
@@ -148,6 +158,8 @@ export default class Travel {
   }
 
   _handleModeChange() {
+    this._pointNewPresenter.destroy();
+
     Object
       .values(this._mark)
       .forEach((presenter) => presenter.resetView());
