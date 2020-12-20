@@ -158,6 +158,7 @@ export default class FormEvent extends Smart {
 
     this._editFormClickHandler = this._editFormClickHandler.bind(this);
     this._editFormSubmitHandler = this._editFormSubmitHandler.bind(this);
+    this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
     this._typeChangeClickHandler = this._typeChangeClickHandler.bind(this);
     this._cityInputHandler = this._cityInputHandler.bind(this);
     this._priceInputHandler = this._priceInputHandler.bind(this);
@@ -177,6 +178,7 @@ export default class FormEvent extends Smart {
     this._setInnerHandlers();
     this.setEditSubmitHandler(this._callback.editFormSubmit);
     this.setEditClickHandler(this._callback.editFormClick);
+    this.setDeleteClickHandler(this._callback.deleteClick);
   }
 
   setEditSubmitHandler(callback) {
@@ -190,6 +192,12 @@ export default class FormEvent extends Smart {
 
     this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editFormClickHandler);
   }
+
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._formDeleteClickHandler);
+  }
+
 
   _validateCity(cityValue) {
     if (cityValue.match(/[a-z]/ig) === null) {
@@ -269,6 +277,11 @@ export default class FormEvent extends Smart {
     this.updateData({
       price: evt.target.value,
     }, true);
+  }
+
+  _formDeleteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.deleteClick(FormEvent.parseDataToPoint(this._data));
   }
 
   static parsePointToData(point) {

@@ -75,9 +75,17 @@ export const citiesData = [
 const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
 
 const generateDate = () => {
-  const daysGap = getRandomInteger(1, MaxDaysGap);
+  const daysGap = getRandomInteger(-120, MaxDaysGap);
 
   return dayjs().add(daysGap, `h`);
+};
+
+export const isFuture = (dueDate) => {
+  return +dayjs(dueDate) < +dayjs() ? false : true;
+};
+
+export const isPast = (dateEnd) => {
+  return +dayjs(dateEnd) > +dayjs() ? false : true;
 };
 
 export const filterOffers = (type) => {
