@@ -2,14 +2,16 @@ import FormEvent from "../view/form-event.js";
 import {RenderPosition, renderElement, remove} from "../utils/render.js";
 import {UserAction, UpdateType} from "../const.js";
 import {generateId} from "../mock/point.js";
+import {BLANK_POINT} from "../view/form-event.js";
 
 export default class PointNew {
   constructor(pointListContainer, changeData) {
     this._pointListContainer = pointListContainer;
     this._changeData = changeData;
-    this._point = {};
+    this._point = BLANK_POINT;
 
     this._formComponent = null;
+    this._isNewPoint = true;
 
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._handleDeleteClick = this._handleDeleteClick.bind(this);
@@ -21,11 +23,11 @@ export default class PointNew {
       return;
     }
 
-    this._formComponent = new FormEvent(this._point);
+    this._formComponent = new FormEvent(this._point, this._isNewPoint);
     this._formComponent.setEditSubmitHandler(this._handleFormSubmit);
     this._formComponent.setDeleteClickHandler(this._handleDeleteClick);
 
-    renderElement(this._pointListContainer, this._formComponent, RenderPosition.BEFOREEND);
+    renderElement(this._pointListContainer, this._formComponent, RenderPosition.AFTERBEGIN);
 
     document.addEventListener(`keydown`, this._onEscKeyDown);
   }
@@ -42,6 +44,7 @@ export default class PointNew {
   }
 
   _handleFormSubmit(point) {
+
     this._changeData(UserAction.ADD_TASK, UpdateType.MINOR, Object.assign({id: generateId()}, point));
     this.destroy();
   }

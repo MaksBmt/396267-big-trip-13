@@ -80,13 +80,10 @@ const generateDate = () => {
   return dayjs().add(daysGap, `h`);
 };
 
-export const isFuture = (dueDate) => {
-  return +dayjs(dueDate) < +dayjs() ? false : true;
-};
 
-export const isPast = (dateEnd) => {
-  return +dayjs(dateEnd) > +dayjs() ? false : true;
-};
+export const isFuture = (dueDate) => +dayjs(dueDate) > +dayjs();
+
+export const isPast = (dateEnd) => +dayjs(dateEnd) < +dayjs();
 
 export const filterOffers = (type) => {
   return OFFERS.filter((offer) => offer.type.includes(type));

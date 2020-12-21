@@ -2,7 +2,6 @@
 import Information from "./view/information.js";
 import PriceTotal from "./view/price-total.js";
 import HeaderMenu from "./view/header-menu.js";
-// import FilterEvents from "./view/filter-events.js";
 import Travel from "./presenter/travel.js";
 import FilterPresenter from "./presenter/filter.js";
 import {generatePoint} from "./mock/point.js";
@@ -12,29 +11,9 @@ import PointsModel from "./model/points.js";
 import FilterModel from "./model/filter.js";
 import {defaultSortPoints} from "./utils/common.js";
 
-// import dayjs from "dayjs";
-// import {isFuture, isPast} from "./mock/point.js";
-
 const POINT_COUNT = 11;
 
 const points = new Array(POINT_COUNT).fill().map(generatePoint);
-// const filters = [
-//   {
-//     type: `everything`,
-//     name: `EVERYTHING`,
-//     count: 0
-//   },
-//   {
-//     type: `future`,
-//     name: `FUTURE`,
-//     count: 0
-//   },
-//   {
-//     type: `past`,
-//     name: `PAST`,
-//     count: 0
-//   }
-// ];
 
 defaultSortPoints(points);
 
@@ -67,7 +46,6 @@ renderElement(headerTitle[0], new HeaderMenu(), RenderPosition.AFTEREND);
 
 const filterModel = new FilterModel();
 
-// renderElement(headerTitle[1], new FilterEvents(filters, `everything`), RenderPosition.AFTEREND);
 const filterPresenter = new FilterPresenter(headerTitle[1], filterModel);
 filterPresenter.init();
 

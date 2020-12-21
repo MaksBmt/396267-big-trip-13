@@ -11,7 +11,7 @@ const Mode = {
 };
 
 export default class Mark {
-  constructor(markContainer, changeData, changeMode) {
+  constructor(markContainer, changeData, changeMode, isNewPoint) {
     this._markContainer = markContainer;
     this._changeData = changeData;
     this._changeMode = changeMode;
@@ -19,6 +19,7 @@ export default class Mark {
     this._markItem = null;
     this._markForm = null;
     this._mode = Mode.DEFAULT;
+    this._isNewPoint = isNewPoint;
 
     this._handleEditClick = this._handleEditClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
@@ -34,7 +35,7 @@ export default class Mark {
     const prevMarkForm = this._markForm;
 
     this._markItem = new EventItem(subject);
-    this._markForm = new FormEvent(subject);
+    this._markForm = new FormEvent(subject, this._isNewPoint);
 
     this._markItem.setPointClickHandler(this._handleEditClick);
     this._markForm.setEditSubmitHandler(this._handleFormSubmit);

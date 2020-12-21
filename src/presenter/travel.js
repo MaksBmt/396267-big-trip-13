@@ -20,6 +20,7 @@ export default class Travel {
     this._sortComponent = null;
     this._mark = {};
     this._currentSortType = SortType.DEFAULT;
+    this._isNewPoint = false;
 
     this._listComponent = new EventList();
     this._noComponent = new NoPoint();
@@ -36,15 +37,7 @@ export default class Travel {
   }
 
   init() {
-    // this._subjects = subjects.slice();
-    // this._sourceSubjects = subjects.slice();
-
-    // if (POINT_COUNT === 0) {
-    //   this._renderNoPoint();
-    // } else {
-    // this._renderSort();
-    this._renderListContent();
-    // }
+    this._renderListContent()
   }
 
   _getPoints() {
@@ -78,7 +71,7 @@ export default class Travel {
   }
 
   _renderPoint(listComponent, subject) {
-    const mark = new Mark(listComponent, this._handleViewAction, this._handleModeChange);
+    const mark = new Mark(listComponent, this._handleViewAction, this._handleModeChange, this._isNewPoint);
     mark.init(subject);
     this._mark[subject.id] = mark;
   }
@@ -94,19 +87,6 @@ export default class Travel {
     this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
     this._pointNewPresenter.init();
   }
-
-  // _renderPoints(points) {
-  //   for (const subject of points) {
-  //     this._renderPoint(this._listComponent, subject);
-  //   }
-  // }
-
-  // _clearPointList() {
-  //   Object
-  //     .values(this._mark)
-  //     .forEach((presenter) => presenter.destroy());
-  //   this._mark = {};
-  // }
 
   _clearListContent({resetRenderedPointCount = false, resetSortType = false} = {}) {
     const pointCount = this._getPoints().length;
@@ -184,13 +164,13 @@ export default class Travel {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_TASK:
-        this._pointsModel.updatePoint(updateType, update);
+        this._pointsModel.update(updateType, update);
         break;
       case UserAction.ADD_TASK:
-        this._pointsModel.addPoint(updateType, update);
+        this._pointsModel.add(updateType, update);
         break;
       case UserAction.DELETE_TASK:
-        this._pointsModel.deletePoint(updateType, update);
+        this._pointsModel.delete(updateType, update);
         break;
     }
   }
