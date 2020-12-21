@@ -37,7 +37,7 @@ export default class Travel {
   }
 
   init() {
-    this._renderListContent()
+    this._renderListContent();
   }
 
   _getPoints() {
