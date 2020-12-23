@@ -1,10 +1,25 @@
 import {CITIES} from "../const.js";
 import {TYPES} from "../const.js";
-import {getRandomInteger} from "../utils/common.js";
-import {filterOffers, citiesData} from "../mock/point.js";
-import {AddInterval} from "../const.js";
-// import Abstract from "./abstract.js";
+import {filterOffers, citiesData, generateId} from "../mock/point.js";
 import Smart from "./smart.js";
+import dayjs from "dayjs";
+import flatpickr from "flatpickr";
+import "../../node_modules/flatpickr/dist/flatpickr.min.css";
+
+export const BLANK_POINT = {
+  id: generateId(),
+  type: TYPES[0],
+  city: ``,
+  destination: {
+    descriptions: ``,
+    srcImg: ``,
+  },
+  offers: [],
+  price: ``,
+  isFavorite: false,
+  dueDate: dayjs(),
+  dateEnd: dayjs(),
+};
 
 const createListDestination = () => {
   return (`<datalist id="destination-list-1"> 
@@ -78,13 +93,9 @@ const createDestinationSection = (descriptions, srcImg) => {
            </section>`;
 };
 
-const createFormEvent = (data = {}) => {
-  const {type, city, price, offers, destination: {descriptions, srcImg}, dueDate
+const createFormEvent = (data, isNewPoint) => {
+  const {type, city, price, offers, destination: {descriptions, srcImg}, dueDate, dateEnd, isDueDate
   } = data;
-
-  const randomMinute = getRandomInteger(AddInterval.MIN, AddInterval.MAX);
-
-  const increasedGap = dueDate.add(randomMinute, `minute`);
 
   const sectionDestination = hasDestination(city)
     ? createDestinationSection(descriptions, srcImg)
@@ -93,6 +104,8 @@ const createFormEvent = (data = {}) => {
   const sectionOffers = hasOffers(offers)
     ? createListOffers(offers)
     : ``;
+
+  const isSubmitDisabled = isDueDate && dueDate === null;
 
   return (`<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
@@ -122,10 +135,10 @@ const createFormEvent = (data = {}) => {
         </div>
             <div class="event__field-group  event__field-group--time">
               <label class="visually-hidden" for="event-start-time-1">From</label>
-              <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dueDate.format(`YY/MM/DD hh:mm`)}">
+              <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${isNewPoint ? dueDate.format(`YY/MM/DD hh:mm`) : dueDate.format(`YY/MM/DD hh:mm`)}">
                 &mdash;
          <label class="visually-hidden" for="event-end-time-1">To</label>
-                <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${increasedGap.format(`YY/MM/DD hh:mm`)}">
+                <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${isNewPoint ? dateEnd.format(`YY/MM/DD hh:mm`) : dateEnd.format(`YY/MM/DD hh:mm`)}">
         </div>
 
                 <div class="event__field-group  event__field-group--price">
@@ -136,9 +149,9 @@ const createFormEvent = (data = {}) => {
                   <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${price}" required>
         </div>
 
-                  <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+                  <button class="event__save-btn  btn  btn--blue" type="submit" ${isSubmitDisabled ? `disabled` : ``}>Save</button>
                   <button class="event__reset-btn" type="reset">Cancel</button>
-                  ${createButtonFormEdit()}
+                  ${isNewPoint ? `` : createButtonFormEdit()}
      </header>
                 <section class="event__details">
 
@@ -151,18 +164,25 @@ const createFormEvent = (data = {}) => {
 };
 
 export default class FormEvent extends Smart {
-  constructor(point = {}) {
+  constructor(point = BLANK_POINT, isNewPoint) {
     super();
-    this._point = point;
-    this._data = FormEvent.parsePointToData(this._point);
+    this._isNewPoint = isNewPoint;
+    this._startDatepicker = null;
+    this._endDatepicker = null;
+
+    this._data = FormEvent.parsePointToData(point);
 
     this._editFormClickHandler = this._editFormClickHandler.bind(this);
     this._editFormSubmitHandler = this._editFormSubmitHandler.bind(this);
+    this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
     this._typeChangeClickHandler = this._typeChangeClickHandler.bind(this);
     this._cityInputHandler = this._cityInputHandler.bind(this);
     this._priceInputHandler = this._priceInputHandler.bind(this);
+    this._startDateChangeHandler = this._startDateChangeHandler.bind(this);
+    this._endDateChangeHandler = this._endDateChangeHandler.bind(this);
 
     this._setInnerHandlers();
+    this._setDatepicker();
   }
 
   reset(item) {
@@ -170,13 +190,14 @@ export default class FormEvent extends Smart {
   }
 
   getTemplate() {
-    return createFormEvent(this._data);
+    return createFormEvent(this._data, this._isNewPoint);
   }
 
   restoreHandlers() {
     this._setInnerHandlers();
     this.setEditSubmitHandler(this._callback.editFormSubmit);
     this.setEditClickHandler(this._callback.editFormClick);
+    this.setDeleteClickHandler(this._callback.deleteClick);
   }
 
   setEditSubmitHandler(callback) {
@@ -187,9 +208,39 @@ export default class FormEvent extends Smart {
 
   setEditClickHandler(callback) {
     this._callback.editFormClick = callback;
-
-    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editFormClickHandler);
+    if (!this._isNewPoint) {
+      this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editFormClickHandler);
+    }
   }
+
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._formDeleteClickHandler);
+  }
+
+  _setDatepicker(datepicker, selector, dataDatepicker, handler) {
+    if (datepicker) {
+      datepicker.destroy();
+      datepicker = null;
+    }
+
+    if (dataDatepicker) {
+      datepicker = flatpickr(this.getElement().querySelector(selector), {
+        dateFormat: `d/m/y H:i`,
+        enableTime: true,
+        onChange: handler
+      });
+    }
+  }
+
+  _setStartDatepicker() {
+    this._setDatepicker(this._startDatepicker, `.event__input--time[name = event-start-time]`, this._data.dueDate, this._startDateChangeHandler);
+  }
+
+  _setEndDatepicker() {
+    this._setDatepicker(this._endDatepicker, `.event__input--time[name = event-end-time]`, this._data.dateEnd, this._endDateChangeHandler);
+  }
+
 
   _validateCity(cityValue) {
     if (cityValue.match(/[a-z]/ig) === null) {
@@ -217,11 +268,14 @@ export default class FormEvent extends Smart {
     this.getElement()
       .querySelector(`.event__input--price`)
       .addEventListener(`input`, this._priceInputHandler);
+
+    this._setStartDatepicker();
+    this._setEndDatepicker();
   }
 
   _editFormClickHandler(evt) {
     evt.preventDefault();
-    this._callback.editFormClick(FormEvent.parseDataToPoint(this._point));
+    this._callback.editFormClick(FormEvent.parseDataToPoint(this._data));
   }
 
   _editFormSubmitHandler(evt) {
@@ -271,12 +325,50 @@ export default class FormEvent extends Smart {
     }, true);
   }
 
+
+  _startDateChangeHandler([userDate]) {
+    this.updateData({
+      dueDate: dayjs(userDate)
+    });
+  }
+
+  _endDateChangeHandler([userDate]) {
+    this.updateData({
+      dateEnd: dayjs(userDate)
+    });
+  }
+
+  _formDeleteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.deleteClick(FormEvent.parseDataToPoint(this._data));
+  }
+
   static parsePointToData(point) {
-    return Object.assign({}, point, {type: point.type, offers: point.offers, city: point.city, descriptions: point.destination.descriptions, srcImg: point.destination.srcImg, point: point.price});
+    point = Object.assign({}, point, {
+      type: point.type,
+      offers: point.offers,
+      city: point.city,
+      descriptions: point.destination.descriptions,
+      srcImg: point.destination.srcImg,
+      price: point.price,
+      dueDate: point.dueDate,
+      dateEnd: point.dateEnd,
+      isDueDate: point.dueDate !== null,
+    });
+
+    return point;
   }
 
   static parseDataToPoint(data) {
-    return Object.assign({}, data);
+    data = Object.assign({}, data);
+
+    if (!data.isDueDate) {
+      data.dueDate = null;
+    }
+
+    delete data.isDueDate;
+
+    return data;
   }
 }
 

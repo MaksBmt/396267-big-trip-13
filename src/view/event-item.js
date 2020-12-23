@@ -26,7 +26,7 @@ const createEventItem = ({type, city, price, isFavorite, dueDate, offers, dateEn
     <div class="event">
       <time class="event__date" datetime="${dueDate.format(`YYYY-MM-DD`)}">${dueDate.format(`MMM D`)}</time>
       <div class="event__type">
-        <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
+        <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
                 </div>
         <h3 class="event__title">${type} ${city}</h3>
         <div class="event__schedule">

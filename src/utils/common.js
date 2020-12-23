@@ -31,9 +31,7 @@ export const updateItem = (items, update) => {
   ];
 };
 
-export const defaultSortPoints = (points) => {
-  points.sort((a, b) => +dayjs(a.dueDate) - +dayjs(b.dueDate));
-};
+export const defaultSortPoints = (pointA, pointB) => +dayjs(pointA.dueDate) - +dayjs(pointB.dueDate);
 
 export const priceSortPoints = (pointA, pointB) => pointB.price - pointA.price;
 
