@@ -13,7 +13,6 @@ const createResultOffers = (offers) => {
 };
 
 const createEventItem = ({type, city, price, isFavorite, dueDate, offers, dateEnd}) => {
-  type = type.toLowerCase();
   const intervalDate = dateEnd.diff(dueDate);
 
   const hoursInterval = dayjs(new Date(intervalDate));

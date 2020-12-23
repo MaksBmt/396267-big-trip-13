@@ -1,7 +1,6 @@
 import Abstract from "./abstract.js";
 
-const createFilterItemTemplate = (filter, currentFilterType) => {
-  const {type, name} = filter;
+const createFilterItemTemplate = ({type, name}, currentFilterType) => {
 
   return `<div class="trip-filters__filter">
   <input id="filter-${name}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${type}" ${type === currentFilterType ? `checked` : ``}>
@@ -34,14 +33,14 @@ export default class FilterEvents extends Abstract {
     return createFilterEventsTemplate(this._filters, this._currentFilter);
   }
 
-  _filterTypeChangeHandler(evt) {
-    evt.preventDefault();
-    this._callback.filterTypeChange(evt.target.value);
-  }
-
   setFilterTypeChangeHandler(callback) {
     this._callback.filterTypeChange = callback;
     this.getElement().addEventListener(`change`, this._filterTypeChangeHandler);
+  }
+
+  _filterTypeChangeHandler(evt) {
+    evt.preventDefault();
+    this._callback.filterTypeChange(evt.target.value);
   }
 }
 

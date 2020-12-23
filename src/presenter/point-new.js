@@ -44,7 +44,6 @@ export default class PointNew {
   }
 
   _handleFormSubmit(point) {
-
     this._changeData(UserAction.ADD_TASK, UpdateType.MINOR, Object.assign({id: generateId()}, point));
     this.destroy();
   }

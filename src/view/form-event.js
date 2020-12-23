@@ -8,7 +8,7 @@ import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
 export const BLANK_POINT = {
   id: generateId(),
-  type: `Taxi`,
+  type: TYPES[0],
   city: ``,
   destination: {
     descriptions: ``,
@@ -105,7 +105,7 @@ const createFormEvent = (data, isNewPoint) => {
     ? createListOffers(offers)
     : ``;
 
-  const isSubmitDisabled = (isDueDate && dueDate === null);
+  const isSubmitDisabled = isDueDate && dueDate === null;
 
   return (`<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
@@ -166,9 +166,9 @@ const createFormEvent = (data, isNewPoint) => {
 export default class FormEvent extends Smart {
   constructor(point = BLANK_POINT, isNewPoint) {
     super();
-    this._point = point;
     this._isNewPoint = isNewPoint;
-    this._datepicker = null;
+    this._startDatepicker = null;
+    this._endDatepicker = null;
 
     this._data = FormEvent.parsePointToData(point);
 
@@ -178,7 +178,8 @@ export default class FormEvent extends Smart {
     this._typeChangeClickHandler = this._typeChangeClickHandler.bind(this);
     this._cityInputHandler = this._cityInputHandler.bind(this);
     this._priceInputHandler = this._priceInputHandler.bind(this);
-    this._dueDateChangeHandler = this._dueDateChangeHandler.bind(this);
+    this._startDateChangeHandler = this._startDateChangeHandler.bind(this);
+    this._endDateChangeHandler = this._endDateChangeHandler.bind(this);
 
     this._setInnerHandlers();
     this._setDatepicker();
@@ -197,7 +198,6 @@ export default class FormEvent extends Smart {
     this.setEditSubmitHandler(this._callback.editFormSubmit);
     this.setEditClickHandler(this._callback.editFormClick);
     this.setDeleteClickHandler(this._callback.deleteClick);
-    this._setDatepicker();
   }
 
   setEditSubmitHandler(callback) {
@@ -216,6 +216,29 @@ export default class FormEvent extends Smart {
   setDeleteClickHandler(callback) {
     this._callback.deleteClick = callback;
     this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._formDeleteClickHandler);
+  }
+
+  _setDatepicker(datepicker, selector, dataDatepicker, handler) {
+    if (datepicker) {
+      datepicker.destroy();
+      datepicker = null;
+    }
+
+    if (dataDatepicker) {
+      datepicker = flatpickr(this.getElement().querySelector(selector), {
+        dateFormat: `d/m/y H:i`,
+        enableTime: true,
+        onChange: handler
+      });
+    }
+  }
+
+  _setStartDatepicker() {
+    this._setDatepicker(this._startDatepicker, `.event__input--time[name = event-start-time]`, this._data.dueDate, this._startDateChangeHandler);
+  }
+
+  _setEndDatepicker() {
+    this._setDatepicker(this._endDatepicker, `.event__input--time[name = event-end-time]`, this._data.dateEnd, this._endDateChangeHandler);
   }
 
 
@@ -245,6 +268,9 @@ export default class FormEvent extends Smart {
     this.getElement()
       .querySelector(`.event__input--price`)
       .addEventListener(`input`, this._priceInputHandler);
+
+    this._setStartDatepicker();
+    this._setEndDatepicker();
   }
 
   _editFormClickHandler(evt) {
@@ -299,30 +325,22 @@ export default class FormEvent extends Smart {
     }, true);
   }
 
-  _formDeleteClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.deleteClick(FormEvent.parseDataToPoint(this._data));
-  }
 
-  _setDatepicker() {
-    if (this._datepicker) {
-      this._datepicker.destroy();
-      this._datepicker = null;
-    }
-
-    if (this._data.isDueDate) {
-      this._datepicker = flatpickr(this.getElement().querySelector(`#event-start-time-1`), {
-        dateFormat: `j F`,
-        defaultDate: this._data.dueDate,
-        onChange: this._dueDateChangeHandler
-      });
-    }
-  }
-
-  _dueDateChangeHandler([userDate]) {
+  _startDateChangeHandler([userDate]) {
     this.updateData({
       dueDate: dayjs(userDate)
     });
+  }
+
+  _endDateChangeHandler([userDate]) {
+    this.updateData({
+      dateEnd: dayjs(userDate)
+    });
+  }
+
+  _formDeleteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.deleteClick(FormEvent.parseDataToPoint(this._data));
   }
 
   static parsePointToData(point) {
@@ -332,9 +350,12 @@ export default class FormEvent extends Smart {
       city: point.city,
       descriptions: point.destination.descriptions,
       srcImg: point.destination.srcImg,
-      point: point.price,
+      price: point.price,
+      dueDate: point.dueDate,
+      dateEnd: point.dateEnd,
       isDueDate: point.dueDate !== null,
     });
+
     return point;
   }
 
@@ -346,6 +367,7 @@ export default class FormEvent extends Smart {
     }
 
     delete data.isDueDate;
+
     return data;
   }
 }

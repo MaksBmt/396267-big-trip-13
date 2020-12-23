@@ -2,6 +2,7 @@
 import Information from "./view/information.js";
 import PriceTotal from "./view/price-total.js";
 import HeaderMenu from "./view/header-menu.js";
+import Button from "./view/button-event.js";
 import Travel from "./presenter/travel.js";
 import FilterPresenter from "./presenter/filter.js";
 import {generatePoint} from "./mock/point.js";
@@ -9,16 +10,13 @@ import {renderElement} from "./utils/render.js";
 import {RenderPosition} from "./utils/render.js";
 import PointsModel from "./model/points.js";
 import FilterModel from "./model/filter.js";
-import {defaultSortPoints} from "./utils/common.js";
 
 const POINT_COUNT = 11;
 
 const points = new Array(POINT_COUNT).fill().map(generatePoint);
 
-defaultSortPoints(points);
-
 const pointsModel = new PointsModel();
-pointsModel.setPoints(points);
+pointsModel.set(points);
 
 const header = document.querySelector(`.page-header`);
 const headerMain = header.querySelector(`.trip-main`);
@@ -49,6 +47,9 @@ const filterModel = new FilterModel();
 const filterPresenter = new FilterPresenter(headerTitle[1], filterModel);
 filterPresenter.init();
 
+const buttonEvent = new Button();
+renderElement(headerMain, buttonEvent, RenderPosition.BEFOREEND);
+
 const containerContent = document.querySelector(`.trip-events`);
 
 const travel = new Travel(containerContent, pointsModel, filterModel);
@@ -63,8 +64,3 @@ if (POINT_COUNT !== 0) {
 
   renderElement(headerInformation, new PriceTotal(totalPrice), RenderPosition.BEFOREEND);
 }
-
-document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, (evt) => {
-  evt.preventDefault();
-  travel.createPoint();
-});

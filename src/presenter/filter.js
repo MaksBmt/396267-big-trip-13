@@ -17,9 +17,9 @@ export default class Filter {
   }
 
   init() {
-    this._currentFilter = this._filterModel.getFilter();
+    this._currentFilter = this._filterModel.get();
 
-    const filters = this._getFilters();
+    const filters = this._get();
     const prevFilterComponent = this._filterComponent;
     this._filterComponent = new FilterEvents(filters, this._currentFilter);
     this._filterComponent.setFilterTypeChangeHandler(this._handleFilterTypeChange);
@@ -39,14 +39,14 @@ export default class Filter {
 
   _handleFilterTypeChange(filterType) {
     if (this._currentFilter === filterType) {
+
       return;
     }
 
-    this._filterModel.setFilter(UpdateType.MAJOR, filterType);
+    this._filterModel.set(UpdateType.MAJOR, filterType);
   }
 
-  _getFilters() {
-    // const points = this._tasksModel.getTasks();
+  _get() {
 
     return [
       {

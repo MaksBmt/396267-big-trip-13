@@ -2,10 +2,11 @@ import FilterSort from "../view/filter-sort.js";
 import EventList from "../view/event-list.js";
 import NoPoint from "../view/no-point.js";
 import Mark from "./mark.js";
+import Button from "../view/button-event.js";
 import PointNewPresenter from "./point-new.js";
 import {renderElement} from "../utils/render.js";
 import {RenderPosition, remove} from "../utils/render.js";
-import {priceSortPoints, intervalSortPoints} from "../utils/common.js";
+import {priceSortPoints, intervalSortPoints, defaultSortPoints} from "../utils/common.js";
 import {filter} from "../utils/filter.js";
 import {SortType, UpdateType, UserAction, FilterType} from "../const.js";
 
@@ -25,10 +26,14 @@ export default class Travel {
     this._listComponent = new EventList();
     this._noComponent = new NoPoint();
 
+    this._button = new Button();
+
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
     this._handleModeChange = this._handleModeChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
+
+    this._handlenewPoint = this._handlenewPoint.bind(this);
 
     this._pointsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
@@ -41,8 +46,8 @@ export default class Travel {
   }
 
   _getPoints() {
-    const filterType = this._filterModel.getFilter();
-    const points = this._pointsModel.getPoints();
+    const filterType = this._filterModel.get();
+    const points = this._pointsModel.get();
     const filtredPoints = filter[filterType](points);
 
 
@@ -51,8 +56,9 @@ export default class Travel {
         return filtredPoints.sort(priceSortPoints);
       case SortType.INTERVAL:
         return filtredPoints.sort(intervalSortPoints);
+      case SortType.DEFAULT:
+        return filtredPoints.sort(defaultSortPoints);
     }
-
     return filtredPoints;
   }
 
@@ -84,7 +90,7 @@ export default class Travel {
 
   createPoint() {
     this._currentSortType = SortType.DEFAULT;
-    this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this._filterModel.set(UpdateType.MAJOR, FilterType.EVERYTHING);
     this._pointNewPresenter.init();
   }
 
@@ -96,16 +102,11 @@ export default class Travel {
       .values(this._mark)
       .forEach((presenter) => presenter.destroy());
     this._mark = {};
-    // this._clearPointList();
 
     remove(this._sortComponent);
     remove(this._noComponent);
 
-    if (resetRenderedPointCount) {
-      this._renderedPointCount = POINT_COUNT;
-    } else {
-      this._renderedPointCount = Math.min(pointCount, this._renderedPointCount);
-    }
+    this._renderedPointCount = resetRenderedPointCount ? POINT_COUNT : Math.min(pointCount, this._renderedPointCount);
 
     if (resetSortType) {
       this._currentSortType = SortType.DEFAULT;
@@ -118,8 +119,11 @@ export default class Travel {
 
     if (pointCount === 0) {
       this._renderNoPoint();
+
       return;
     }
+
+    this._button.setNewPointClickHandler(this._handlenewPoint);
 
     this._renderSort();
     renderElement(this._containerContent, this._listComponent, RenderPosition.BEFOREEND);
@@ -129,6 +133,7 @@ export default class Travel {
 
   _handleSortTypeChange(sortType) {
     if (this._currentSortType === sortType) {
+
       return;
     }
 
@@ -173,5 +178,9 @@ export default class Travel {
         this._pointsModel.delete(updateType, update);
         break;
     }
+  }
+
+  _handlenewPoint() {
+    this.createPoint();
   }
 }
