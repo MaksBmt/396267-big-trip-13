@@ -14,7 +14,26 @@ export const BLANK_POINT = {
     descriptions: ``,
     srcImg: ``,
   },
-  offers: [],
+  offers: [
+    {
+      name: `Add luggage`,
+      price: 30,
+      type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`],
+      isChecked: false,
+    },
+    {
+      name: `Switch to comfort`,
+      price: 45,
+      type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`],
+      isChecked: false,
+    },
+    {
+      name: `Add breakfast`,
+      price: 25,
+      type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`],
+      isChecked: false,
+    }
+  ],
   price: ``,
   isFavorite: false,
   dueDate: dayjs(),
@@ -182,7 +201,19 @@ export default class FormEvent extends Smart {
     this._endDateChangeHandler = this._endDateChangeHandler.bind(this);
 
     this._setInnerHandlers();
-    this._setDatepicker();
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    if (this._startDatepicker) {
+      this._startDatepicker.destroy();
+      this._startDatepicker = null;
+    }
+    if (this._endDatepicker) {
+      this._endDatepicker.destroy();
+      this._endDatepicker = null;
+    }
   }
 
   reset(item) {
@@ -218,14 +249,14 @@ export default class FormEvent extends Smart {
     this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._formDeleteClickHandler);
   }
 
-  _setDatepicker(datepicker, selector, dataDatepicker, handler) {
+  _setDatepicker(datepicker, element, dataDatepicker, handler) {
     if (datepicker) {
       datepicker.destroy();
       datepicker = null;
     }
 
     if (dataDatepicker) {
-      datepicker = flatpickr(this.getElement().querySelector(selector), {
+      datepicker = flatpickr(element, {
         dateFormat: `d/m/y H:i`,
         enableTime: true,
         onChange: handler
@@ -234,11 +265,13 @@ export default class FormEvent extends Smart {
   }
 
   _setStartDatepicker() {
-    this._setDatepicker(this._startDatepicker, `.event__input--time[name = event-start-time]`, this._data.dueDate, this._startDateChangeHandler);
+    const inputDateOne = this.getElement().querySelector(`.event__input--time[name = event-start-time]`);
+    this._setDatepicker(this._startDatepicker, inputDateOne, this._data.dueDate, this._startDateChangeHandler);
   }
 
   _setEndDatepicker() {
-    this._setDatepicker(this._endDatepicker, `.event__input--time[name = event-end-time]`, this._data.dateEnd, this._endDateChangeHandler);
+    const inputDateSecond = this.getElement().querySelector(`.event__input--time[name = event-end-time]`);
+    this._setDatepicker(this._endDatepicker, inputDateSecond, this._data.dateEnd, this._endDateChangeHandler);
   }
 
 
@@ -329,13 +362,13 @@ export default class FormEvent extends Smart {
   _startDateChangeHandler([userDate]) {
     this.updateData({
       dueDate: dayjs(userDate)
-    });
+    }, true);
   }
 
   _endDateChangeHandler([userDate]) {
     this.updateData({
       dateEnd: dayjs(userDate)
-    });
+    }, true);
   }
 
   _formDeleteClickHandler(evt) {
@@ -344,7 +377,7 @@ export default class FormEvent extends Smart {
   }
 
   static parsePointToData(point) {
-    point = Object.assign({}, point, {
+    return Object.assign({}, point, {
       type: point.type,
       offers: point.offers,
       city: point.city,
@@ -355,8 +388,6 @@ export default class FormEvent extends Smart {
       dateEnd: point.dateEnd,
       isDueDate: point.dueDate !== null,
     });
-
-    return point;
   }
 
   static parseDataToPoint(data) {

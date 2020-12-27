@@ -98,7 +98,7 @@ export default class Mark {
   }
 
   _handleFavoriteClick() {
-    this._changeData(UserAction.UPDATE_TASK, UpdateType.MINOR, Object.assign({}, this._subject, {isFavorite: !this._subject.isFavorite}));
+    this._changeData(UserAction.UPDATE_TASK, UpdateType.PATCH, Object.assign({}, this._subject, {isFavorite: !this._subject.isFavorite}));
   }
 
   _handleFormSubmit(item) {
@@ -107,6 +107,6 @@ export default class Mark {
   }
 
   _handleDeleteClick(item) {
-    this._changeData(UserAction.DELETE_TASK, UpdateType.MINOR, item);
+    this._changeData(UserAction.DELETE_TASK, UpdateType.MAJOR, item);
   }
 }

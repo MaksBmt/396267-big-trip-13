@@ -50,7 +50,6 @@ export default class Travel {
     const points = this._pointsModel.get();
     const filtredPoints = filter[filterType](points);
 
-
     switch (this._currentSortType) {
       case SortType.PRICE:
         return filtredPoints.sort(priceSortPoints);
