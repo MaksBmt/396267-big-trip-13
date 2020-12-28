@@ -1,6 +1,8 @@
 import FilterSort from "../view/filter-sort.js";
 import EventList from "../view/event-list.js";
 import NoPoint from "../view/no-point.js";
+import Information from "../view/information.js";
+import PriceTotal from "../view/price-total.js";
 import Mark from "./mark.js";
 import Button from "../view/button-event.js";
 import PointNewPresenter from "./point-new.js";
@@ -10,15 +12,15 @@ import {priceSortPoints, intervalSortPoints, defaultSortPoints} from "../utils/c
 import {filter} from "../utils/filter.js";
 import {SortType, UpdateType, UserAction, FilterType} from "../const.js";
 
-const POINT_COUNT = 11;
 
 export default class Travel {
   constructor(containerContent, pointsModel, filterModel) {
     this._pointsModel = pointsModel;
     this._filterModel = filterModel;
     this._containerContent = containerContent;
-    this._renderedPointCount = POINT_COUNT;
     this._sortComponent = null;
+    this._informationCityComponent = null;
+    this._priceTotalComponent = null;
     this._mark = {};
     this._currentSortType = SortType.DEFAULT;
     this._isNewPoint = false;
@@ -27,6 +29,8 @@ export default class Travel {
     this._noComponent = new NoPoint();
 
     this._button = new Button();
+
+    this.headerMain = document.querySelector(`.trip-main`);
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
@@ -61,6 +65,50 @@ export default class Travel {
     return filtredPoints;
   }
 
+  sumCheckOfferPrice(offers) {
+
+    const offersPrice = offers
+      .filter((offer) => offer.isChecked)
+      .map((offer) => offer.price);
+
+    return offersPrice.reduce((sum, current) => sum + current, 0);
+  }
+
+  totalPrice() {
+    const points = this._pointsModel.get();
+    const pointPrice = points.map((point) => point.price);
+    const totalPriceOffersCheck = points.map((point) => this.sumCheckOfferPrice(point.offers)).reduce((sum, current) => sum + current, 0);
+
+    return pointPrice.reduce((sum, current) => sum + current, 0) + totalPriceOffersCheck;
+  }
+
+  informationCity(points) {
+    return points.map((point) => point.city);
+  }
+
+  _renderInformationCity(points) {
+    if (this._informationCityComponent !== null) {
+      this._informationCityComponent = null;
+    }
+
+    if (points.length !== 0) {
+      this._informationCityComponent = new Information(this.informationCity(points));
+      renderElement(this.headerMain, this._informationCityComponent, RenderPosition.AFTERBEGIN);
+    }
+  }
+
+  _renderPriceTotal(points) {
+    if (this._priceTotalComponent !== null) {
+      this._priceTotalComponent = null;
+    }
+    if (points.length !== 0) {
+      const headerInformation = this.headerMain.querySelector(`.trip-info`);
+      this._priceTotalComponent = new PriceTotal(this.totalPrice());
+      renderElement(headerInformation, this._priceTotalComponent, RenderPosition.BEFOREEND);
+    }
+
+  }
+
   _renderNoPoint() {
     renderElement(this._containerContent, this._noComponent, RenderPosition.BEFOREEND);
   }
@@ -93,8 +141,7 @@ export default class Travel {
     this._pointNewPresenter.init();
   }
 
-  _clearListContent({resetRenderedPointCount = false, resetSortType = false} = {}) {
-    const pointCount = this._getPoints().length;
+  _clearListContent({resetSortType = false} = {}) {
 
     this._pointNewPresenter.destroy();
     Object
@@ -102,10 +149,10 @@ export default class Travel {
       .forEach((presenter) => presenter.destroy());
     this._mark = {};
 
+    remove(this._informationCityComponent);
+    remove(this._priceTotalComponent);
     remove(this._sortComponent);
     remove(this._noComponent);
-
-    this._renderedPointCount = resetRenderedPointCount ? POINT_COUNT : Math.min(pointCount, this._renderedPointCount);
 
     if (resetSortType) {
       this._currentSortType = SortType.DEFAULT;
@@ -123,10 +170,11 @@ export default class Travel {
     }
 
     this._button.setNewPointClickHandler(this._handlenewPoint);
-
+    this._renderInformationCity(points);
+    this._renderPriceTotal(points);
     this._renderSort();
     renderElement(this._containerContent, this._listComponent, RenderPosition.BEFOREEND);
-    this._renderPoints(points.slice(0, Math.min(pointCount, this._renderedPointCount)));
+    this._renderPoints(points.slice(0, pointCount));
   }
 
 

@@ -354,7 +354,7 @@ export default class FormEvent extends Smart {
     evt.preventDefault();
 
     this.updateData({
-      price: evt.target.value,
+      price: +evt.target.value,
     }, true);
   }
 
