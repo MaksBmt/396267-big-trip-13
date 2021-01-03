@@ -1,13 +1,13 @@
 import {CITIES} from "../const.js";
 import {TYPES} from "../const.js";
-import {filterOffers, citiesData, generateId} from "../mock/point.js";
+import {filterOffers, citiesData} from "../mock/point.js";
 import Smart from "./smart.js";
 import dayjs from "dayjs";
 import flatpickr from "flatpickr";
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
 export const BLANK_POINT = {
-  id: generateId(),
+  id: 0,
   type: TYPES[0],
   city: ``,
   destination: {
@@ -51,11 +51,12 @@ const generateIdFromName = (sentence) => sentence.toLowerCase().split(` `).join(
 
 const layoutOffers = (offers) => {
   return offers.map((offer) => {
-    const id = generateIdFromName(offer.name);
+
+    const id = generateIdFromName(offer.title);
     return `<div class="event__offer-selector">
          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-1" type="checkbox" name="event-offer-${id}" ${offer.isChecked ? `checked` : ``}>
           <label class="event__offer-label" for="event-offer-${id}-1">
-         <span class="event__offer-title">${offer.name}</span>
+         <span class="event__offer-title">${offer.title}</span>
           &plus;&euro;&nbsp;
           <span class="event__offer-price">${offer.price}</span>
           </label>
@@ -82,7 +83,7 @@ const createItemsType = () => {
 };
 
 const createDestinationPhotos = (srcImg) => {
-  return srcImg.map((foto) => `<img class="event__photo" src = "${foto}" alt = "Event photo">`).join(``);
+  return srcImg.map((foto) => `<img class="event__photo" src = "${foto.src}" alt = "${foto.descriptions}">`).join(``);
 };
 
 const createButtonFormEdit = () => {

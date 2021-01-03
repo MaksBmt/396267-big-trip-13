@@ -3,30 +3,19 @@ import HeaderMenu from "./view/header-menu.js";
 import Button from "./view/button-event.js";
 import Travel from "./presenter/travel.js";
 import FilterPresenter from "./presenter/filter.js";
-import {generatePoint} from "./mock/point.js";
+import {UpdateType} from "./const.js";
 import {renderElement} from "./utils/render.js";
 import {RenderPosition} from "./utils/render.js";
 import PointsModel from "./model/points.js";
 import FilterModel from "./model/filter.js";
 import Api from "./api.js";
 
-const POINT_COUNT = 11;
 const AUTHORIZATION = `Basic **SlvMY$68`;
 const END_POINT = `https://13.ecmascript.pages.academy/big-trip/`;
 
-const points = new Array(POINT_COUNT).fill().map(generatePoint);
 const api = new Api(END_POINT, AUTHORIZATION);
 
-api.getEvents().then((events) => {
-  console.log(events);
-  // Есть проблема: cтруктура объекта похожа, но некоторые ключи называются иначе,
-  // а ещё на сервере используется snake_case, а у нас camelCase.
-  // Можно, конечно, переписать часть нашего клиентского приложения, но зачем?
-  // Есть вариант получше - паттерн "Адаптер"
-});
-
 const pointsModel = new PointsModel();
-pointsModel.set(points);
 
 const headerMain = document.querySelector(`.trip-main`);
 const headerControl = headerMain.querySelector(`.trip-controls`);
@@ -44,4 +33,12 @@ const containerContent = document.querySelector(`.trip-events`);
 
 const travel = new Travel(containerContent, pointsModel, filterModel);
 travel.init();
+
+api.getEvents()
+  .then((points) => {
+    pointsModel.set(UpdateType.INIT, points);
+  });
+  // .catch(() => {
+  //   pointsModel.set(UpdateType.INIT, []);
+  // });
 
