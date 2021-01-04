@@ -13,9 +13,9 @@ import Api from "./api.js";
 const AUTHORIZATION = `Basic **SlvMY$68`;
 const END_POINT = `https://13.ecmascript.pages.academy/big-trip/`;
 
-const api = new Api(END_POINT, AUTHORIZATION);
+export const api = new Api(END_POINT, AUTHORIZATION);
 
-const pointsModel = new PointsModel();
+export const pointsModel = new PointsModel();
 
 const headerMain = document.querySelector(`.trip-main`);
 const headerControl = headerMain.querySelector(`.trip-controls`);
@@ -38,6 +38,7 @@ api.getEvents()
   .then((points) => {
     pointsModel.set(UpdateType.INIT, points);
   });
+
   // .catch(() => {
   //   pointsModel.set(UpdateType.INIT, []);
   // });

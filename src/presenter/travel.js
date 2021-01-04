@@ -1,6 +1,7 @@
 import FilterSort from "../view/filter-sort.js";
 import EventList from "../view/event-list.js";
 import NoPoint from "../view/no-point.js";
+import Loading from "../view/loading.js";
 import Information from "../view/information.js";
 import PriceTotal from "../view/price-total.js";
 import Mark from "./mark.js";
@@ -24,11 +25,13 @@ export default class Travel {
     this._mark = {};
     this._currentSortType = SortType.DEFAULT;
     this._isNewPoint = false;
+    this._isLoading = true;
 
     this._listComponent = new EventList();
     this._noComponent = new NoPoint();
 
     this._button = new Button();
+    this._loadingComponent = new Loading();
 
     this.headerMain = document.querySelector(`.trip-main`);
 
@@ -37,15 +40,15 @@ export default class Travel {
     this._handleModeChange = this._handleModeChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
 
-    this._handlenewPoint = this._handlenewPoint.bind(this);
-
-    this._pointsModel.addObserver(this._handleModelEvent);
-    this._filterModel.addObserver(this._handleModelEvent);
+    this._handleNewPoint = this._handleNewPoint.bind(this);
 
     this._pointNewPresenter = new PointNewPresenter(this._listComponent, this._handleViewAction);
   }
 
   init() {
+    this._pointsModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
+
     this._renderListContent();
   }
 
@@ -113,6 +116,11 @@ export default class Travel {
     renderElement(this._containerContent, this._noComponent, RenderPosition.BEFOREEND);
   }
 
+  _renderLoading() {
+    renderElement(this._containerContent, this._loadingComponent, RenderPosition.AFTERBEGIN);
+  }
+
+
   _renderSort() {
     if (this._sortComponent !== null) {
       this._sortComponent = null;
@@ -124,14 +132,14 @@ export default class Travel {
   }
 
   _renderPoint(listComponent, subject) {
-    const mark = new Mark(listComponent, this._handleViewAction, this._handleModeChange, this._isNewPoint);
+    const mark = new Mark(listComponent, this._handleViewAction, this._handleModeChange, this._isNewPoint, this._pointsModel);
     mark.init(subject);
     this._mark[subject.id] = mark;
   }
 
   _renderPoints(subjects) {
     for (const subject of subjects) {
-      this._renderPoint(this._listComponent, subject);
+      this._renderPoint(this._listComponent, subject, this._pointsModel);
     }
   }
 
@@ -160,6 +168,11 @@ export default class Travel {
   }
 
   _renderListContent() {
+    if (this._isLoading) {
+      this._renderLoading();
+      return;
+    }
+
     const points = this._getPoints();
     const pointCount = points.length;
 
@@ -169,7 +182,7 @@ export default class Travel {
       return;
     }
 
-    this._button.setNewPointClickHandler(this._handlenewPoint);
+    this._button.setNewPointClickHandler(this._handleNewPoint);
     this._renderInformationCity(points);
     this._renderPriceTotal(points);
     this._renderSort();
@@ -198,6 +211,7 @@ export default class Travel {
   }
 
   _handleModelEvent(updateType, data) {
+
     switch (updateType) {
       case UpdateType.PATCH:
         this._mark[data.id].init(data);
@@ -208,6 +222,11 @@ export default class Travel {
         break;
       case UpdateType.MAJOR:
         this._clearListContent({resetRenderedPointCount: true, resetSortType: true});
+        this._renderListContent();
+        break;
+      case UpdateType.INIT:
+        this._isLoading = false;
+        remove(this._loadingComponent);
         this._renderListContent();
         break;
     }
@@ -227,7 +246,7 @@ export default class Travel {
     }
   }
 
-  _handlenewPoint() {
+  _handleNewPoint() {
     this.createPoint();
   }
 }

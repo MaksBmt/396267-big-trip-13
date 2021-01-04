@@ -1,6 +1,5 @@
-import {CITIES} from "../const.js";
+
 import {TYPES} from "../const.js";
-import {filterOffers, citiesData} from "../mock/point.js";
 import Smart from "./smart.js";
 import dayjs from "dayjs";
 import flatpickr from "flatpickr";
@@ -40,9 +39,9 @@ export const BLANK_POINT = {
   dateEnd: dayjs(),
 };
 
-const createListDestination = () => {
+const createListDestination = (model) => {
   return (`<datalist id="destination-list-1"> 
- ${CITIES.map((city) => `<option value="${city}"></option>`).join(``)}
+ ${model.map((item) => `<option value="${item.city}"></option>`).join(``)}
   </datalist>`
   );
 };
@@ -113,11 +112,11 @@ const createDestinationSection = (descriptions, srcImg) => {
            </section>`;
 };
 
-const createFormEvent = (data, isNewPoint) => {
-  const {type, city, price, offers, destination: {descriptions, srcImg}, dueDate, dateEnd, isDueDate
+const createFormEvent = (data, isNewPoint, model) => {
+  const {type, city, price, offers, destination, dueDate, dateEnd, isDueDate
   } = data;
-
-  const sectionDestination = hasDestination(city)
+  const {descriptions, srcImg} = destination;
+  const sectionDestination = hasDestination(destination)
     ? createDestinationSection(descriptions, srcImg)
     : ``;
 
@@ -151,7 +150,7 @@ const createFormEvent = (data, isNewPoint) => {
               ${type}
             </label>
             <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1" required>
-              ${createListDestination(CITIES)}
+              ${createListDestination(model)}
         </div>
             <div class="event__field-group  event__field-group--time">
               <label class="visually-hidden" for="event-start-time-1">From</label>
@@ -184,13 +183,15 @@ const createFormEvent = (data, isNewPoint) => {
 };
 
 export default class FormEvent extends Smart {
-  constructor(point = BLANK_POINT, isNewPoint) {
+  constructor(point = BLANK_POINT, isNewPoint, model) {
     super();
     this._isNewPoint = isNewPoint;
     this._startDatepicker = null;
     this._endDatepicker = null;
+    this._model = model.get();
+    this._point = point;
 
-    this._data = FormEvent.parsePointToData(point);
+    this._data = FormEvent.parsePointToData(this._point);
 
     this._editFormClickHandler = this._editFormClickHandler.bind(this);
     this._editFormSubmitHandler = this._editFormSubmitHandler.bind(this);
@@ -222,7 +223,7 @@ export default class FormEvent extends Smart {
   }
 
   getTemplate() {
-    return createFormEvent(this._data, this._isNewPoint);
+    return createFormEvent(this._data, this._isNewPoint, this._model);
   }
 
   restoreHandlers() {
@@ -275,6 +276,9 @@ export default class FormEvent extends Smart {
     this._setDatepicker(this._endDatepicker, inputDateSecond, this._data.dateEnd, this._endDateChangeHandler);
   }
 
+  getCities() {
+    return this._model.map((item) => item.city);
+  }
 
   _validateCity(cityValue) {
     if (cityValue.match(/[a-z]/ig) === null) {
@@ -285,7 +289,7 @@ export default class FormEvent extends Smart {
       return `Чувак, надо писать город, а не номер телефона соседки!`;
     }
 
-    if (!CITIES.includes(cityValue)) {
+    if (!this.getCities().includes(cityValue)) {
       return `Лучше выбрать из списка - доберешься быстрее`;
     }
 
@@ -320,10 +324,17 @@ export default class FormEvent extends Smart {
   _typeChangeClickHandler(evt) {
     evt.preventDefault();
     const typeUpdate = this.getElement().querySelector(`.event__type-output`).textContent = this.getElement().querySelector(`#${evt.target.htmlFor}`).value;
+
     this.updateData({
       type: typeUpdate,
-      offers: filterOffers(typeUpdate),
+      offers: this.filterOffers(typeUpdate),
     });
+  }
+
+  filterOffers(type) {
+    type = type.toLowerCase();
+    const item = this._model.find((offer) => offer.type === type);
+    return item ? item.offers : ``;
   }
 
   _cityInputHandler(evt) {
@@ -335,14 +346,14 @@ export default class FormEvent extends Smart {
     evt.target.setCustomValidity(validationMessage);
 
     if (validationMessage === ``) {
-      const destinationCity = citiesData.find((item) => (item.name === cityTargetValue));
+      const destinationCity = this._model.find((item) => (item.city === cityTargetValue));
 
       if (destinationCity) {
         this.updateData({
-          city: destinationCity.name,
+          city: destinationCity.city,
           destination: {
-            descriptions: destinationCity.description,
-            srcImg: destinationCity.photos,
+            descriptions: destinationCity.destination.descriptions,
+            srcImg: destinationCity.destination.srcImg,
           },
         });
       }
@@ -378,6 +389,7 @@ export default class FormEvent extends Smart {
   }
 
   static parsePointToData(point) {
+
     return Object.assign({}, point, {
       type: point.type,
       offers: point.offers,
