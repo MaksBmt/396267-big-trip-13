@@ -63,7 +63,6 @@ export default class EventItem extends Abstract {
     super();
     this._point = point;
     this.itemFavorite = this.getElement().querySelector(`.event__favorite-btn`);
-
     this._pointClickHandler = this._pointClickHandler.bind(this);
     this._favoriteClickHadler = this._favoriteClickHadler.bind(this);
   }

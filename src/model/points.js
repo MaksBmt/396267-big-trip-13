@@ -59,16 +59,21 @@ export default class Points extends Observer {
 
   static adaptToClient(event) {
     const adaptedPoint = Object.assign({}, event, {
+      id: event.id,
       type: event.type,
       city: event.destination.name,
       destination: {
         descriptions: event.destination.description,
         srcImg: event.destination.pictures,
       },
-      offers: event.offers,
+      // offers: {
+      //   title: event.offers.title,
+      //   price: event.offers.price,
+      // },
+      // offers: event.offers,
       price: event.base_price,
-      dueDate: event.date_from !== null ? dayjs(new Date(event.date_from)) : dayjs(event.date_from),
-      dateEnd: event.date_to !== null ? dayjs(new Date(event.date_to)) : dayjs(event.date_to),
+      dueDate: event.date_from !== null ? dayjs(event.date_from) : dayjs(event.date_from),
+      dateEnd: event.date_to !== null ? dayjs(event.date_to) : dayjs(event.date_to),
       isFavorite: event.is_favorite,
     });
 
@@ -79,33 +84,39 @@ export default class Points extends Observer {
     delete adaptedPoint.destination.pictures;
     delete adaptedPoint.destination.description;
     delete adaptedPoint.destination.name;
-    delete adaptedPoint.destination.offers;
+    // delete adaptedPoint.offers.price;
+    // delete adaptedPoint.offers.title;
 
     return adaptedPoint;
   }
 
   static adaptToServer(event) {
     const adaptedPoint = Object.assign({}, event, {
-      "due_from": event.dueDate instanceof Date ? event.dueDate.toISOString() : null,
-      "due_to": event.dateEnd instanceof Date ? event.dateEnd.toISOString() : null,
+      "due_from": new Date(event.dueDate) instanceof Date ? new Date(event.dueDate).toISOString() : null,
+      "due_to": new Date(event.dateEnd) instanceof Date ? new Date(event.dateEnd).toISOString() : null,
       "is_favorite": event.isFavorite,
       "base_price": event.price,
       "destination": {
         "name": event.city,
-        "description": event.destination.description,
+        "description": event.destination.descriptions,
         "pictures": event.destination.srcImg,
-        "offers": event.offers,
-        "type": event.type,
       },
+      // "offers": event.offers,
+      // "offers": {
+      //   "title": event.offers.title,
+      //   "price": event.offers.price,
+      // },
+      "type": event.type,
     });
 
     delete adaptedPoint.dueDate;
     delete adaptedPoint.dateEnd;
     delete adaptedPoint.price;
     delete adaptedPoint.city;
-    delete adaptedPoint.destination.description;
+    delete adaptedPoint.destination.descriptions;
     delete adaptedPoint.destination.srcImg;
-    delete adaptedPoint.offers;
+    // delete adaptedPoint.offers.title;
+    // delete adaptedPoint.offers.price;
     delete adaptedPoint.isFavorite;
 
     return adaptedPoint;

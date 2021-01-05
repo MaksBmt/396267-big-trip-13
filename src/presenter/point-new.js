@@ -5,10 +5,11 @@ import {generateId} from "../utils/common.js";
 import {BLANK_POINT} from "../view/form-event.js";
 
 export default class PointNew {
-  constructor(pointListContainer, changeData) {
+  constructor(pointListContainer, changeData, model) {
     this._pointListContainer = pointListContainer;
     this._changeData = changeData;
     this._point = BLANK_POINT;
+    this._model = model;
 
     this._formComponent = null;
     this._isNewPoint = true;
@@ -23,7 +24,7 @@ export default class PointNew {
       return;
     }
 
-    this._formComponent = new FormEvent(this._point, this._isNewPoint);
+    this._formComponent = new FormEvent(this._point, this._isNewPoint, this._model);
     this._formComponent.setEditSubmitHandler(this._handleFormSubmit);
     this._formComponent.setDeleteClickHandler(this._handleDeleteClick);
 

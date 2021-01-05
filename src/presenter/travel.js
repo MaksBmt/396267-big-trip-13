@@ -15,7 +15,7 @@ import {SortType, UpdateType, UserAction, FilterType} from "../const.js";
 
 
 export default class Travel {
-  constructor(containerContent, pointsModel, filterModel) {
+  constructor(containerContent, pointsModel, filterModel, api) {
     this._pointsModel = pointsModel;
     this._filterModel = filterModel;
     this._containerContent = containerContent;
@@ -26,6 +26,7 @@ export default class Travel {
     this._currentSortType = SortType.DEFAULT;
     this._isNewPoint = false;
     this._isLoading = true;
+    this._api = api;
 
     this._listComponent = new EventList();
     this._noComponent = new NoPoint();
@@ -42,7 +43,7 @@ export default class Travel {
 
     this._handleNewPoint = this._handleNewPoint.bind(this);
 
-    this._pointNewPresenter = new PointNewPresenter(this._listComponent, this._handleViewAction);
+    this._pointNewPresenter = new PointNewPresenter(this._listComponent, this._handleViewAction, this._pointsModel);
   }
 
   init() {
@@ -50,6 +51,15 @@ export default class Travel {
     this._filterModel.addObserver(this._handleModelEvent);
 
     this._renderListContent();
+  }
+
+  destroy() {
+    this._clearListContent({resetRenderedPointCount: true, resetSortType: true});
+
+    remove(this._listComponent);
+
+    this._pointsModel.removeObserver(this._handleModelEvent);
+    this._filterModel.removeObserver(this._handleModelEvent);
   }
 
   _getPoints() {
@@ -80,9 +90,9 @@ export default class Travel {
   totalPrice() {
     const points = this._pointsModel.get();
     const pointPrice = points.map((point) => point.price);
-    const totalPriceOffersCheck = points.map((point) => this.sumCheckOfferPrice(point.offers)).reduce((sum, current) => sum + current, 0);
+    // const totalPriceOffersCheck = points.map((point) => this.sumCheckOfferPrice(point.offers)).reduce((sum, current) => sum + current, 0);
 
-    return pointPrice.reduce((sum, current) => sum + current, 0) + totalPriceOffersCheck;
+    return pointPrice.reduce((sum, current) => sum + current, 0) /* + totalPriceOffersCheck */;
   }
 
   informationCity(points) {
@@ -236,6 +246,9 @@ export default class Travel {
     switch (actionType) {
       case UserAction.UPDATE_TASK:
         this._pointsModel.update(updateType, update);
+        this._api.updateEvent(update).then((response) => {
+          this._pointsModel.updateTask(updateType, response);
+        });
         break;
       case UserAction.ADD_TASK:
         this._pointsModel.add(updateType, update);
