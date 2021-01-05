@@ -245,7 +245,6 @@ export default class Travel {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_TASK:
-        this._pointsModel.update(updateType, update);
         this._api.updateEvent(update).then((response) => {
           this._pointsModel.updateTask(updateType, response);
         });
