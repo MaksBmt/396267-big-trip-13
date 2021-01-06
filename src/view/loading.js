@@ -1,9 +1,7 @@
 import Abstract from "./abstract.js";
 
 const createNoTaskTemplate = () => {
-  return `<p class="board__no-tasks">
-    Loading...
-  </p>`;
+  return `<p class="trip-events__msg">Loading...</p>`;
 };
 
 export default class Loading extends Abstract {

@@ -127,7 +127,7 @@ export default class Travel {
   }
 
   _renderLoading() {
-    renderElement(this._containerContent, this._loadingComponent, RenderPosition.AFTERBEGIN);
+    renderElement(this._containerContent, this._loadingComponent, RenderPosition.BEFOREEND);
   }
 
 
