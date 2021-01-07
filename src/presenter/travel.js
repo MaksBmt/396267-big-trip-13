@@ -53,6 +53,19 @@ export default class Travel {
     this._renderListContent();
   }
 
+  hide() {
+    this._listComponent.hide();
+    this._sortComponent.hide();
+  }
+
+  show() {
+    this._listComponent.show();
+    this._sortComponent.show();
+    this._currentSortType = SortType.DEFAULT;
+    this._filterModel.set(UpdateType.MAJOR, FilterType.EVERYTHING);
+  }
+
+
   destroy() {
     this._clearListContent({resetRenderedPointCount: true, resetSortType: true});
 

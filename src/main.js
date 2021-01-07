@@ -4,10 +4,12 @@ import Button from "./view/button-event.js";
 import Travel from "./presenter/travel.js";
 import FilterPresenter from "./presenter/filter.js";
 import {UpdateType} from "./const.js";
-import {renderElement} from "./utils/render.js";
+import {renderElement, remove} from "./utils/render.js";
 import {RenderPosition} from "./utils/render.js";
 import PointsModel from "./model/points.js";
 import FilterModel from "./model/filter.js";
+import {MenuItem} from "./const.js";
+import StatisticsView from "./view/statistics.js";
 import Api from "./api.js";
 
 const AUTHORIZATION = `Basic **SlvMY$68`;
@@ -22,6 +24,9 @@ const headerControl = headerMain.querySelector(`.trip-controls`);
 const headerTitle = headerControl.querySelectorAll(`h2`);
 // renderElement(headerTitle[0], new HeaderMenu(), RenderPosition.AFTEREND);
 
+const siteMenuComponent = new HeaderMenu();
+let statisticsComponent = null;
+
 const filterModel = new FilterModel();
 const filterPresenter = new FilterPresenter(headerTitle[1], filterModel);
 filterPresenter.init();
@@ -34,17 +39,38 @@ const containerContent = document.querySelector(`.trip-events`);
 const travel = new Travel(containerContent, pointsModel, filterModel, api);
 travel.init();
 
+const handleSiteMenuClick = (menuItem) => {
+  switch (menuItem) {
+    case MenuItem.TABLE:
+      // siteMenuComponent.setMenuItem(menuItem);
+      travel.show();
+      remove(statisticsComponent);
+      statisticsComponent.hide();
+      break;
+    case MenuItem.STATS:
+      // siteMenuComponent.setMenuItem(menuItem);
+      statisticsComponent = new StatisticsView(pointsModel);
+      renderElement(containerContent, statisticsComponent, RenderPosition.AFTEREND);
+      travel.hide();
+      statisticsComponent.show();
+      break;
+  }
+};
+
+siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
+
 api.getEvents()
   .then((points) => {
     const buttonEvent = new Button();
     renderElement(headerMain, buttonEvent, RenderPosition.BEFOREEND);
     pointsModel.set(UpdateType.INIT, points);
-    renderElement(headerTitle[0], new HeaderMenu(), RenderPosition.AFTEREND);
+    renderElement(headerTitle[0], siteMenuComponent, RenderPosition.AFTEREND);
   })
   .catch(() => {
     pointsModel.set(UpdateType.INIT, []);
-    renderElement(headerTitle[0], new HeaderMenu(), RenderPosition.AFTEREND);
+    renderElement(headerTitle[0], siteMenuComponent, RenderPosition.AFTEREND);
     const buttonEvent = new Button();
     renderElement(headerMain, buttonEvent, RenderPosition.BEFOREEND);
   });
+
 
