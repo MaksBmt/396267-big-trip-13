@@ -103,8 +103,8 @@ export default class Travel {
   totalPrice() {
     const points = this._pointsModel.get();
     const pointPrice = points.map((point) => point.price);
-    // const totalPriceOffersCheck = points.map((point) => this.sumCheckOfferPrice(point.offers)).reduce((sum, current) => sum + current, 0);
-    const totalPriceOffersCheck = 0;
+    const totalPriceOffersCheck = points.map((point) => this.sumCheckOfferPrice(point.offers)).reduce((sum, current) => sum + current, 0);
+
     return pointPrice.reduce((sum, current) => sum + current, 0) + totalPriceOffersCheck;
   }
 
@@ -258,9 +258,10 @@ export default class Travel {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_TASK:
-        this._api.updateEvent(update).then((response) => {
-          this._pointsModel.updateTask(updateType, response);
-        });
+        this._pointsModel.update(updateType, update);
+        // this._api.updateEvent(update).then((response) => {
+        //   this._pointsModel.update(updateType, response);
+        // });
         break;
       case UserAction.ADD_TASK:
         this._pointsModel.add(updateType, update);

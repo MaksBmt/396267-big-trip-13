@@ -1,5 +1,5 @@
 
-import {TYPES} from "../const.js";
+import {TYPES, CITIES, OFFERS} from "../const.js";
 import Smart from "./smart.js";
 import dayjs from "dayjs";
 import flatpickr from "flatpickr";
@@ -39,9 +39,9 @@ export const BLANK_POINT = {
   dateEnd: dayjs(),
 };
 
-const createListDestination = (model) => {
+const createListDestination = () => {
   return (`<datalist id="destination-list-1"> 
- ${model.map((item) => `<option value="${item.city}"></option>`).join(``)}
+ ${CITIES.map((item) => `<option value="${item.name}"></option>`).join(``)}
   </datalist>`
   );
 };
@@ -112,7 +112,7 @@ const createDestinationSection = (descriptions, srcImg) => {
            </section>`;
 };
 
-const createFormEvent = (data, isNewPoint, model) => {
+const createFormEvent = (data, isNewPoint) => {
   const {type, city, price, offers, destination, dueDate, dateEnd, isDueDate
   } = data;
   const {descriptions, srcImg} = destination;
@@ -150,7 +150,7 @@ const createFormEvent = (data, isNewPoint, model) => {
               ${type}
             </label>
             <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1" required>
-              ${createListDestination(model)}
+              ${createListDestination()}
         </div>
             <div class="event__field-group  event__field-group--time">
               <label class="visually-hidden" for="event-start-time-1">From</label>
@@ -223,7 +223,7 @@ export default class FormEvent extends Smart {
   }
 
   getTemplate() {
-    return createFormEvent(this._data, this._isNewPoint, this._model);
+    return createFormEvent(this._data, this._isNewPoint);
   }
 
   restoreHandlers() {
@@ -277,7 +277,7 @@ export default class FormEvent extends Smart {
   }
 
   getCities() {
-    return this._model.map((item) => item.city);
+    return CITIES.map((item) => item.name);
   }
 
   _validateCity(cityValue) {
@@ -318,6 +318,18 @@ export default class FormEvent extends Smart {
 
   _editFormSubmitHandler(evt) {
     evt.preventDefault();
+    const itemOffers = this._data.offers;
+    const checkedOffers = [];
+    if (itemOffers) {
+      const eventOffers = this.getElement().querySelectorAll(`.event__offer-checkbox`);
+      eventOffers.forEach((offer, i) => {
+        if (offer.checked) {
+          checkedOffers.push(itemOffers[i].isChecked = true);
+        } else {
+          checkedOffers.push(itemOffers[i].isChecked = false);
+        }
+      });
+    }
     this._callback.editFormSubmit(FormEvent.parseDataToPoint(this._data));
   }
 
@@ -333,7 +345,7 @@ export default class FormEvent extends Smart {
 
   filterOffers(type) {
     type = type.toLowerCase();
-    const item = this._model.find((offer) => offer.type === type);
+    const item = OFFERS.find((offer) => offer.type === type);
     return item ? item.offers : ``;
   }
 
@@ -346,14 +358,14 @@ export default class FormEvent extends Smart {
     evt.target.setCustomValidity(validationMessage);
 
     if (validationMessage === ``) {
-      const destinationCity = this._model.find((item) => (item.city === cityTargetValue));
+      const destinationCity = CITIES.find((item) => (item.name === cityTargetValue));
 
       if (destinationCity) {
         this.updateData({
-          city: destinationCity.city,
+          city: destinationCity.name,
           destination: {
-            descriptions: destinationCity.destination.descriptions,
-            srcImg: destinationCity.destination.srcImg,
+            descriptions: destinationCity.description,
+            srcImg: destinationCity.pictures,
           },
         });
       }
