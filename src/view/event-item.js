@@ -1,8 +1,24 @@
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import Abstract from "./abstract.js";
+import {TimeCount} from "../const.js";
 
 dayjs.extend(utc);
+
+const transformationFormatTime = (dueDate, dateEnd) => {
+  const intervalDate = dateEnd.diff(dueDate);
+  const hoursInterval = dayjs(new Date(intervalDate));
+  let resultIntervalFormat = hoursInterval.utc().format(`H[H] mm[M]`);
+  if (intervalDate < TimeCount.HOUR) {
+    resultIntervalFormat = hoursInterval.utc().format(`mm[M]`);
+  } else if (intervalDate >= TimeCount.HOUR && intervalDate < TimeCount.DAY) {
+    resultIntervalFormat = hoursInterval.utc().format(`HH[H] mm[M]`);
+  } else {
+    resultIntervalFormat = hoursInterval.utc().format(`DD[D] HH[H] mm[M]`);
+  }
+
+  return resultIntervalFormat;
+};
 
 const createResultOffers = (offers) => {
   return offers.map((offer) => `<li  class= "event__offer" > 
@@ -13,10 +29,8 @@ const createResultOffers = (offers) => {
 };
 
 const createEventItem = ({type, city, price, isFavorite, dueDate, offers, dateEnd}) => {
-  const intervalDate = dateEnd.diff(dueDate);
 
-  const hoursInterval = dayjs(new Date(intervalDate));
-  const resultIntervalFormat = hoursInterval.utc().format(`H[H] mm[M]`);
+  const resultTransfomationTime = transformationFormatTime(dueDate, dateEnd);
 
   const favoriteClassName = isFavorite
     ? `event__favorite-btn  event__favorite-btn--active`
@@ -35,7 +49,7 @@ const createEventItem = ({type, city, price, isFavorite, dueDate, offers, dateEn
                     &mdash;
                     <time class="event__end-time" datetime="${dateEnd.format(`YYYY-MM-DDTHH:mm`)}">${dateEnd.format(`HH:mm`)}</time>
           </p>
-          <p class="event__duration">${resultIntervalFormat}</p>
+          <p class="event__duration">${resultTransfomationTime}</p>
         </div>
         <p class="event__price">
           &euro;&nbsp;<span class="event__price-value">${price}</span>

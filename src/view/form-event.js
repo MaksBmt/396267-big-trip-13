@@ -6,34 +6,14 @@ import flatpickr from "flatpickr";
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
 export const BLANK_POINT = {
-  id: 0,
   type: TYPES[0],
   city: ``,
   destination: {
     descriptions: ``,
-    srcImg: ``,
+    srcImg: [],
   },
-  offers: [
-    {
-      name: `Add luggage`,
-      price: 30,
-      type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`],
-      isChecked: false,
-    },
-    {
-      name: `Switch to comfort`,
-      price: 45,
-      type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`],
-      isChecked: false,
-    },
-    {
-      name: `Add breakfast`,
-      price: 25,
-      type: [`Taxi`, `Bus`, `Train`, `Ship`, ` Transport`, `Drive`, `Flight`],
-      isChecked: false,
-    }
-  ],
   price: ``,
+  offers: [],
   isFavorite: false,
   dueDate: dayjs(),
   dateEnd: dayjs(),
@@ -116,7 +96,7 @@ const createFormEvent = (data, isNewPoint) => {
   const {type, city, price, offers, destination, dueDate, dateEnd, isDueDate
   } = data;
   const {descriptions, srcImg} = destination;
-  const sectionDestination = hasDestination(destination)
+  const sectionDestination = hasDestination(city)
     ? createDestinationSection(descriptions, srcImg)
     : ``;
 
@@ -183,12 +163,11 @@ const createFormEvent = (data, isNewPoint) => {
 };
 
 export default class FormEvent extends Smart {
-  constructor(point = BLANK_POINT, isNewPoint, model) {
+  constructor(point = BLANK_POINT, isNewPoint) {
     super();
     this._isNewPoint = isNewPoint;
     this._startDatepicker = null;
     this._endDatepicker = null;
-    this._model = model.get();
     this._point = point;
 
     this._data = FormEvent.parsePointToData(this._point);

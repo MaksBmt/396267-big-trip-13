@@ -1,9 +1,9 @@
 import Smart from './smart.js';
 import Chart from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
+import {TimeCount} from "../const.js";
 
 const BAR_HEIGHT = 55;
-const DAY = 86400000;
 
 const makeItemsUniq = (items) => {
   const result = items.map((item) => item.type.toUpperCase());
@@ -48,10 +48,9 @@ const getTypesTimeResult = (items, points) => {
   items.forEach((item) => {
     points.forEach((point) => {
       if (point.type === item.toLowerCase()) {
-        result += point.dateEnd.diff(point.dueDate) / DAY;
+        result += point.dateEnd.diff(point.dueDate) / TimeCount.DAY;
       }
     });
-    // typesTime.push(Math.round(result));
     typesTime.push(result.toFixed(1));
     result = 0;
   });

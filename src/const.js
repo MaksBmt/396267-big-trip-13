@@ -64,6 +64,12 @@ export const MenuItem = {
   STATS: `Stats`
 };
 
+export const TimeCount = {
+  HOUR: 3600000,
+  DAY: 86400000,
+};
+
+
 export const OFFERS = [
   {
     "type": `taxi`,
