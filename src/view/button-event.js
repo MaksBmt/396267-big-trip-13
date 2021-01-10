@@ -8,7 +8,6 @@ export default class Button extends Abstract {
   constructor() {
     super();
 
-    // this.button = document.querySelector(`.trip-main__event-add-btn`);
     this._newPointClickHandler = this._newPointClickHandler.bind(this);
   }
 
@@ -24,5 +23,6 @@ export default class Button extends Abstract {
   _newPointClickHandler(evt) {
     evt.preventDefault();
     this._callback.buttonClick();
+    document.querySelector(`.trip-main__event-add-btn`).disabled = true;
   }
 }

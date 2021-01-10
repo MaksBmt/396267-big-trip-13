@@ -1,7 +1,6 @@
 import FormEvent from "../view/form-event.js";
 import {RenderPosition, renderElement, remove} from "../utils/render.js";
 import {UserAction, UpdateType} from "../const.js";
-// import {generateId} from "../utils/common.js";
 import {BLANK_POINT} from "../view/form-event.js";
 
 export default class PointNew {
@@ -62,19 +61,24 @@ export default class PointNew {
     this._formComponent.shake(resetFormState);
   }
 
+  disabledButtonNew() {
+    document.querySelector(`.trip-main__event-add-btn`).disabled = false;
+  }
+
   _handleFormSubmit(point) {
     this._changeData(UserAction.ADD_TASK, UpdateType.MINOR, point);
-    // this.destroy();
   }
 
   _handleDeleteClick() {
     this.destroy();
+    this.disabledButtonNew();
   }
 
   _onEscKeyDown(evt) {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       evt.preventDefault();
       this.destroy();
+      this.disabledButtonNew();
     }
   }
 }

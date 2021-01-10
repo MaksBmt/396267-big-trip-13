@@ -42,13 +42,11 @@ travel.init();
 const handleSiteMenuClick = (menuItem) => {
   switch (menuItem) {
     case MenuItem.TABLE:
-      // siteMenuComponent.setMenuItem(menuItem);
       travel.show();
       remove(statisticsComponent);
       statisticsComponent.hide();
       break;
     case MenuItem.STATS:
-      // siteMenuComponent.setMenuItem(menuItem);
       statisticsComponent = new StatisticsView(pointsModel);
       renderElement(containerContent, statisticsComponent, RenderPosition.AFTEREND);
       travel.hide();

@@ -223,6 +223,7 @@ export default class FormEvent extends Smart {
     if (!this._isNewPoint) {
       this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editFormClickHandler);
     }
+    this.disabledButtonNew();
   }
 
   setDeleteClickHandler(callback) {
@@ -263,6 +264,10 @@ export default class FormEvent extends Smart {
 
   getCities() {
     return CITIES.map((item) => item.name);
+  }
+
+  disabledButtonNew() {
+    document.querySelector(`.trip-main__event-add-btn`).disabled = false;
   }
 
   _validateCity(cityValue) {
@@ -315,6 +320,8 @@ export default class FormEvent extends Smart {
   _editFormClickHandler(evt) {
     evt.preventDefault();
     this._callback.editFormClick(FormEvent.parseDataToPoint(this._data));
+    // document.querySelector(`.trip-main__event-add-btn`).disabled = false;
+    this.disabledButtonNew();
   }
 
   _editFormSubmitHandler(evt) {

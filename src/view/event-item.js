@@ -99,6 +99,7 @@ export default class EventItem extends Abstract {
   _pointClickHandler(evt) {
     evt.preventDefault();
     this._callback.pointClick();
+    document.querySelector(`.trip-main__event-add-btn`).disabled = false;
   }
 
   _favoriteClickHadler(evt) {
