@@ -93,7 +93,7 @@ const createDestinationSection = (descriptions, srcImg) => {
 };
 
 const createFormEvent = (data, isNewPoint) => {
-  const {type, city, price, offers, destination, dueDate, dateEnd, isDisabled, isDueDate, isSaving, isDeleting
+  const {type, city, price, offers, destination, dueDate, dateEnd, isDisabled, isSaving, isDeleting
   } = data;
   const {descriptions, srcImg} = destination;
   const sectionDestination = hasDestination(city)
@@ -103,8 +103,6 @@ const createFormEvent = (data, isNewPoint) => {
   const sectionOffers = hasOffers(offers)
     ? createListOffers(offers)
     : ``;
-
-  const isSubmitDisabled = isDueDate && dueDate === null;
 
   return (`<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
@@ -148,7 +146,7 @@ const createFormEvent = (data, isNewPoint) => {
                   <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${price}" required>
         </div>
 
-                  <button class="event__save-btn  btn  btn--blue" type="submit" ${isSubmitDisabled || isDisabled ? `disabled` : ``}>${isSaving ? `Saving...` : `Save`}</button>
+                  <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? `disabled` : ``}>${isSaving ? `Saving...` : `Save`}</button>
                   <button class="event__reset-btn" type="reset" ${isDisabled ? `disabled` : ``}>${isDeleting ? `Deleting...` : `Delete`}</button>
                   ${isNewPoint ? `` : createButtonFormEdit()}
      </header>
@@ -166,11 +164,11 @@ export default class FormEvent extends Smart {
   constructor(point = BLANK_POINT, isNewPoint) {
     super();
     this._isNewPoint = isNewPoint;
-    this._startDatepicker = null;
-    this._endDatepicker = null;
     this._point = point;
 
     this._data = FormEvent.parsePointToData(this._point);
+    this._setStartDatepicker = null;
+    this._setEndDatepicker = null;
 
     this._editFormClickHandler = this._editFormClickHandler.bind(this);
     this._editFormSubmitHandler = this._editFormSubmitHandler.bind(this);
@@ -182,18 +180,19 @@ export default class FormEvent extends Smart {
     this._endDateChangeHandler = this._endDateChangeHandler.bind(this);
 
     this._setInnerHandlers();
+    this._setDatepicker();
   }
 
   removeElement() {
     super.removeElement();
 
-    if (this._startDatepicker) {
-      this._startDatepicker.destroy();
-      this._startDatepicker = null;
+    if (this._setStartDatepicker) {
+      this._setStartDatepicker.destroy();
+      this._setStartDatepicker = null;
     }
-    if (this._endDatepicker) {
-      this._endDatepicker.destroy();
-      this._endDatepicker = null;
+    if (this._setEndDatepicker) {
+      this._setEndDatepicker.destroy();
+      this._setEndDatepicker = null;
     }
   }
 
@@ -207,6 +206,7 @@ export default class FormEvent extends Smart {
 
   restoreHandlers() {
     this._setInnerHandlers();
+    this._setDatepicker();
     this.setEditSubmitHandler(this._callback.editFormSubmit);
     this.setEditClickHandler(this._callback.editFormClick);
     this.setDeleteClickHandler(this._callback.deleteClick);
@@ -231,19 +231,32 @@ export default class FormEvent extends Smart {
     this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._formDeleteClickHandler);
   }
 
-  _setDatepicker(datepicker, element, dataDatepicker, handler) {
-    if (datepicker) {
-      datepicker.destroy();
-      datepicker = null;
+  _setDatepicker() {
+    if (this._setStartDatepicker) {
+      this._setStartDatepicker.destroy();
+      this._setStartDatepicker = null;
+    }
+    if (this._setEndDatepicker) {
+      this._setEndDatepicker.destroy();
+      this._setEndDatepicker = null;
     }
 
-    if (dataDatepicker) {
-      datepicker = flatpickr(element, {
-        dateFormat: `d/m/y H:i`,
-        enableTime: true,
-        onChange: handler
-      });
-    }
+    this._setStartDatepicker = flatpickr(this.getInputDateOne(), {
+      enableTime: true,
+      dateFormat: `d/m/y H:i`,
+      dateDefault: this._data.dueDate,
+      defaultDate: `${this._data.dueDate}`,
+      onChange: this._startDateChangeHandler
+    });
+
+    this._setEndDatepicker = flatpickr(this.getInputDateSecond(), {
+      enableTime: true,
+      dateFormat: `d/m/y H:i`,
+      minDate: `${this._data.dueDate}`,
+      dateDefault: this._data.dateEnd,
+      defaultDate: `${this._data.dateEnd}`,
+      onChange: this._endDateChangeHandler
+    });
   }
 
   getInputDateOne() {
@@ -252,14 +265,6 @@ export default class FormEvent extends Smart {
 
   getInputDateSecond() {
     return this.getElement().querySelector(`.event__input--time[name = event-end-time]`);
-  }
-
-  _setStartDatepicker() {
-    this._setDatepicker(this._startDatepicker, this.getInputDateOne(), this._data.dueDate, this._startDateChangeHandler);
-  }
-
-  _setEndDatepicker() {
-    this._setDatepicker(this._endDatepicker, this.getInputDateSecond(), this._data.dateEnd, this._endDateChangeHandler);
   }
 
   getCities() {
@@ -312,15 +317,11 @@ export default class FormEvent extends Smart {
     this.getElement()
       .querySelector(`.event__input--price`)
       .addEventListener(`input`, this._priceInputHandler);
-
-    this._setStartDatepicker();
-    this._setEndDatepicker();
   }
 
   _editFormClickHandler(evt) {
     evt.preventDefault();
     this._callback.editFormClick(FormEvent.parseDataToPoint(this._data));
-    // document.querySelector(`.trip-main__event-add-btn`).disabled = false;
     this.disabledButtonNew();
   }
 
@@ -375,7 +376,7 @@ export default class FormEvent extends Smart {
           destination: {
             descriptions: destinationCity.description,
             srcImg: destinationCity.pictures,
-          },
+          }
         });
       }
     }
@@ -417,6 +418,7 @@ export default class FormEvent extends Smart {
     }
     this.getInputDateSecond().reportValidity();
   }
+
   _formDeleteClickHandler(evt) {
     evt.preventDefault();
     this._callback.deleteClick(FormEvent.parseDataToPoint(this._data));
@@ -425,7 +427,6 @@ export default class FormEvent extends Smart {
   static parsePointToData(point) {
 
     return Object.assign({}, point, {
-      isDueDate: point.dueDate !== null,
       isDisabled: false,
       isSaving: false,
       isDeleting: false
@@ -435,11 +436,6 @@ export default class FormEvent extends Smart {
   static parseDataToPoint(data) {
     data = Object.assign({}, data);
 
-    if (!data.isDueDate) {
-      data.dueDate = null;
-    }
-
-    delete data.isDueDate;
     delete data.isDisabled;
     delete data.isSaving;
     delete data.isDeleting;
