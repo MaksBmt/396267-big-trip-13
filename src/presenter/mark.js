@@ -10,6 +10,12 @@ const Mode = {
   EDITING: `EDITING`
 };
 
+export const State = {
+  SAVING: `SAVING`,
+  DELETING: `DELETING`,
+  ABORTING: `ABORTING`
+};
+
 export default class Mark {
   constructor(markContainer, changeData, changeMode, isNewPoint) {
     this._markContainer = markContainer;
@@ -20,7 +26,6 @@ export default class Mark {
     this._markForm = null;
     this._mode = Mode.DEFAULT;
     this._isNewPoint = isNewPoint;
-    // this._model = model;
 
     this._handleEditClick = this._handleEditClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
@@ -54,7 +59,8 @@ export default class Mark {
     }
 
     if (this._mode === Mode.EDITING) {
-      replace(this._markForm, prevMarkForm);
+      replace(this._markItem, prevMarkItem);
+      this._mode = Mode.DEFAULT;
     }
 
     remove(prevMarkItem);
@@ -85,6 +91,36 @@ export default class Mark {
     this._mode = Mode.DEFAULT;
   }
 
+  setViewState(state) {
+    const resetFormState = () => {
+      this._markForm.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false
+      });
+    };
+
+    switch (state) {
+      case State.SAVING:
+        this._markForm.updateData({
+          isDisabled: true,
+          isSaving: true
+        });
+        break;
+      case State.DELETING:
+        this._markForm.updateData({
+          isDisabled: true,
+          isDeleting: true
+        });
+        break;
+      case State.ABORTING:
+        this._markItem.shake(resetFormState);
+        this._markForm.shake(resetFormState);
+        break;
+    }
+  }
+
+
   _onEscKeyDown(evt) {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       evt.preventDefault();
@@ -104,7 +140,6 @@ export default class Mark {
 
   _handleFormSubmit(item) {
     this._changeData(UserAction.UPDATE_TASK, UpdateType.MINOR, item);
-    this._replaceFormToCard();
   }
 
   _handleDeleteClick(item) {

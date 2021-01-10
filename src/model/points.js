@@ -101,6 +101,7 @@ export default class Points extends Observer {
     delete adaptedPoint.city;
     delete adaptedPoint.descriptions;
     delete adaptedPoint.srcImg;
+    delete adaptedPoint.isFavorite;
 
     return adaptedPoint;
   }

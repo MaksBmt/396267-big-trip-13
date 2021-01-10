@@ -1,7 +1,7 @@
 import FormEvent from "../view/form-event.js";
 import {RenderPosition, renderElement, remove} from "../utils/render.js";
 import {UserAction, UpdateType} from "../const.js";
-import {generateId} from "../utils/common.js";
+// import {generateId} from "../utils/common.js";
 import {BLANK_POINT} from "../view/form-event.js";
 
 export default class PointNew {
@@ -43,9 +43,28 @@ export default class PointNew {
     document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 
+  setSaving() {
+    this._formComponent.updateData({
+      isDisabled: true,
+      isSaving: true
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this._formComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false
+      });
+    };
+
+    this._formComponent.shake(resetFormState);
+  }
+
   _handleFormSubmit(point) {
-    this._changeData(UserAction.ADD_TASK, UpdateType.MINOR, Object.assign({id: generateId()}, point));
-    this.destroy();
+    this._changeData(UserAction.ADD_TASK, UpdateType.MINOR, point);
+    // this.destroy();
   }
 
   _handleDeleteClick() {

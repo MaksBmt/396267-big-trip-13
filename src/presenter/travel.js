@@ -4,7 +4,7 @@ import NoPoint from "../view/no-point.js";
 import Loading from "../view/loading.js";
 import Information from "../view/information.js";
 import PriceTotal from "../view/price-total.js";
-import Mark from "./mark.js";
+import Mark, {State as MarkViewState} from "./mark.js";
 import Button from "../view/button-event.js";
 import PointNewPresenter from "./point-new.js";
 import {renderElement} from "../utils/render.js";
@@ -12,7 +12,6 @@ import {RenderPosition, remove} from "../utils/render.js";
 import {priceSortPoints, intervalSortPoints, defaultSortPoints} from "../utils/common.js";
 import {filter} from "../utils/filter.js";
 import {SortType, UpdateType, UserAction, FilterType} from "../const.js";
-
 
 export default class Travel {
   constructor(containerContent, pointsModel, filterModel, api) {
@@ -193,6 +192,7 @@ export default class Travel {
   _renderListContent() {
     if (this._isLoading) {
       this._renderLoading();
+
       return;
     }
 
@@ -258,16 +258,34 @@ export default class Travel {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_TASK:
-        // this._pointsModel.update(updateType, update);
-        this._api.updateEvent(update).then((response) => {
-          this._pointsModel.update(updateType, response);
-        });
+        this._mark[update.id].setViewState(MarkViewState.SAVING);
+        this._api.updateEvent(update)
+          .then((response) => {
+            this._pointsModel.update(updateType, response);
+          })
+          .catch(() => {
+            this._mark[update.id].setViewState(MarkViewState.ABORTING);
+          });
         break;
       case UserAction.ADD_TASK:
-        this._pointsModel.add(updateType, update);
+        this._pointNewPresenter.setSaving();
+        this._api.addEvent(update)
+          .then((response) => {
+            this._pointsModel.add(updateType, response);
+          })
+          .catch(() => {
+            this._pointNewPresenter.setAborting();
+          });
         break;
       case UserAction.DELETE_TASK:
-        this._pointsModel.delete(updateType, update);
+        this._mark[update.id].setViewState(MarkViewState.DELETING);
+        this._api.deleteEvent(update)
+          .then(() => {
+            this._pointsModel.delete(updateType, update);
+          })
+          .catch(() => {
+            this._mark[update.id].setViewState(MarkViewState.ABORTING);
+          });
         break;
     }
   }

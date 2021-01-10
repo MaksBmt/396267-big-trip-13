@@ -93,7 +93,7 @@ const createDestinationSection = (descriptions, srcImg) => {
 };
 
 const createFormEvent = (data, isNewPoint) => {
-  const {type, city, price, offers, destination, dueDate, dateEnd, isDueDate
+  const {type, city, price, offers, destination, dueDate, dateEnd, isDisabled, isDueDate, isSaving, isDeleting
   } = data;
   const {descriptions, srcImg} = destination;
   const sectionDestination = hasDestination(city)
@@ -148,8 +148,8 @@ const createFormEvent = (data, isNewPoint) => {
                   <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${price}" required>
         </div>
 
-                  <button class="event__save-btn  btn  btn--blue" type="submit" ${isSubmitDisabled ? `disabled` : ``}>Save</button>
-                  <button class="event__reset-btn" type="reset">Cancel</button>
+                  <button class="event__save-btn  btn  btn--blue" type="submit" ${isSubmitDisabled || isDisabled ? `disabled` : ``}>${isSaving ? `Saving...` : `Save`}</button>
+                  <button class="event__reset-btn" type="reset" ${isDisabled ? `disabled` : ``}>${isDeleting ? `Deleting...` : `Delete`}</button>
                   ${isNewPoint ? `` : createButtonFormEdit()}
      </header>
                 <section class="event__details">
@@ -245,14 +245,20 @@ export default class FormEvent extends Smart {
     }
   }
 
+  getInputDateOne() {
+    return this.getElement().querySelector(`.event__input--time[name = event-start-time]`);
+  }
+
+  getInputDateSecond() {
+    return this.getElement().querySelector(`.event__input--time[name = event-end-time]`);
+  }
+
   _setStartDatepicker() {
-    const inputDateOne = this.getElement().querySelector(`.event__input--time[name = event-start-time]`);
-    this._setDatepicker(this._startDatepicker, inputDateOne, this._data.dueDate, this._startDateChangeHandler);
+    this._setDatepicker(this._startDatepicker, this.getInputDateOne(), this._data.dueDate, this._startDateChangeHandler);
   }
 
   _setEndDatepicker() {
-    const inputDateSecond = this.getElement().querySelector(`.event__input--time[name = event-end-time]`);
-    this._setDatepicker(this._endDatepicker, inputDateSecond, this._data.dateEnd, this._endDateChangeHandler);
+    this._setDatepicker(this._endDatepicker, this.getInputDateSecond(), this._data.dateEnd, this._endDateChangeHandler);
   }
 
   getCities() {
@@ -270,6 +276,22 @@ export default class FormEvent extends Smart {
 
     if (!this.getCities().includes(cityValue)) {
       return `Лучше выбрать из списка - доберешься быстрее`;
+    }
+
+    return ``;
+  }
+
+  _validatePrice(priceValue) {
+    if (priceValue <= 0) {
+      return `Число должно быть больше нуля`;
+    }
+
+    return ``;
+  }
+
+  _validateDate(dateValue) {
+    if (dateValue <= 0) {
+      return `Машины времени пока нет - конечная дата должна быть больше начальной`;
     }
 
     return ``;
@@ -297,6 +319,7 @@ export default class FormEvent extends Smart {
 
   _editFormSubmitHandler(evt) {
     evt.preventDefault();
+
     const itemOffers = this._data.offers;
     const checkedOffers = [];
     if (itemOffers) {
@@ -332,11 +355,11 @@ export default class FormEvent extends Smart {
     evt.preventDefault();
 
     const cityTargetValue = evt.target.value.trim();
-    const validationMessage = this._validateCity(cityTargetValue);
+    const validationMessageCity = this._validateCity(cityTargetValue);
 
-    evt.target.setCustomValidity(validationMessage);
+    evt.target.setCustomValidity(validationMessageCity);
 
-    if (validationMessage === ``) {
+    if (validationMessageCity === ``) {
       const destinationCity = CITIES.find((item) => (item.name === cityTargetValue));
 
       if (destinationCity) {
@@ -356,9 +379,16 @@ export default class FormEvent extends Smart {
   _priceInputHandler(evt) {
     evt.preventDefault();
 
-    this.updateData({
-      price: +evt.target.value,
-    }, true);
+    const priceTargetValue = +evt.target.value.trim();
+    const validationMessagePrice = this._validatePrice(priceTargetValue);
+    evt.target.setCustomValidity(validationMessagePrice);
+
+    if (validationMessagePrice === ``) {
+      this.updateData({
+        price: priceTargetValue
+      }, true);
+    }
+    evt.target.reportValidity();
   }
 
 
@@ -369,11 +399,17 @@ export default class FormEvent extends Smart {
   }
 
   _endDateChangeHandler([userDate]) {
-    this.updateData({
-      dateEnd: dayjs(userDate)
-    }, true);
-  }
+    const differenceDate = this._data.dateEnd.diff(this._data.dueDate);
+    const validationMessageDate = this._validateDate(differenceDate);
+    this.getInputDateSecond().setCustomValidity(validationMessageDate);
 
+    if (validationMessageDate === ``) {
+      this.updateData({
+        dateEnd: dayjs(userDate)
+      }, true);
+    }
+    this.getInputDateSecond().reportValidity();
+  }
   _formDeleteClickHandler(evt) {
     evt.preventDefault();
     this._callback.deleteClick(FormEvent.parseDataToPoint(this._data));
@@ -382,15 +418,10 @@ export default class FormEvent extends Smart {
   static parsePointToData(point) {
 
     return Object.assign({}, point, {
-      type: point.type,
-      offers: point.offers,
-      city: point.city,
-      descriptions: point.destination.descriptions,
-      srcImg: point.destination.srcImg,
-      price: point.price,
-      dueDate: point.dueDate,
-      dateEnd: point.dateEnd,
       isDueDate: point.dueDate !== null,
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false
     });
   }
 
@@ -402,6 +433,9 @@ export default class FormEvent extends Smart {
     }
 
     delete data.isDueDate;
+    delete data.isDisabled;
+    delete data.isSaving;
+    delete data.isDeleting;
 
     return data;
   }
