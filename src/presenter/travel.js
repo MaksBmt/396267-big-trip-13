@@ -14,7 +14,7 @@ import {filter} from "../utils/filter.js";
 import {SortType, UpdateType, UserAction, FilterType} from "../const.js";
 
 export default class Travel {
-  constructor(containerContent, pointsModel, filterModel, api) {
+  constructor(containerContent, pointsModel, filterModel, api, headerMain) {
     this._pointsModel = pointsModel;
     this._filterModel = filterModel;
     this._containerContent = containerContent;
@@ -26,6 +26,7 @@ export default class Travel {
     this._isNewPoint = false;
     this._isLoading = true;
     this._api = api;
+    this._headerMain = headerMain;
 
     this._listComponent = new EventList();
     this._noComponent = new NoPoint();
@@ -42,7 +43,7 @@ export default class Travel {
 
     this._handleNewPoint = this._handleNewPoint.bind(this);
 
-    this._pointNewPresenter = new PointNewPresenter(this._listComponent, this._handleViewAction);
+    this._pointNewPresenter = new PointNewPresenter(this._listComponent, this._handleViewAction, this._headerMain);
   }
 
   init() {
@@ -91,7 +92,6 @@ export default class Travel {
   }
 
   sumCheckOfferPrice(offers) {
-
     const offersPrice = offers
       .filter((offer) => offer.isChecked)
       .map((offer) => offer.price);
@@ -155,7 +155,7 @@ export default class Travel {
 
   _renderPoint(listComponent, subject) {
     const mark = new Mark(listComponent, this._handleViewAction, this._handleModeChange, this._isNewPoint);
-    mark.init(subject);
+    mark.init(subject, this._headerMain);
     this._mark[subject.id] = mark;
   }
 
@@ -234,7 +234,6 @@ export default class Travel {
   }
 
   _handleModelEvent(updateType, data) {
-
     switch (updateType) {
       case UpdateType.PATCH:
         this._mark[data.id].init(data);

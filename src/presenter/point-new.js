@@ -4,10 +4,11 @@ import {UserAction, UpdateType} from "../const.js";
 import {BLANK_POINT} from "../view/form-event.js";
 
 export default class PointNew {
-  constructor(pointListContainer, changeData) {
+  constructor(pointListContainer, changeData, headerMain) {
     this._pointListContainer = pointListContainer;
     this._changeData = changeData;
     this._point = BLANK_POINT;
+    this._headerMain = headerMain;
 
     this._formComponent = null;
     this._isNewPoint = true;
@@ -62,7 +63,7 @@ export default class PointNew {
   }
 
   disabledButtonNew() {
-    document.querySelector(`.trip-main__event-add-btn`).disabled = false;
+    this._headerMain.querySelector(`.trip-main__event-add-btn`).disabled = false;
   }
 
   _handleFormSubmit(point) {

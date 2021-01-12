@@ -31,13 +31,13 @@ const filterModel = new FilterModel();
 const filterPresenter = new FilterPresenter(headerTitle[1], filterModel);
 filterPresenter.init();
 
-// const buttonEvent = new Button();
-// renderElement(headerMain, buttonEvent, RenderPosition.BEFOREEND);
+const buttonEvent = new Button();
+renderElement(headerMain, buttonEvent, RenderPosition.BEFOREEND);
 
 const containerContent = document.querySelector(`.trip-events`);
 
-const travel = new Travel(containerContent, pointsModel, filterModel, api);
-travel.init();
+const travel = new Travel(containerContent, pointsModel, filterModel, api, headerMain);
+// travel.init();
 
 const handleSiteMenuClick = (menuItem) => {
   switch (menuItem) {
@@ -57,18 +57,36 @@ const handleSiteMenuClick = (menuItem) => {
 
 siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
 
-api.getEvents()
-  .then((points) => {
-    const buttonEvent = new Button();
-    renderElement(headerMain, buttonEvent, RenderPosition.BEFOREEND);
-    pointsModel.set(UpdateType.INIT, points);
+const promiseEvent = api.getEvents();
+const promiseOffers = api.getOffers();
+const promiseDestinations = api.getDestinations();
+
+const resolvePromiseEvent = (points) => {
+  // travel.init();
+  pointsModel.set(UpdateType.INIT, points);
+
+  // renderElement(headerTitle[0], siteMenuComponent, RenderPosition.AFTEREND);
+};
+
+Promise
+  .all([
+    promiseEvent,
+    promiseOffers,
+    promiseDestinations
+  ])
+  .then((response) => {
+    const [points, offers, destinations] = response;
+    travel.init();
+    resolvePromiseEvent(points);
+    pointsModel.setOffers(offers);
+    pointsModel.setDestination(destinations);
+  })
+  .finally(() => {
     renderElement(headerTitle[0], siteMenuComponent, RenderPosition.AFTEREND);
   })
   .catch(() => {
     pointsModel.set(UpdateType.INIT, []);
-    renderElement(headerTitle[0], siteMenuComponent, RenderPosition.AFTEREND);
-    const buttonEvent = new Button();
-    renderElement(headerMain, buttonEvent, RenderPosition.BEFOREEND);
   });
 
+// travel.init();
 

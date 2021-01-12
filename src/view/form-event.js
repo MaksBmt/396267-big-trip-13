@@ -161,10 +161,11 @@ const createFormEvent = (data, isNewPoint) => {
 };
 
 export default class FormEvent extends Smart {
-  constructor(point = BLANK_POINT, isNewPoint) {
+  constructor(point = BLANK_POINT, isNewPoint, headerMain) {
     super();
     this._isNewPoint = isNewPoint;
     this._point = point;
+    this._headerMain = headerMain;
 
     this._data = FormEvent.parsePointToData(this._point);
     this._setStartDatepicker = null;
@@ -223,7 +224,6 @@ export default class FormEvent extends Smart {
     if (!this._isNewPoint) {
       this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editFormClickHandler);
     }
-    this.disabledButtonNew();
   }
 
   setDeleteClickHandler(callback) {
@@ -272,7 +272,7 @@ export default class FormEvent extends Smart {
   }
 
   disabledButtonNew() {
-    document.querySelector(`.trip-main__event-add-btn`).disabled = false;
+    this._headerMain.querySelector(`.trip-main__event-add-btn`).disabled = false;
   }
 
   _validateCity(cityValue) {
@@ -401,22 +401,26 @@ export default class FormEvent extends Smart {
 
 
   _startDateChangeHandler([userDate]) {
-    this.updateData({
-      dueDate: dayjs(userDate)
-    }, true);
+    const inputDateOne = this.getInputDateOne();
+    inputDateOne.readOnly = false;
+    inputDateOne.addEventListener(`input`, () => {
+      const differenceDate = this._data.dateEnd.diff(this._data.dueDate);
+      const validationMessageDate = this._validateDate(differenceDate);
+      this.getInputDateOne().setCustomValidity(validationMessageDate);
+      if (validationMessageDate === ``) {
+        this.updateData({
+          dueDate: dayjs(userDate)
+        }, true);
+      }
+    });
+
+    this.getInputDateOne().reportValidity();
   }
 
   _endDateChangeHandler([userDate]) {
-    const differenceDate = this._data.dateEnd.diff(this._data.dueDate);
-    const validationMessageDate = this._validateDate(differenceDate);
-    this.getInputDateSecond().setCustomValidity(validationMessageDate);
-
-    if (validationMessageDate === ``) {
-      this.updateData({
-        dateEnd: dayjs(userDate)
-      }, true);
-    }
-    this.getInputDateSecond().reportValidity();
+    this.updateData({
+      dateEnd: dayjs(userDate)
+    }, true);
   }
 
   _formDeleteClickHandler(evt) {
