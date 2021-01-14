@@ -1,5 +1,5 @@
 
-import {TYPES, CITIES, OFFERS} from "../const.js";
+import {TYPES, CITIES} from "../const.js";
 import Smart from "./smart.js";
 import dayjs from "dayjs";
 import flatpickr from "flatpickr";
@@ -93,9 +93,10 @@ const createDestinationSection = (descriptions, srcImg) => {
 };
 
 const createFormEvent = (data, isNewPoint) => {
-  const {type, city, price, offers, destination, dueDate, dateEnd, isDisabled, isSaving, isDeleting
+  const {type, city, price, destination, dueDate, dateEnd, offers, isDisabled, isSaving, isDeleting
   } = data;
   const {descriptions, srcImg} = destination;
+
   const sectionDestination = hasDestination(city)
     ? createDestinationSection(descriptions, srcImg)
     : ``;
@@ -161,11 +162,12 @@ const createFormEvent = (data, isNewPoint) => {
 };
 
 export default class FormEvent extends Smart {
-  constructor(point = BLANK_POINT, isNewPoint, headerMain) {
+  constructor(point = BLANK_POINT, isNewPoint, headerMain, offersModel) {
     super();
     this._isNewPoint = isNewPoint;
     this._point = point;
     this._headerMain = headerMain;
+    this._offersModel = offersModel;
 
     this._data = FormEvent.parsePointToData(this._point);
     this._setStartDatepicker = null;
@@ -272,7 +274,9 @@ export default class FormEvent extends Smart {
   }
 
   disabledButtonNew() {
-    this._headerMain.querySelector(`.trip-main__event-add-btn`).disabled = false;
+    if (this._headerMain) {
+      this._headerMain.querySelector(`.trip-main__event-add-btn`).disabled = false;
+    }
   }
 
   _validateCity(cityValue) {
@@ -349,14 +353,8 @@ export default class FormEvent extends Smart {
 
     this.updateData({
       type: typeUpdate,
-      offers: this.filterOffers(typeUpdate),
+      offers: this._offersModel.filter(typeUpdate),
     });
-  }
-
-  filterOffers(type) {
-    type = type.toLowerCase();
-    const item = OFFERS.find((offer) => offer.type === type);
-    return item ? item.offers : ``;
   }
 
   _cityInputHandler(evt) {

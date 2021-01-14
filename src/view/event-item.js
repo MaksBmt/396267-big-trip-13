@@ -28,7 +28,8 @@ const createResultOffers = (offers) => {
 </li>`).join(``);
 };
 
-const createEventItem = ({type, city, price, isFavorite, dueDate, offers, dateEnd}) => {
+const createEventItem = (point) => {
+  const {type, city, price, isFavorite, dueDate, offers, dateEnd} = point;
 
   const resultTransfomationTime = transformationFormatTime(dueDate, dateEnd);
 
@@ -77,6 +78,7 @@ export default class EventItem extends Abstract {
     super();
     this._point = point;
     this._headerMain = headerMain;
+
     this.itemFavorite = this.getElement().querySelector(`.event__favorite-btn`);
     this._pointClickHandler = this._pointClickHandler.bind(this);
     this._favoriteClickHadler = this._favoriteClickHadler.bind(this);
@@ -100,7 +102,10 @@ export default class EventItem extends Abstract {
   _pointClickHandler(evt) {
     evt.preventDefault();
     this._callback.pointClick();
-    this._headerMain.querySelector(`.trip-main__event-add-btn`).disabled = false;
+
+    if (this._headerMain) {
+      this._headerMain.querySelector(`.trip-main__event-add-btn`).disabled = false;
+    }
   }
 
   _favoriteClickHadler(evt) {

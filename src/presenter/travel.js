@@ -14,9 +14,10 @@ import {filter} from "../utils/filter.js";
 import {SortType, UpdateType, UserAction, FilterType} from "../const.js";
 
 export default class Travel {
-  constructor(containerContent, pointsModel, filterModel, api, headerMain) {
+  constructor(containerContent, pointsModel, filterModel, api, offersModel, headerMain) {
     this._pointsModel = pointsModel;
     this._filterModel = filterModel;
+    this._offersModel = offersModel;
     this._containerContent = containerContent;
     this._sortComponent = null;
     this._informationCityComponent = null;
@@ -26,15 +27,13 @@ export default class Travel {
     this._isNewPoint = false;
     this._isLoading = true;
     this._api = api;
-    this._headerMain = headerMain;
 
     this._listComponent = new EventList();
     this._noComponent = new NoPoint();
-
     this._button = new Button();
     this._loadingComponent = new Loading();
 
-    this.headerMain = document.querySelector(`.trip-main`);
+    this._headerMain = headerMain;
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
@@ -75,6 +74,30 @@ export default class Travel {
     this._filterModel.removeObserver(this._handleModelEvent);
   }
 
+  sumCheckOfferPrice(offers) {
+    return offers
+      .map((offer) => offer.isChecked ? offer.price : 0)
+      .reduce((sum, current) => sum + current, 0);
+  }
+
+  getTotalPrice() {
+    const points = this._pointsModel.get();
+    const pointPrice = points.map((point) => point.price);
+    const totalPriceOffersCheck = points.map((point) => this.sumCheckOfferPrice(point.offers)).reduce((sum, current) => sum + current, 0);
+
+    return pointPrice.reduce((sum, current) => sum + current, 0) + totalPriceOffersCheck;
+  }
+
+  _getInformationCity(points) {
+    return points.map((point) => point.city);
+  }
+
+  createPoint() {
+    this._currentSortType = SortType.DEFAULT;
+    this._filterModel.set(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this._pointNewPresenter.init();
+  }
+
   _getPoints() {
     const filterType = this._filterModel.get();
     const points = this._pointsModel.get();
@@ -91,47 +114,23 @@ export default class Travel {
     return filtredPoints;
   }
 
-  sumCheckOfferPrice(offers) {
-    const offersPrice = offers
-      .filter((offer) => offer.isChecked)
-      .map((offer) => offer.price);
-
-    return offersPrice.reduce((sum, current) => sum + current, 0);
-  }
-
-  totalPrice() {
-    const points = this._pointsModel.get();
-    const pointPrice = points.map((point) => point.price);
-    const totalPriceOffersCheck = points.map((point) => this.sumCheckOfferPrice(point.offers)).reduce((sum, current) => sum + current, 0);
-
-    return pointPrice.reduce((sum, current) => sum + current, 0) + totalPriceOffersCheck;
-  }
-
-  informationCity(points) {
-    return points.map((point) => point.city);
-  }
-
   _renderInformationCity(points) {
     if (this._informationCityComponent !== null) {
       this._informationCityComponent = null;
     }
 
-    if (points.length !== 0) {
-      this._informationCityComponent = new Information(this.informationCity(points));
-      renderElement(this.headerMain, this._informationCityComponent, RenderPosition.AFTERBEGIN);
-    }
+    this._informationCityComponent = new Information(this._getInformationCity(points));
+    renderElement(this._headerMain, this._informationCityComponent, RenderPosition.AFTERBEGIN);
   }
 
-  _renderPriceTotal(points) {
+  _renderPriceTotal() {
     if (this._priceTotalComponent !== null) {
       this._priceTotalComponent = null;
     }
-    if (points.length !== 0) {
-      const headerInformation = this.headerMain.querySelector(`.trip-info`);
-      this._priceTotalComponent = new PriceTotal(this.totalPrice());
-      renderElement(headerInformation, this._priceTotalComponent, RenderPosition.BEFOREEND);
-    }
 
+    const headerInformation = this._headerMain.querySelector(`.trip-info`);
+    this._priceTotalComponent = new PriceTotal(this.getTotalPrice());
+    renderElement(headerInformation, this._priceTotalComponent, RenderPosition.BEFOREEND);
   }
 
   _renderNoPoint() {
@@ -154,21 +153,15 @@ export default class Travel {
   }
 
   _renderPoint(listComponent, subject) {
-    const mark = new Mark(listComponent, this._handleViewAction, this._handleModeChange, this._isNewPoint);
+    const mark = new Mark(listComponent, this._handleViewAction, this._handleModeChange, this._isNewPoint, this._offersModel);
     mark.init(subject, this._headerMain);
     this._mark[subject.id] = mark;
   }
 
   _renderPoints(subjects) {
     for (const subject of subjects) {
-      this._renderPoint(this._listComponent, subject, this._pointsModel);
+      this._renderPoint(this._listComponent, subject);
     }
-  }
-
-  createPoint() {
-    this._currentSortType = SortType.DEFAULT;
-    this._filterModel.set(UpdateType.MAJOR, FilterType.EVERYTHING);
-    this._pointNewPresenter.init();
   }
 
   _clearListContent({resetSortType = false} = {}) {
@@ -205,9 +198,13 @@ export default class Travel {
       return;
     }
 
+    renderElement(this._headerMain, this._button, RenderPosition.BEFOREEND);
     this._button.setNewPointClickHandler(this._handleNewPoint);
-    this._renderInformationCity(points);
-    this._renderPriceTotal(points);
+
+    if (pointCount !== 0) {
+      this._renderInformationCity(points);
+      this._renderPriceTotal();
+    }
     this._renderSort();
     renderElement(this._containerContent, this._listComponent, RenderPosition.BEFOREEND);
     this._renderPoints(points.slice(0, pointCount));
