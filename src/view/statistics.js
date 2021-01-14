@@ -43,7 +43,7 @@ const getTypesResult = (items, points) => {
 };
 
 const getTypesTimeResult = (items, points) => {
-  let typesTime = [];
+  const typesTime = [];
   let result = 0;
   items.forEach((item) => {
     points.forEach((point) => {

@@ -286,19 +286,11 @@ export default class FormEvent extends Smart {
   }
 
   _validatePrice(priceValue) {
-    if (priceValue <= 0) {
-      return `Число должно быть больше нуля`;
-    }
-
-    return ``;
+    return (priceValue <= 0) ? `Число должно быть больше нуля` : ``;
   }
 
   _validateDate(dateValue) {
-    if (dateValue <= 0) {
-      return `Машины времени пока нет - конечная дата должна быть больше начальной`;
-    }
-
-    return ``;
+    return (dateValue <= 0) ? `Машины времени пока нет - конечная дата должна быть больше начальной` : ``;
   }
 
   _setInnerHandlers() {
@@ -328,9 +320,11 @@ export default class FormEvent extends Smart {
       const eventOffers = this.getElement().querySelectorAll(`.event__offer-checkbox`);
       eventOffers.forEach((offer, i) => {
         if (offer.checked) {
-          checkedOffers.push(itemOffers[i].isChecked = true);
+          checkedOffers.push(itemOffers[i]);
+          itemOffers[i].isChecked = true;
         } else {
-          checkedOffers.push(itemOffers[i].isChecked = false);
+          checkedOffers.push(itemOffers[i]);
+          itemOffers[i].isChecked = false;
         }
       });
     }
@@ -410,6 +404,7 @@ export default class FormEvent extends Smart {
       dateEnd: dayjs(userDate)
     }, true);
   }
+
 
   _formDeleteClickHandler(evt) {
     evt.preventDefault();

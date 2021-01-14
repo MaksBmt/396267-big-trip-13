@@ -23,17 +23,13 @@ export default class HeaderMenu extends Abstract {
     this._callback.menuClick = callback;
 
     this.getElement().querySelectorAll(`.trip-tabs__btn`)
-      .forEach((button) => {
-        return button.addEventListener(`click`, this._menuClickHandler);
-      });
+      .forEach((button) => button.addEventListener(`click`, this._menuClickHandler));
   }
 
   setMenuItem(menuItem) {
     this.getElement()
       .querySelectorAll(`.trip-tabs__btn`)
-      .forEach((button) => {
-        button.classList.remove(`trip-tabs__btn--active`);
-      });
+      .forEach((button) => button.classList.remove(`trip-tabs__btn--active`));
 
     const item = this.getElement().querySelector(`[data-value=${menuItem}]`);
 

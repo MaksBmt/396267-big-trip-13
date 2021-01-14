@@ -5,16 +5,17 @@ import {TimeCount} from "../const.js";
 
 dayjs.extend(utc);
 
-const transformationFormatTime = (dueDate, dateEnd) => {
+const transformFormatTime = (dueDate, dateEnd) => {
   const intervalDate = dateEnd.diff(dueDate);
-  const hoursInterval = dayjs(new Date(intervalDate));
-  let resultIntervalFormat = hoursInterval.utc().format(`H[H] mm[M]`);
+  const hoursInterval = (dayjs(new Date(intervalDate))).utc();
+
+  let resultIntervalFormat = null;
   if (intervalDate < TimeCount.HOUR) {
-    resultIntervalFormat = hoursInterval.utc().format(`mm[M]`);
+    resultIntervalFormat = hoursInterval.format(`mm[M]`);
   } else if (intervalDate >= TimeCount.HOUR && intervalDate < TimeCount.DAY) {
-    resultIntervalFormat = hoursInterval.utc().format(`HH[H] mm[M]`);
+    resultIntervalFormat = hoursInterval.format(`HH[H] mm[M]`);
   } else {
-    resultIntervalFormat = hoursInterval.utc().format(`DD[D] HH[H] mm[M]`);
+    resultIntervalFormat = hoursInterval.format(`DD[D] HH[H] mm[M]`);
   }
 
   return resultIntervalFormat;
@@ -31,7 +32,7 @@ const createResultOffers = (offers) => {
 const createEventItem = (point) => {
   const {type, city, price, isFavorite, dueDate, offers, dateEnd} = point;
 
-  const resultTransfomationTime = transformationFormatTime(dueDate, dateEnd);
+  const resultTransfomationTime = transformFormatTime(dueDate, dateEnd);
 
   const favoriteClassName = isFavorite
     ? `event__favorite-btn  event__favorite-btn--active`
@@ -81,7 +82,7 @@ export default class EventItem extends Abstract {
 
     this.itemFavorite = this.getElement().querySelector(`.event__favorite-btn`);
     this._pointClickHandler = this._pointClickHandler.bind(this);
-    this._favoriteClickHadler = this._favoriteClickHadler.bind(this);
+    this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
   }
 
   getTemplate() {
@@ -96,7 +97,7 @@ export default class EventItem extends Abstract {
 
   setFavoriteClickHandler(callback) {
     this._callback.favoriteClick = callback;
-    this.itemFavorite.addEventListener(`click`, this._favoriteClickHadler);
+    this.itemFavorite.addEventListener(`click`, this._favoriteClickHandler);
   }
 
   _pointClickHandler(evt) {
@@ -108,7 +109,7 @@ export default class EventItem extends Abstract {
     }
   }
 
-  _favoriteClickHadler(evt) {
+  _favoriteClickHandler(evt) {
     evt.preventDefault();
     this._callback.favoriteClick();
   }

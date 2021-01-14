@@ -43,7 +43,7 @@ export default class Travel {
 
     this._handleNewPoint = this._handleNewPoint.bind(this);
 
-    this._pointNewPresenter = new PointNewPresenter(this._listComponent, this._handleViewAction, this._headerMain);
+    this._pointNewPresenter = new PointNewPresenter(this._listComponent, this._handleViewAction, this._headerMain, this._offersModel, this._destinationsModel);
   }
 
   init() {
@@ -89,14 +89,14 @@ export default class Travel {
     return pointPrice.reduce((sum, current) => sum + current, 0) + totalPriceOffersCheck;
   }
 
-  _getInformationCity(points) {
-    return points.map((point) => point.city);
-  }
-
   createPoint() {
     this._currentSortType = SortType.DEFAULT;
     this._filterModel.set(UpdateType.MAJOR, FilterType.EVERYTHING);
     this._pointNewPresenter.init();
+  }
+
+  _getInformationCity(points) {
+    return points.map((point) => point.city);
   }
 
   _getPoints() {

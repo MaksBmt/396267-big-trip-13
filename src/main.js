@@ -75,8 +75,6 @@ Promise
     offersModel.set(offers);
     travel.init();
     resolvePromiseEvent(points);
-    offersModel.set(offers);
-
   })
   .finally(() => {
     renderElement(headerTitle[0], siteMenuComponent, RenderPosition.AFTEREND);

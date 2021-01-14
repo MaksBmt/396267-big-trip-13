@@ -19,18 +19,6 @@ export default class Points extends Observer {
     return this._points;
   }
 
-  setOffers(offers) {
-    this._offers = offers.slice();
-  }
-
-  getOffers() {
-    return this._offers;
-  }
-
-  setDestination(destinations) {
-    this._destinations = destinations.slice();
-  }
-
   update(updateType, update) {
     const index = this._points.findIndex((point) => point.id === update.id);
 
