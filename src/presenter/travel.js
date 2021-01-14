@@ -14,10 +14,11 @@ import {filter} from "../utils/filter.js";
 import {SortType, UpdateType, UserAction, FilterType} from "../const.js";
 
 export default class Travel {
-  constructor(containerContent, pointsModel, filterModel, api, offersModel, headerMain) {
+  constructor(containerContent, pointsModel, filterModel, api, offersModel, destinationsModel, headerMain) {
     this._pointsModel = pointsModel;
     this._filterModel = filterModel;
     this._offersModel = offersModel;
+    this._destinationsModel = destinationsModel;
     this._containerContent = containerContent;
     this._sortComponent = null;
     this._informationCityComponent = null;
@@ -153,7 +154,7 @@ export default class Travel {
   }
 
   _renderPoint(listComponent, subject) {
-    const mark = new Mark(listComponent, this._handleViewAction, this._handleModeChange, this._isNewPoint, this._offersModel);
+    const mark = new Mark(listComponent, this._handleViewAction, this._handleModeChange, this._isNewPoint, this._offersModel, this._destinationsModel);
     mark.init(subject, this._headerMain);
     this._mark[subject.id] = mark;
   }

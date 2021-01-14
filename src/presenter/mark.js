@@ -17,11 +17,12 @@ export const State = {
 };
 
 export default class Mark {
-  constructor(markContainer, changeData, changeMode, isNewPoint, offersModel) {
+  constructor(markContainer, changeData, changeMode, isNewPoint, offersModel, destinationsModel) {
     this._markContainer = markContainer;
     this._changeData = changeData;
     this._changeMode = changeMode;
     this._offersModel = offersModel;
+    this._destinationsModel = destinationsModel;
 
     this._markItem = null;
     this._markForm = null;
@@ -43,7 +44,7 @@ export default class Mark {
     const prevMarkForm = this._markForm;
 
     this._markItem = new EventItem(subject, this._headerMain);
-    this._markForm = new FormEvent(subject, this._isNewPoint, this._headerMain, this._offersModel);
+    this._markForm = new FormEvent(subject, this._isNewPoint, this._headerMain, this._offersModel, this._destinationsModel);
 
     this._markItem.setPointClickHandler(this._handleEditClick);
     this._markForm.setEditSubmitHandler(this._handleFormSubmit);

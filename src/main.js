@@ -7,6 +7,7 @@ import {renderElement, remove} from "./utils/render.js";
 import {RenderPosition} from "./utils/render.js";
 import PointsModel from "./model/points.js";
 import OffersModel from "./model/offers.js";
+import DestinationModel from "./model/destinations.js";
 import FilterModel from "./model/filter.js";
 import {MenuItem} from "./const.js";
 import StatisticsView from "./view/statistics.js";
@@ -19,11 +20,11 @@ export const api = new Api(END_POINT, AUTHORIZATION);
 
 export const pointsModel = new PointsModel();
 export const offersModel = new OffersModel();
+export const destinationsModel = new DestinationModel();
 
 const headerMain = document.querySelector(`.trip-main`);
 const headerControl = headerMain.querySelector(`.trip-controls`);
 const headerTitle = headerControl.querySelectorAll(`h2`);
-// renderElement(headerTitle[0], new HeaderMenu(), RenderPosition.AFTEREND);
 
 const siteMenuComponent = new HeaderMenu();
 let statisticsComponent = null;
@@ -32,13 +33,9 @@ const filterModel = new FilterModel();
 const filterPresenter = new FilterPresenter(headerTitle[1], filterModel);
 filterPresenter.init();
 
-// const buttonEvent = new Button();
-// renderElement(headerMain, buttonEvent, RenderPosition.BEFOREEND);
-
 const containerContent = document.querySelector(`.trip-events`);
 
-const travel = new Travel(containerContent, pointsModel, filterModel, api, offersModel, headerMain);
-// travel.init();
+const travel = new Travel(containerContent, pointsModel, filterModel, api, offersModel, destinationsModel, headerMain);
 
 const handleSiteMenuClick = (menuItem) => {
   switch (menuItem) {
@@ -63,7 +60,6 @@ const promiseOffers = api.getOffers();
 const promiseDestinations = api.getDestinations();
 
 const resolvePromiseEvent = (points) => {
-  // travel.init();
   pointsModel.set(UpdateType.INIT, points);
 };
 
@@ -75,10 +71,12 @@ Promise
   ])
   .then((response) => {
     const [points, offers, destinations] = response;
+    destinationsModel.set(destinations);
+    offersModel.set(offers);
     travel.init();
     resolvePromiseEvent(points);
     offersModel.set(offers);
-    pointsModel.setDestination(destinations);
+
   })
   .finally(() => {
     renderElement(headerTitle[0], siteMenuComponent, RenderPosition.AFTEREND);
@@ -87,5 +85,4 @@ Promise
     pointsModel.set(UpdateType.INIT, []);
   });
 
-// travel.init();
 

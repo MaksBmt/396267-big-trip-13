@@ -1,5 +1,5 @@
 
-import {TYPES, CITIES} from "../const.js";
+import {TYPES} from "../const.js";
 import Smart from "./smart.js";
 import dayjs from "dayjs";
 import flatpickr from "flatpickr";
@@ -17,13 +17,6 @@ export const BLANK_POINT = {
   isFavorite: false,
   dueDate: dayjs(),
   dateEnd: dayjs(),
-};
-
-const createListDestination = () => {
-  return (`<datalist id="destination-list-1"> 
- ${CITIES.map((item) => `<option value="${item.name}"></option>`).join(``)}
-  </datalist>`
-  );
 };
 
 const generateIdFromName = (sentence) => sentence.toLowerCase().split(` `).join(`_`);
@@ -92,7 +85,7 @@ const createDestinationSection = (descriptions, srcImg) => {
            </section>`;
 };
 
-const createFormEvent = (data, isNewPoint) => {
+const createFormEvent = (data, isNewPoint, citiesList) => {
   const {type, city, price, destination, dueDate, dateEnd, offers, isDisabled, isSaving, isDeleting
   } = data;
   const {descriptions, srcImg} = destination;
@@ -129,7 +122,7 @@ const createFormEvent = (data, isNewPoint) => {
               ${type}
             </label>
             <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1" required>
-              ${createListDestination()}
+              ${citiesList.createListDestination()}
         </div>
             <div class="event__field-group  event__field-group--time">
               <label class="visually-hidden" for="event-start-time-1">From</label>
@@ -162,12 +155,13 @@ const createFormEvent = (data, isNewPoint) => {
 };
 
 export default class FormEvent extends Smart {
-  constructor(point = BLANK_POINT, isNewPoint, headerMain, offersModel) {
+  constructor(point = BLANK_POINT, isNewPoint, headerMain, offersModel, destinationsModel) {
     super();
     this._isNewPoint = isNewPoint;
     this._point = point;
     this._headerMain = headerMain;
     this._offersModel = offersModel;
+    this._destinationsModel = destinationsModel;
 
     this._data = FormEvent.parsePointToData(this._point);
     this._setStartDatepicker = null;
@@ -204,7 +198,7 @@ export default class FormEvent extends Smart {
   }
 
   getTemplate() {
-    return createFormEvent(this._data, this._isNewPoint);
+    return createFormEvent(this._data, this._isNewPoint, this._destinationsModel);
   }
 
   restoreHandlers() {
@@ -269,10 +263,6 @@ export default class FormEvent extends Smart {
     return this.getElement().querySelector(`.event__input--time[name = event-end-time]`);
   }
 
-  getCities() {
-    return CITIES.map((item) => item.name);
-  }
-
   disabledButtonNew() {
     if (this._headerMain) {
       this._headerMain.querySelector(`.trip-main__event-add-btn`).disabled = false;
@@ -288,7 +278,7 @@ export default class FormEvent extends Smart {
       return `Чувак, надо писать город, а не номер телефона соседки!`;
     }
 
-    if (!this.getCities().includes(cityValue)) {
+    if (!this._destinationsModel.getCities().includes(cityValue)) {
       return `Лучше выбрать из списка - доберешься быстрее`;
     }
 
@@ -366,7 +356,7 @@ export default class FormEvent extends Smart {
     evt.target.setCustomValidity(validationMessageCity);
 
     if (validationMessageCity === ``) {
-      const destinationCity = CITIES.find((item) => (item.name === cityTargetValue));
+      const destinationCity = this._destinationsModel.get().find((item) => (item.name === cityTargetValue));
 
       if (destinationCity) {
         this.updateData({
