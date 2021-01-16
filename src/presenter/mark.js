@@ -36,16 +36,15 @@ export default class Mark {
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
   }
 
-  init(subject, headerMain, button) {
+  init(subject, button) {
     this._subject = subject;
-    this._headerMain = headerMain;
     this._button = button;
 
     const prevMarkItem = this._markItem;
     const prevMarkForm = this._markForm;
 
     this._markItem = new EventItem(subject, this._button);
-    this._markForm = new FormEvent(subject, this._isNewPoint, this._headerMain, this._offersModel, this._destinationsModel, this._button);
+    this._markForm = new FormEvent(subject, this._isNewPoint, this._offersModel, this._destinationsModel, this._button);
 
     this._markItem.setPointClickHandler(this._handleEditClick);
     this._markForm.setEditSubmitHandler(this._handleFormSubmit);

@@ -4,11 +4,10 @@ import {UserAction, UpdateType} from "../const.js";
 import {BLANK_POINT} from "../view/form-event.js";
 
 export default class PointNew {
-  constructor(pointListContainer, changeData, headerMain, offersModel, destinationsModel, button) {
+  constructor(pointListContainer, changeData, offersModel, destinationsModel, button) {
     this._pointListContainer = pointListContainer;
     this._changeData = changeData;
     this._point = BLANK_POINT;
-    this._headerMain = headerMain;
     this._destinationsModel = destinationsModel;
     this._offersModel = offersModel;
     this._button = button;
@@ -26,7 +25,7 @@ export default class PointNew {
       return;
     }
 
-    this._formComponent = new FormEvent(this._point, this._isNewPoint, this._headerMain, this._offersModel, this._destinationsModel, this._button);
+    this._formComponent = new FormEvent(this._point, this._isNewPoint, this._offersModel, this._destinationsModel, this._button);
     this._formComponent.setEditSubmitHandler(this._handleFormSubmit);
     this._formComponent.setDeleteClickHandler(this._handleDeleteClick);
 

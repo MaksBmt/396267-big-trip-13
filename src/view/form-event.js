@@ -163,11 +163,10 @@ const createFormEvent = (data, isNewPoint, citiesList) => {
 };
 
 export default class FormEvent extends Smart {
-  constructor(point = BLANK_POINT, isNewPoint, headerMain, offersModel, destinationsModel, button) {
+  constructor(point = BLANK_POINT, isNewPoint, offersModel, destinationsModel, button) {
     super();
     this._isNewPoint = isNewPoint;
     this._point = point;
-    this._headerMain = headerMain;
     this._offersModel = offersModel;
     this._destinationsModel = destinationsModel;
     this._button = button;
