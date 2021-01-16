@@ -11,51 +11,26 @@ const makeItemsUniq = (items) => {
 };
 
 const getTypesPriceResult = (items, points) => {
-  let typesPrice = [];
-  let result = 0;
-  items.forEach((item) => {
-    points.forEach((point) => {
-      if (point.type === item.toLowerCase()) {
-        result = result + point.price;
-      }
-    });
-    typesPrice.push(result);
-    result = 0;
-  });
 
-  return typesPrice;
+  return items.map((item) =>
+    points
+      .filter((point) => point.type === item.toLowerCase())
+      .reduce((sum, current) => sum + current.price, 0));
 };
 
 const getTypesResult = (items, points) => {
-  let typesCount = [];
-  let result = 0;
-  items.forEach((item) => {
-    points.forEach((point) => {
-      if (point.type === item.toLowerCase()) {
-        result++;
-      }
-    });
-    typesCount.push(result);
-    result = 0;
-  });
 
-  return typesCount;
+  return items
+    .map((item) => points.filter((point) => point.type === item.toLowerCase()))
+    .map((el) => el.length);
 };
 
 const getTypesTimeResult = (items, points) => {
-  const typesTime = [];
-  let result = 0;
-  items.forEach((item) => {
-    points.forEach((point) => {
-      if (point.type === item.toLowerCase()) {
-        result += point.dateEnd.diff(point.dueDate) / TimeCount.DAY;
-      }
-    });
-    typesTime.push(result.toFixed(1));
-    result = 0;
-  });
 
-  return typesTime;
+  return items.map((item) =>
+    points
+      .filter((point) => point.type === item.toLowerCase())
+      .reduce((sum, current) => sum + (current.dateEnd.diff(current.dueDate) / TimeCount.DAY), 0).toFixed(1));
 };
 
 const renderType = (typeCtx, points) => {

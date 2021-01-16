@@ -75,10 +75,10 @@ const createEventItem = (point) => {
 };
 
 export default class EventItem extends Abstract {
-  constructor(point, headerMain) {
+  constructor(point, button) {
     super();
     this._point = point;
-    this._headerMain = headerMain;
+    this._button = button;
 
     this.itemFavorite = this.getElement().querySelector(`.event__favorite-btn`);
     this._pointClickHandler = this._pointClickHandler.bind(this);
@@ -103,10 +103,7 @@ export default class EventItem extends Abstract {
   _pointClickHandler(evt) {
     evt.preventDefault();
     this._callback.pointClick();
-
-    if (this._headerMain) {
-      this._headerMain.querySelector(`.trip-main__event-add-btn`).disabled = false;
-    }
+    this._button.enableNewPointButton();
   }
 
   _favoriteClickHandler(evt) {

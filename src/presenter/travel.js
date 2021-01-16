@@ -43,7 +43,7 @@ export default class Travel {
 
     this._handleNewPoint = this._handleNewPoint.bind(this);
 
-    this._pointNewPresenter = new PointNewPresenter(this._listComponent, this._handleViewAction, this._headerMain, this._offersModel, this._destinationsModel);
+    this._pointNewPresenter = new PointNewPresenter(this._listComponent, this._handleViewAction, this._headerMain, this._offersModel, this._destinationsModel, this._button);
   }
 
   init() {
@@ -155,7 +155,7 @@ export default class Travel {
 
   _renderPoint(listComponent, subject) {
     const mark = new Mark(listComponent, this._handleViewAction, this._handleModeChange, this._isNewPoint, this._offersModel, this._destinationsModel);
-    mark.init(subject, this._headerMain);
+    mark.init(subject, this._headerMain, this._button);
     this._mark[subject.id] = mark;
   }
 

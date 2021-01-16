@@ -21,6 +21,14 @@ export const BLANK_POINT = {
 
 const generateIdFromName = (sentence) => sentence.toLowerCase().split(` `).join(`_`);
 
+const createListDestination = (cities) => {
+  const citiesList = cities.get();
+  return (`<datalist id="destination-list-1"> 
+   ${citiesList.map((item) => `<option value="${item.name}"></option>`).join(``)}
+    </datalist>`
+  );
+};
+
 const layoutOffers = (offers) => {
   return offers.map((offer) => {
 
@@ -122,7 +130,7 @@ const createFormEvent = (data, isNewPoint, citiesList) => {
               ${type}
             </label>
             <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1" required>
-              ${citiesList.createListDestination()}
+              ${createListDestination(citiesList)}
         </div>
             <div class="event__field-group  event__field-group--time">
               <label class="visually-hidden" for="event-start-time-1">From</label>
@@ -155,13 +163,15 @@ const createFormEvent = (data, isNewPoint, citiesList) => {
 };
 
 export default class FormEvent extends Smart {
-  constructor(point = BLANK_POINT, isNewPoint, headerMain, offersModel, destinationsModel) {
+  constructor(point = BLANK_POINT, isNewPoint, headerMain, offersModel, destinationsModel, button) {
     super();
     this._isNewPoint = isNewPoint;
     this._point = point;
     this._headerMain = headerMain;
     this._offersModel = offersModel;
     this._destinationsModel = destinationsModel;
+    this._button = button;
+
 
     this._data = FormEvent.parsePointToData(this._point);
     this._setStartDatepicker = null;
@@ -182,15 +192,7 @@ export default class FormEvent extends Smart {
 
   removeElement() {
     super.removeElement();
-
-    if (this._setStartDatepicker) {
-      this._setStartDatepicker.destroy();
-      this._setStartDatepicker = null;
-    }
-    if (this._setEndDatepicker) {
-      this._setEndDatepicker.destroy();
-      this._setEndDatepicker = null;
-    }
+    this._destroyDatepicker();
   }
 
   reset(item) {
@@ -227,7 +229,7 @@ export default class FormEvent extends Smart {
     this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._formDeleteClickHandler);
   }
 
-  _setDatepicker() {
+  _destroyDatepicker() {
     if (this._setStartDatepicker) {
       this._setStartDatepicker.destroy();
       this._setStartDatepicker = null;
@@ -236,6 +238,10 @@ export default class FormEvent extends Smart {
       this._setEndDatepicker.destroy();
       this._setEndDatepicker = null;
     }
+  }
+
+  _setDatepicker() {
+    this._destroyDatepicker();
 
     this._setStartDatepicker = flatpickr(this.getInputDateOne(), {
       enableTime: true,
@@ -261,12 +267,6 @@ export default class FormEvent extends Smart {
 
   getInputDateSecond() {
     return this.getElement().querySelector(`.event__input--time[name = event-end-time]`);
-  }
-
-  disabledButtonNew() {
-    if (this._headerMain) {
-      this._headerMain.querySelector(`.trip-main__event-add-btn`).disabled = false;
-    }
   }
 
   _validateCity(cityValue) {
@@ -308,26 +308,26 @@ export default class FormEvent extends Smart {
   _editFormClickHandler(evt) {
     evt.preventDefault();
     this._callback.editFormClick(FormEvent.parseDataToPoint(this._data));
-    this.disabledButtonNew();
+    this._button.enableNewPointButton();
   }
 
   _editFormSubmitHandler(evt) {
     evt.preventDefault();
 
     const itemOffers = this._data.offers;
-    const checkedOffers = [];
     if (itemOffers) {
-      const eventOffers = this.getElement().querySelectorAll(`.event__offer-checkbox`);
-      eventOffers.forEach((offer, i) => {
-        if (offer.checked) {
-          checkedOffers.push(itemOffers[i]);
-          itemOffers[i].isChecked = true;
-        } else {
-          checkedOffers.push(itemOffers[i]);
-          itemOffers[i].isChecked = false;
-        }
-      });
+      this.getElement()
+        .querySelectorAll(`.event__offer-checkbox`)
+        .forEach((offer, i) => {
+          // offer.checked ? itemOffers[i].isChecked = true : itemOffers[i].isChecked = false;
+          if (offer.checked) {
+            itemOffers[i].isChecked = true;
+          } else {
+            itemOffers[i].isChecked = false;
+          }
+        });
     }
+
     this._callback.editFormSubmit(FormEvent.parseDataToPoint(this._data));
   }
 

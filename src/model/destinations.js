@@ -17,12 +17,4 @@ export default class DestinationModel extends Observer {
   getCities() {
     return this.get().map((item) => item.name);
   }
-
-  createListDestination() {
-    const citiesList = this._destinations;
-    return (`<datalist id="destination-list-1"> 
-   ${citiesList.map((item) => `<option value="${item.name}"></option>`).join(``)}
-    </datalist>`
-    );
-  }
 }

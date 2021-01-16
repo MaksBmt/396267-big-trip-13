@@ -55,26 +55,17 @@ const handleSiteMenuClick = (menuItem) => {
 
 siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
 
-const promiseEvent = api.getEvents();
-const promiseOffers = api.getOffers();
-const promiseDestinations = api.getDestinations();
-
-const resolvePromiseEvent = (points) => {
-  pointsModel.set(UpdateType.INIT, points);
-};
-
 Promise
   .all([
-    promiseEvent,
-    promiseOffers,
-    promiseDestinations
+    api.getEvents(),
+    api.getOffers(),
+    api.getDestinations()
   ])
-  .then((response) => {
-    const [points, offers, destinations] = response;
+  .then(([points, offers, destinations]) => {
     destinationsModel.set(destinations);
     offersModel.set(offers);
     travel.init();
-    resolvePromiseEvent(points);
+    pointsModel.set(UpdateType.INIT, points);
   })
   .finally(() => {
     renderElement(headerTitle[0], siteMenuComponent, RenderPosition.AFTEREND);
