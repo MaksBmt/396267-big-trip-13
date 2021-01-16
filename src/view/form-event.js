@@ -318,12 +318,7 @@ export default class FormEvent extends Smart {
       this.getElement()
         .querySelectorAll(`.event__offer-checkbox`)
         .forEach((offer, i) => {
-          // offer.checked ? itemOffers[i].isChecked = true : itemOffers[i].isChecked = false;
-          if (offer.checked) {
-            itemOffers[i].isChecked = true;
-          } else {
-            itemOffers[i].isChecked = false;
-          }
+          itemOffers[i].isChecked = offer.checked;
         });
     }
 

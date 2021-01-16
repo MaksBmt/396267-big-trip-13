@@ -49,7 +49,6 @@ export default class Travel {
   init() {
     this._pointsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
-
     this._renderListContent();
   }
 
