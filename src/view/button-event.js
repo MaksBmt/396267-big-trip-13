@@ -17,11 +17,20 @@ export default class Button extends Abstract {
 
   setNewPointClickHandler(callback) {
     this._callback.buttonClick = callback;
-    document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, this._newPointClickHandler);
+    this.getElement().addEventListener(`click`, this._newPointClickHandler);
+  }
+
+  enableNewPointButton() {
+    this.getElement().disabled = false;
+  }
+
+  _disableNewPointButton() {
+    this.getElement().disabled = true;
   }
 
   _newPointClickHandler(evt) {
     evt.preventDefault();
     this._callback.buttonClick();
+    this._disableNewPointButton();
   }
 }

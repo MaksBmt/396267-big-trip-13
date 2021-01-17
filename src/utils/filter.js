@@ -1,5 +1,5 @@
 import {FilterType} from "../const";
-import {isFuture, isPast} from "../mock/point";
+import {isFuture, isPast} from "./common.js";
 
 export const filter = {
   [FilterType.EVERYTHING]: (points) => points.filter((point) => point),

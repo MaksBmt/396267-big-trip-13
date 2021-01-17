@@ -10,11 +10,19 @@ const Mode = {
   EDITING: `EDITING`
 };
 
+export const State = {
+  SAVING: `SAVING`,
+  DELETING: `DELETING`,
+  ABORTING: `ABORTING`
+};
+
 export default class Mark {
-  constructor(markContainer, changeData, changeMode, isNewPoint) {
+  constructor(markContainer, changeData, changeMode, isNewPoint, offersModel, destinationsModel) {
     this._markContainer = markContainer;
     this._changeData = changeData;
     this._changeMode = changeMode;
+    this._offersModel = offersModel;
+    this._destinationsModel = destinationsModel;
 
     this._markItem = null;
     this._markForm = null;
@@ -28,14 +36,15 @@ export default class Mark {
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
   }
 
-  init(subject) {
+  init(subject, button) {
     this._subject = subject;
+    this._button = button;
 
     const prevMarkItem = this._markItem;
     const prevMarkForm = this._markForm;
 
-    this._markItem = new EventItem(subject);
-    this._markForm = new FormEvent(subject, this._isNewPoint);
+    this._markItem = new EventItem(subject, this._button);
+    this._markForm = new FormEvent(subject, this._isNewPoint, this._offersModel, this._destinationsModel, this._button);
 
     this._markItem.setPointClickHandler(this._handleEditClick);
     this._markForm.setEditSubmitHandler(this._handleFormSubmit);
@@ -53,7 +62,8 @@ export default class Mark {
     }
 
     if (this._mode === Mode.EDITING) {
-      replace(this._markForm, prevMarkForm);
+      replace(this._markItem, prevMarkItem);
+      this._mode = Mode.DEFAULT;
     }
 
     remove(prevMarkItem);
@@ -84,6 +94,36 @@ export default class Mark {
     this._mode = Mode.DEFAULT;
   }
 
+  setViewState(state) {
+    const resetFormState = () => {
+      this._markForm.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false
+      });
+    };
+
+    switch (state) {
+      case State.SAVING:
+        this._markForm.updateData({
+          isDisabled: true,
+          isSaving: true
+        });
+        break;
+      case State.DELETING:
+        this._markForm.updateData({
+          isDisabled: true,
+          isDeleting: true
+        });
+        break;
+      case State.ABORTING:
+        this._markItem.shake(resetFormState);
+        this._markForm.shake(resetFormState);
+        break;
+    }
+  }
+
+
   _onEscKeyDown(evt) {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       evt.preventDefault();
@@ -98,15 +138,14 @@ export default class Mark {
   }
 
   _handleFavoriteClick() {
-    this._changeData(UserAction.UPDATE_TASK, UpdateType.MINOR, Object.assign({}, this._subject, {isFavorite: !this._subject.isFavorite}));
+    this._changeData(UserAction.UPDATE_TASK, UpdateType.PATCH, Object.assign({}, this._subject, {isFavorite: !this._subject.isFavorite}));
   }
 
   _handleFormSubmit(item) {
     this._changeData(UserAction.UPDATE_TASK, UpdateType.MINOR, item);
-    this._replaceFormToCard();
   }
 
   _handleDeleteClick(item) {
-    this._changeData(UserAction.DELETE_TASK, UpdateType.MINOR, item);
+    this._changeData(UserAction.DELETE_TASK, UpdateType.MAJOR, item);
   }
 }

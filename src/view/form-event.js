@@ -1,42 +1,42 @@
-import {CITIES} from "../const.js";
+
 import {TYPES} from "../const.js";
-import {filterOffers, citiesData, generateId} from "../mock/point.js";
 import Smart from "./smart.js";
 import dayjs from "dayjs";
 import flatpickr from "flatpickr";
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
 export const BLANK_POINT = {
-  id: generateId(),
   type: TYPES[0],
   city: ``,
   destination: {
     descriptions: ``,
-    srcImg: ``,
+    srcImg: [],
   },
-  offers: [],
   price: ``,
+  offers: [],
   isFavorite: false,
   dueDate: dayjs(),
   dateEnd: dayjs(),
 };
 
-const createListDestination = () => {
+const generateIdFromName = (sentence) => sentence.toLowerCase().split(` `).join(`_`);
+
+const createListDestination = (cities) => {
+  const citiesList = cities.get();
   return (`<datalist id="destination-list-1"> 
- ${CITIES.map((city) => `<option value="${city}"></option>`).join(``)}
-  </datalist>`
+   ${citiesList.map((item) => `<option value="${item.name}"></option>`).join(``)}
+    </datalist>`
   );
 };
 
-const generateIdFromName = (sentence) => sentence.toLowerCase().split(` `).join(`_`);
-
 const layoutOffers = (offers) => {
   return offers.map((offer) => {
-    const id = generateIdFromName(offer.name);
+
+    const id = generateIdFromName(offer.title);
     return `<div class="event__offer-selector">
          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-1" type="checkbox" name="event-offer-${id}" ${offer.isChecked ? `checked` : ``}>
           <label class="event__offer-label" for="event-offer-${id}-1">
-         <span class="event__offer-title">${offer.name}</span>
+         <span class="event__offer-title">${offer.title}</span>
           &plus;&euro;&nbsp;
           <span class="event__offer-price">${offer.price}</span>
           </label>
@@ -63,7 +63,7 @@ const createItemsType = () => {
 };
 
 const createDestinationPhotos = (srcImg) => {
-  return srcImg.map((foto) => `<img class="event__photo" src = "${foto}" alt = "Event photo">`).join(``);
+  return srcImg.map((foto) => `<img class="event__photo" src = "${foto.src}" alt = "${foto.descriptions}">`).join(``);
 };
 
 const createButtonFormEdit = () => {
@@ -93,9 +93,10 @@ const createDestinationSection = (descriptions, srcImg) => {
            </section>`;
 };
 
-const createFormEvent = (data, isNewPoint) => {
-  const {type, city, price, offers, destination: {descriptions, srcImg}, dueDate, dateEnd, isDueDate
+const createFormEvent = (data, isNewPoint, citiesList) => {
+  const {type, city, price, destination, dueDate, dateEnd, offers, isDisabled, isSaving, isDeleting
   } = data;
+  const {descriptions, srcImg} = destination;
 
   const sectionDestination = hasDestination(city)
     ? createDestinationSection(descriptions, srcImg)
@@ -104,8 +105,6 @@ const createFormEvent = (data, isNewPoint) => {
   const sectionOffers = hasOffers(offers)
     ? createListOffers(offers)
     : ``;
-
-  const isSubmitDisabled = isDueDate && dueDate === null;
 
   return (`<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
@@ -131,7 +130,7 @@ const createFormEvent = (data, isNewPoint) => {
               ${type}
             </label>
             <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1" required>
-              ${createListDestination(CITIES)}
+              ${createListDestination(citiesList)}
         </div>
             <div class="event__field-group  event__field-group--time">
               <label class="visually-hidden" for="event-start-time-1">From</label>
@@ -149,8 +148,8 @@ const createFormEvent = (data, isNewPoint) => {
                   <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${price}" required>
         </div>
 
-                  <button class="event__save-btn  btn  btn--blue" type="submit" ${isSubmitDisabled ? `disabled` : ``}>Save</button>
-                  <button class="event__reset-btn" type="reset">Cancel</button>
+                  <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? `disabled` : ``}>${isSaving ? `Saving...` : `Save`}</button>
+                  <button class="event__reset-btn" type="reset" ${isDisabled ? `disabled` : ``}>${isDeleting ? `Deleting...` : `Delete`}</button>
                   ${isNewPoint ? `` : createButtonFormEdit()}
      </header>
                 <section class="event__details">
@@ -164,13 +163,18 @@ const createFormEvent = (data, isNewPoint) => {
 };
 
 export default class FormEvent extends Smart {
-  constructor(point = BLANK_POINT, isNewPoint) {
+  constructor(point = BLANK_POINT, isNewPoint, offersModel, destinationsModel, button) {
     super();
     this._isNewPoint = isNewPoint;
-    this._startDatepicker = null;
-    this._endDatepicker = null;
+    this._point = point;
+    this._offersModel = offersModel;
+    this._destinationsModel = destinationsModel;
+    this._button = button;
 
-    this._data = FormEvent.parsePointToData(point);
+
+    this._data = FormEvent.parsePointToData(this._point);
+    this._setStartDatepicker = null;
+    this._setEndDatepicker = null;
 
     this._editFormClickHandler = this._editFormClickHandler.bind(this);
     this._editFormSubmitHandler = this._editFormSubmitHandler.bind(this);
@@ -185,16 +189,22 @@ export default class FormEvent extends Smart {
     this._setDatepicker();
   }
 
+  removeElement() {
+    super.removeElement();
+    this._destroyDatepicker();
+  }
+
   reset(item) {
     this.updateData(FormEvent.parsePointToData(item));
   }
 
   getTemplate() {
-    return createFormEvent(this._data, this._isNewPoint);
+    return createFormEvent(this._data, this._isNewPoint, this._destinationsModel);
   }
 
   restoreHandlers() {
     this._setInnerHandlers();
+    this._setDatepicker();
     this.setEditSubmitHandler(this._callback.editFormSubmit);
     this.setEditClickHandler(this._callback.editFormClick);
     this.setDeleteClickHandler(this._callback.deleteClick);
@@ -218,29 +228,45 @@ export default class FormEvent extends Smart {
     this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._formDeleteClickHandler);
   }
 
-  _setDatepicker(datepicker, selector, dataDatepicker, handler) {
-    if (datepicker) {
-      datepicker.destroy();
-      datepicker = null;
+  _destroyDatepicker() {
+    if (this._setStartDatepicker) {
+      this._setStartDatepicker.destroy();
+      this._setStartDatepicker = null;
     }
-
-    if (dataDatepicker) {
-      datepicker = flatpickr(this.getElement().querySelector(selector), {
-        dateFormat: `d/m/y H:i`,
-        enableTime: true,
-        onChange: handler
-      });
+    if (this._setEndDatepicker) {
+      this._setEndDatepicker.destroy();
+      this._setEndDatepicker = null;
     }
   }
 
-  _setStartDatepicker() {
-    this._setDatepicker(this._startDatepicker, `.event__input--time[name = event-start-time]`, this._data.dueDate, this._startDateChangeHandler);
+  _setDatepicker() {
+    this._destroyDatepicker();
+
+    this._setStartDatepicker = flatpickr(this.getInputDateOne(), {
+      enableTime: true,
+      dateFormat: `d/m/y H:i`,
+      dateDefault: this._data.dueDate,
+      defaultDate: `${this._data.dueDate}`,
+      onChange: this._startDateChangeHandler
+    });
+
+    this._setEndDatepicker = flatpickr(this.getInputDateSecond(), {
+      enableTime: true,
+      dateFormat: `d/m/y H:i`,
+      minDate: `${this._data.dueDate}`,
+      dateDefault: this._data.dateEnd,
+      defaultDate: `${this._data.dateEnd}`,
+      onChange: this._endDateChangeHandler
+    });
   }
 
-  _setEndDatepicker() {
-    this._setDatepicker(this._endDatepicker, `.event__input--time[name = event-end-time]`, this._data.dateEnd, this._endDateChangeHandler);
+  getInputDateOne() {
+    return this.getElement().querySelector(`.event__input--time[name = event-start-time]`);
   }
 
+  getInputDateSecond() {
+    return this.getElement().querySelector(`.event__input--time[name = event-end-time]`);
+  }
 
   _validateCity(cityValue) {
     if (cityValue.match(/[a-z]/ig) === null) {
@@ -251,11 +277,19 @@ export default class FormEvent extends Smart {
       return `Чувак, надо писать город, а не номер телефона соседки!`;
     }
 
-    if (!CITIES.includes(cityValue)) {
+    if (!this._destinationsModel.getCities().includes(cityValue)) {
       return `Лучше выбрать из списка - доберешься быстрее`;
     }
 
     return ``;
+  }
+
+  _validatePrice(priceValue) {
+    return (priceValue <= 0) ? `Число должно быть больше нуля` : ``;
+  }
+
+  _validateDate(dateValue) {
+    return (dateValue <= 0) ? `Машины времени пока нет - конечная дата должна быть больше начальной` : ``;
   }
 
   _setInnerHandlers() {
@@ -268,27 +302,36 @@ export default class FormEvent extends Smart {
     this.getElement()
       .querySelector(`.event__input--price`)
       .addEventListener(`input`, this._priceInputHandler);
-
-    this._setStartDatepicker();
-    this._setEndDatepicker();
   }
 
   _editFormClickHandler(evt) {
     evt.preventDefault();
     this._callback.editFormClick(FormEvent.parseDataToPoint(this._data));
+    this._button.enableNewPointButton();
   }
 
   _editFormSubmitHandler(evt) {
     evt.preventDefault();
+
+    const itemOffers = this._data.offers;
+    if (itemOffers) {
+      this.getElement()
+        .querySelectorAll(`.event__offer-checkbox`)
+        .forEach((offer, i) => {
+          itemOffers[i].isChecked = offer.checked;
+        });
+    }
+
     this._callback.editFormSubmit(FormEvent.parseDataToPoint(this._data));
   }
 
   _typeChangeClickHandler(evt) {
     evt.preventDefault();
     const typeUpdate = this.getElement().querySelector(`.event__type-output`).textContent = this.getElement().querySelector(`#${evt.target.htmlFor}`).value;
+
     this.updateData({
       type: typeUpdate,
-      offers: filterOffers(typeUpdate),
+      offers: this._offersModel.filter(typeUpdate),
     });
   }
 
@@ -296,20 +339,20 @@ export default class FormEvent extends Smart {
     evt.preventDefault();
 
     const cityTargetValue = evt.target.value.trim();
-    const validationMessage = this._validateCity(cityTargetValue);
+    const validationMessageCity = this._validateCity(cityTargetValue);
 
-    evt.target.setCustomValidity(validationMessage);
+    evt.target.setCustomValidity(validationMessageCity);
 
-    if (validationMessage === ``) {
-      const destinationCity = citiesData.find((item) => (item.name === cityTargetValue));
+    if (validationMessageCity === ``) {
+      const destinationCity = this._destinationsModel.get().find((item) => (item.name === cityTargetValue));
 
       if (destinationCity) {
         this.updateData({
           city: destinationCity.name,
           destination: {
             descriptions: destinationCity.description,
-            srcImg: destinationCity.photos,
-          },
+            srcImg: destinationCity.pictures,
+          }
         });
       }
     }
@@ -320,23 +363,42 @@ export default class FormEvent extends Smart {
   _priceInputHandler(evt) {
     evt.preventDefault();
 
-    this.updateData({
-      price: evt.target.value,
-    }, true);
+    const priceTargetValue = +evt.target.value.trim();
+    const validationMessagePrice = this._validatePrice(priceTargetValue);
+    evt.target.setCustomValidity(validationMessagePrice);
+
+    if (validationMessagePrice === ``) {
+      this.updateData({
+        price: priceTargetValue
+      }, true);
+    }
+    evt.target.reportValidity();
   }
 
 
   _startDateChangeHandler([userDate]) {
-    this.updateData({
-      dueDate: dayjs(userDate)
+    const inputDateOne = this.getInputDateOne();
+    inputDateOne.readOnly = false;
+    inputDateOne.addEventListener(`input`, () => {
+      const differenceDate = this._data.dateEnd.diff(this._data.dueDate);
+      const validationMessageDate = this._validateDate(differenceDate);
+      this.getInputDateOne().setCustomValidity(validationMessageDate);
+      if (validationMessageDate === ``) {
+        this.updateData({
+          dueDate: dayjs(userDate)
+        }, true);
+      }
     });
+
+    this.getInputDateOne().reportValidity();
   }
 
   _endDateChangeHandler([userDate]) {
     this.updateData({
       dateEnd: dayjs(userDate)
-    });
+    }, true);
   }
+
 
   _formDeleteClickHandler(evt) {
     evt.preventDefault();
@@ -344,29 +406,20 @@ export default class FormEvent extends Smart {
   }
 
   static parsePointToData(point) {
-    point = Object.assign({}, point, {
-      type: point.type,
-      offers: point.offers,
-      city: point.city,
-      descriptions: point.destination.descriptions,
-      srcImg: point.destination.srcImg,
-      price: point.price,
-      dueDate: point.dueDate,
-      dateEnd: point.dateEnd,
-      isDueDate: point.dueDate !== null,
-    });
 
-    return point;
+    return Object.assign({}, point, {
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false
+    });
   }
 
   static parseDataToPoint(data) {
     data = Object.assign({}, data);
 
-    if (!data.isDueDate) {
-      data.dueDate = null;
-    }
-
-    delete data.isDueDate;
+    delete data.isDisabled;
+    delete data.isSaving;
+    delete data.isDeleting;
 
     return data;
   }

@@ -1,22 +1,38 @@
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import Abstract from "./abstract.js";
+import {TimeCount} from "../const.js";
 
 dayjs.extend(utc);
 
+const transformFormatTime = (dueDate, dateEnd) => {
+  const intervalDate = dateEnd.diff(dueDate);
+  const hoursInterval = (dayjs(new Date(intervalDate))).utc();
+
+  let resultIntervalFormat = null;
+  if (intervalDate < TimeCount.HOUR) {
+    resultIntervalFormat = hoursInterval.format(`mm[M]`);
+  } else if (intervalDate >= TimeCount.HOUR && intervalDate < TimeCount.DAY) {
+    resultIntervalFormat = hoursInterval.format(`HH[H] mm[M]`);
+  } else {
+    resultIntervalFormat = hoursInterval.format(`DD[D] HH[H] mm[M]`);
+  }
+
+  return resultIntervalFormat;
+};
+
 const createResultOffers = (offers) => {
   return offers.map((offer) => `<li  class= "event__offer" > 
-    <span class="event__offer-title">${offer.name}</span>
+    <span class="event__offer-title">${offer.title}</span>
     &plus;&euro;&nbsp;
   <span class="event__offer-price">${offer.price}</span>
 </li>`).join(``);
 };
 
-const createEventItem = ({type, city, price, isFavorite, dueDate, offers, dateEnd}) => {
-  const intervalDate = dateEnd.diff(dueDate);
+const createEventItem = (point) => {
+  const {type, city, price, isFavorite, dueDate, offers, dateEnd} = point;
 
-  const hoursInterval = dayjs(new Date(intervalDate));
-  const resultIntervalFormat = hoursInterval.utc().format(`H[H] mm[M]`);
+  const resultTransfomationTime = transformFormatTime(dueDate, dateEnd);
 
   const favoriteClassName = isFavorite
     ? `event__favorite-btn  event__favorite-btn--active`
@@ -35,7 +51,7 @@ const createEventItem = ({type, city, price, isFavorite, dueDate, offers, dateEn
                     &mdash;
                     <time class="event__end-time" datetime="${dateEnd.format(`YYYY-MM-DDTHH:mm`)}">${dateEnd.format(`HH:mm`)}</time>
           </p>
-          <p class="event__duration">${resultIntervalFormat}</p>
+          <p class="event__duration">${resultTransfomationTime}</p>
         </div>
         <p class="event__price">
           &euro;&nbsp;<span class="event__price-value">${price}</span>
@@ -59,13 +75,14 @@ const createEventItem = ({type, city, price, isFavorite, dueDate, offers, dateEn
 };
 
 export default class EventItem extends Abstract {
-  constructor(point) {
+  constructor(point, button) {
     super();
     this._point = point;
-    this.itemFavorite = this.getElement().querySelector(`.event__favorite-btn`);
+    this._button = button;
 
+    this.itemFavorite = this.getElement().querySelector(`.event__favorite-btn`);
     this._pointClickHandler = this._pointClickHandler.bind(this);
-    this._favoriteClickHadler = this._favoriteClickHadler.bind(this);
+    this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
   }
 
   getTemplate() {
@@ -80,15 +97,16 @@ export default class EventItem extends Abstract {
 
   setFavoriteClickHandler(callback) {
     this._callback.favoriteClick = callback;
-    this.itemFavorite.addEventListener(`click`, this._favoriteClickHadler);
+    this.itemFavorite.addEventListener(`click`, this._favoriteClickHandler);
   }
 
   _pointClickHandler(evt) {
     evt.preventDefault();
     this._callback.pointClick();
+    this._button.enableNewPointButton();
   }
 
-  _favoriteClickHadler(evt) {
+  _favoriteClickHandler(evt) {
     evt.preventDefault();
     this._callback.favoriteClick();
   }
