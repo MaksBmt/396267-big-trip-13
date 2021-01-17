@@ -4,6 +4,8 @@ import {renderElement} from "../utils/render.js";
 import {RenderPosition} from "../utils/render.js";
 import {replace, remove} from "../utils/render.js";
 import {UserAction, UpdateType} from "../const.js";
+import {isOnline} from "../utils/common.js";
+import {toast} from "../utils/toast/toast.js";
 
 const Mode = {
   DEFAULT: `DEFAULT`,
@@ -134,6 +136,11 @@ export default class Mark {
   }
 
   _handleEditClick() {
+    if (!isOnline()) {
+      toast(`You can't edit task offline`);
+      return;
+    }
+
     this._replaceCardToForm();
   }
 
@@ -142,10 +149,20 @@ export default class Mark {
   }
 
   _handleFormSubmit(item) {
+    if (!isOnline()) {
+      toast(`You can't save task offline`);
+      return;
+    }
+
     this._changeData(UserAction.UPDATE_TASK, UpdateType.MINOR, item);
   }
 
   _handleDeleteClick(item) {
+    if (!isOnline()) {
+      toast(`You can't delete task offline`);
+      return;
+    }
+
     this._changeData(UserAction.DELETE_TASK, UpdateType.MAJOR, item);
   }
 }

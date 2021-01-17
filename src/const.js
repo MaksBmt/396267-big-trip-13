@@ -45,3 +45,8 @@ export const TimeCount = {
   HOUR: 3600000,
   DAY: 86400000,
 };
+
+export const StoreOption = {
+  OFFERS: `offers`,
+  DESTINATIONS: `destinations`
+};
