@@ -22,7 +22,7 @@ const getTypesResult = (items, points) => {
 
   return items
     .map((item) => points.filter((point) => point.type === item.toLowerCase()))
-    .map((el) => el.length);
+    .map((subject) => subject.length);
 };
 
 const getTypesTimeResult = (items, points) => {

@@ -5,7 +5,7 @@ import Loading from "../view/loading.js";
 import Information from "../view/information.js";
 import PriceTotal from "../view/price-total.js";
 import Mark, {State as MarkViewState} from "./mark.js";
-import Button from "../view/button-event.js";
+import Button from "../view/button-new-point.js";
 import PointNewPresenter from "./point-new.js";
 import {renderElement} from "../utils/render.js";
 import {RenderPosition, remove} from "../utils/render.js";
@@ -31,7 +31,7 @@ export default class Travel {
 
     this._listComponent = new EventList();
     this._noComponent = new NoPoint();
-    this._button = new Button();
+    this._buttonNewPoint = new Button();
     this._loadingComponent = new Loading();
 
     this._headerMain = headerMain;
@@ -43,7 +43,7 @@ export default class Travel {
 
     this._handleNewPoint = this._handleNewPoint.bind(this);
 
-    this._pointNewPresenter = new PointNewPresenter(this._listComponent, this._handleViewAction, this._offersModel, this._destinationsModel, this._button);
+    this._pointNewPresenter = new PointNewPresenter(this._listComponent, this._handleViewAction, this._offersModel, this._destinationsModel, this._buttonNewPoint);
   }
 
   init() {
@@ -154,7 +154,7 @@ export default class Travel {
 
   _renderPoint(listComponent, subject) {
     const mark = new Mark(listComponent, this._handleViewAction, this._handleModeChange, this._isNewPoint, this._offersModel, this._destinationsModel);
-    mark.init(subject, this._button);
+    mark.init(subject, this._buttonNewPoint);
     this._mark[subject.id] = mark;
   }
 
@@ -198,8 +198,8 @@ export default class Travel {
       return;
     }
 
-    renderElement(this._headerMain, this._button, RenderPosition.BEFOREEND);
-    this._button.setNewPointClickHandler(this._handleNewPoint);
+    renderElement(this._headerMain, this._buttonNewPoint, RenderPosition.BEFOREEND);
+    this._buttonNewPoint.setNewPointClickHandler(this._handleNewPoint);
 
     if (pointCount !== 0) {
       this._renderInformationCity(points);

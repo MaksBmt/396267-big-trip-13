@@ -24,7 +24,7 @@ const generateIdFromName = (sentence) => sentence.toLowerCase().split(` `).join(
 const createListDestination = (cities) => {
   const citiesList = cities.get();
   return (`<datalist id="destination-list-1"> 
-   ${citiesList.map((item) => `<option value="${item.name}"></option>`).join(``)}
+   ${citiesList.map(({name}) => `<option value="${name}"></option>`).join(``)}
     </datalist>`
   );
 };
@@ -63,7 +63,7 @@ const createItemsType = () => {
 };
 
 const createDestinationPhotos = (srcImg) => {
-  return srcImg.map((foto) => `<img class="event__photo" src = "${foto.src}" alt = "${foto.descriptions}">`).join(``);
+  return srcImg.map(({src, descriptions}) => `<img class="event__photo" src = "${src}" alt = "${descriptions}">`).join(``);
 };
 
 const createButtonFormEdit = () => {
@@ -169,12 +169,12 @@ export default class FormEvent extends Smart {
     this._point = point;
     this._offersModel = offersModel;
     this._destinationsModel = destinationsModel;
-    this._button = button;
+    this._buttonNewPoint = button;
 
 
     this._data = FormEvent.parsePointToData(this._point);
-    this._setStartDatepicker = null;
-    this._setEndDatepicker = null;
+    this._startDatepicker = null;
+    this._endDatepicker = null;
 
     this._editFormClickHandler = this._editFormClickHandler.bind(this);
     this._editFormSubmitHandler = this._editFormSubmitHandler.bind(this);
@@ -229,20 +229,20 @@ export default class FormEvent extends Smart {
   }
 
   _destroyDatepicker() {
-    if (this._setStartDatepicker) {
-      this._setStartDatepicker.destroy();
-      this._setStartDatepicker = null;
+    if (this._startDatepicker) {
+      this._startDatepicker.destroy();
+      this._startDatepicker = null;
     }
-    if (this._setEndDatepicker) {
-      this._setEndDatepicker.destroy();
-      this._setEndDatepicker = null;
+    if (this._endDatepicker) {
+      this._endDatepicker.destroy();
+      this._endDatepicker = null;
     }
   }
 
   _setDatepicker() {
     this._destroyDatepicker();
 
-    this._setStartDatepicker = flatpickr(this.getInputDateOne(), {
+    this._startDatepicker = flatpickr(this._getInputDateStart(), {
       enableTime: true,
       dateFormat: `d/m/y H:i`,
       dateDefault: this._data.dueDate,
@@ -250,7 +250,7 @@ export default class FormEvent extends Smart {
       onChange: this._startDateChangeHandler
     });
 
-    this._setEndDatepicker = flatpickr(this.getInputDateSecond(), {
+    this._endDatepicker = flatpickr(this._getInputDateEnd(), {
       enableTime: true,
       dateFormat: `d/m/y H:i`,
       minDate: `${this._data.dueDate}`,
@@ -260,11 +260,11 @@ export default class FormEvent extends Smart {
     });
   }
 
-  getInputDateOne() {
+  _getInputDateStart() {
     return this.getElement().querySelector(`.event__input--time[name = event-start-time]`);
   }
 
-  getInputDateSecond() {
+  _getInputDateEnd() {
     return this.getElement().querySelector(`.event__input--time[name = event-end-time]`);
   }
 
@@ -307,7 +307,7 @@ export default class FormEvent extends Smart {
   _editFormClickHandler(evt) {
     evt.preventDefault();
     this._callback.editFormClick(FormEvent.parseDataToPoint(this._data));
-    this._button.enableNewPointButton();
+    this._buttonNewPoint.enable();
   }
 
   _editFormSubmitHandler(evt) {
@@ -331,7 +331,7 @@ export default class FormEvent extends Smart {
 
     this.updateData({
       type: typeUpdate,
-      offers: this._offersModel.filter(typeUpdate),
+      offers: this._offersModel.filterByType(typeUpdate),
     });
   }
 
@@ -377,12 +377,12 @@ export default class FormEvent extends Smart {
 
 
   _startDateChangeHandler([userDate]) {
-    const inputDateOne = this.getInputDateOne();
+    const inputDateOne = this._getInputDateStart();
     inputDateOne.readOnly = false;
     inputDateOne.addEventListener(`input`, () => {
       const differenceDate = this._data.dateEnd.diff(this._data.dueDate);
       const validationMessageDate = this._validateDate(differenceDate);
-      this.getInputDateOne().setCustomValidity(validationMessageDate);
+      this._getInputDateStart().setCustomValidity(validationMessageDate);
       if (validationMessageDate === ``) {
         this.updateData({
           dueDate: dayjs(userDate)
@@ -390,7 +390,7 @@ export default class FormEvent extends Smart {
       }
     });
 
-    this.getInputDateOne().reportValidity();
+    this._getInputDateStart().reportValidity();
   }
 
   _endDateChangeHandler([userDate]) {

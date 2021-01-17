@@ -22,14 +22,11 @@ export default class HeaderMenu extends Abstract {
   setMenuClickHandler(callback) {
     this._callback.menuClick = callback;
 
-    this.getElement().querySelectorAll(`.trip-tabs__btn`)
-      .forEach((button) => button.addEventListener(`click`, this._menuClickHandler));
+    this._getTabs().forEach((button) => button.addEventListener(`click`, this._menuClickHandler));
   }
 
   setMenuItem(menuItem) {
-    this.getElement()
-      .querySelectorAll(`.trip-tabs__btn`)
-      .forEach((button) => button.classList.remove(`trip-tabs__btn--active`));
+    this._getTabs().forEach((button) => button.classList.remove(`trip-tabs__btn--active`));
 
     const item = this.getElement().querySelector(`[data-value=${menuItem}]`);
 
@@ -42,5 +39,9 @@ export default class HeaderMenu extends Abstract {
     evt.preventDefault();
     this._callback.menuClick(evt.target.dataset.value);
     this.setMenuItem(evt.target.dataset.value);
+  }
+
+  _getTabs() {
+    return this.getElement().querySelectorAll(`.trip-tabs__btn`);
   }
 }

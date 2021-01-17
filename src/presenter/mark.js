@@ -38,13 +38,13 @@ export default class Mark {
 
   init(subject, button) {
     this._subject = subject;
-    this._button = button;
+    this._buttonNewPoint = button;
 
     const prevMarkItem = this._markItem;
     const prevMarkForm = this._markForm;
 
-    this._markItem = new EventItem(subject, this._button);
-    this._markForm = new FormEvent(subject, this._isNewPoint, this._offersModel, this._destinationsModel, this._button);
+    this._markItem = new EventItem(subject, this._buttonNewPoint);
+    this._markForm = new FormEvent(subject, this._isNewPoint, this._offersModel, this._destinationsModel, this._buttonNewPoint);
 
     this._markItem.setPointClickHandler(this._handleEditClick);
     this._markForm.setEditSubmitHandler(this._handleFormSubmit);
