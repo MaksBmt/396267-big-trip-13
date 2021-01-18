@@ -72,7 +72,7 @@ siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
 
 Promise
   .all([
-    apiWithProvider.get(),
+    apiWithProvider.getEvents(),
     apiWithProvider.getOffers(),
     apiWithProvider.getDestinations()
   ])

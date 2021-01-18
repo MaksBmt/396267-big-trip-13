@@ -12,25 +12,35 @@ const makeItemsUniq = (items) => {
 
 const getTypesPriceResult = (items, points) => {
 
-  return items.map((item) =>
-    points
-      .filter((point) => point.type === item.toLowerCase())
-      .reduce((sum, current) => sum + current.price, 0));
+  return items
+    .map((item) => {
+      const lowerItem = item.toLowerCase();
+      return points
+        .filter((type) => type === lowerItem)
+        .reduce((sum, current) => sum + current.price, 0);
+    });
 };
 
 const getTypesResult = (items, points) => {
 
   return items
-    .map((item) => points.filter((point) => point.type === item.toLowerCase()))
+    .map((item) => {
+      const lowerItem = item.toLowerCase();
+      return points.filter((point) => point.type === lowerItem);
+    })
     .map((subject) => subject.length);
 };
 
 const getTypesTimeResult = (items, points) => {
 
-  return items.map((item) =>
-    points
-      .filter((point) => point.type === item.toLowerCase())
-      .reduce((sum, current) => sum + (current.dateEnd.diff(current.dueDate) / TimeCount.DAY), 0).toFixed(1));
+  return items
+    .map((item) => {
+      const lowerItem = item.toLowerCase();
+      return points
+        .filter((point) => point.type === lowerItem)
+        .reduce((sum, current) => sum + (current.dateEnd.diff(current.dueDate) / TimeCount.DAY), 0).toFixed(1);
+    });
+
 };
 
 const renderType = (typeCtx, points) => {

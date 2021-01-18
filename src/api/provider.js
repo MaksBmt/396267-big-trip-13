@@ -21,7 +21,7 @@ export default class Provider {
     this._store = store;
   }
 
-  get() {
+  getEvents() {
     if (isOnline()) {
       return this._api.getEvents()
         .then((points) => {
@@ -66,7 +66,7 @@ export default class Provider {
     return Promise.resolve(storeDestinations);
   }
 
-  update(point) {
+  updateEvent(point) {
     if (isOnline()) {
       return this._api.updateEvent(point)
         .then((updatedPoint) => {
@@ -81,7 +81,7 @@ export default class Provider {
     return Promise.resolve(point);
   }
 
-  add(point) {
+  addEvent(point) {
     if (isOnline()) {
       return this._api.addTask(point)
         .then((newPoint) => {
