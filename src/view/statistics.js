@@ -16,7 +16,7 @@ const getTypesPriceResult = (items, points) => {
     .map((item) => {
       const lowerItem = item.toLowerCase();
       return points
-        .filter((type) => type === lowerItem)
+        .filter((point) => point.type === lowerItem)
         .reduce((sum, current) => sum + current.price, 0);
     });
 };

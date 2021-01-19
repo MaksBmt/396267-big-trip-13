@@ -4,13 +4,13 @@ import {UserAction, UpdateType} from "../const.js";
 import {BLANK_POINT} from "../view/form-event.js";
 
 export default class PointNew {
-  constructor(pointListContainer, changeData, offersModel, destinationsModel, button) {
+  constructor(pointListContainer, changeData, offersModel, destinationsModel, buttonNewPoint) {
     this._pointListContainer = pointListContainer;
     this._changeData = changeData;
     this._point = BLANK_POINT;
     this._destinationsModel = destinationsModel;
     this._offersModel = offersModel;
-    this._buttonNewPoint = button;
+    this._buttonNewPoint = buttonNewPoint;
 
     this._formComponent = null;
     this._isNewPoint = true;

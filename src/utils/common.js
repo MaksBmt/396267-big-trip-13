@@ -10,8 +10,5 @@ export const isFuture = (dueDate) => +dayjs(dueDate) > +dayjs();
 
 export const isPast = (dateEnd) => +dayjs(dateEnd) < +dayjs();
 
-export const isOnline = () => {
-  return window.navigator.onLine;
-};
-
+export const isOnline = () => window.navigator.onLine;
 

@@ -12,6 +12,7 @@ import {RenderPosition, remove} from "../utils/render.js";
 import {priceSortPoints, intervalSortPoints, defaultSortPoints} from "../utils/common.js";
 import {filter} from "../utils/filter.js";
 import {SortType, UpdateType, UserAction, FilterType} from "../const.js";
+import dayjs from "dayjs";
 
 export default class Travel {
   constructor(containerContent, pointsModel, filterModel, api, offersModel, destinationsModel, headerMain) {
@@ -98,6 +99,22 @@ export default class Travel {
     return points.map((point) => point.city);
   }
 
+  _getEndDate() {
+
+    return this._pointsModel.get()
+      .map((point) => point.dateEnd)
+      .sort((pointA, pointB) => +dayjs(pointA) - +dayjs(pointB))
+      .pop();
+  }
+
+  _getStartDate() {
+
+    return this._pointsModel.get()
+      .map((point) => point.dueDate)
+      .sort((pointA, pointB) => +dayjs(pointA) - +dayjs(pointB))
+      .shift();
+  }
+
   _getPoints() {
     const filterType = this._filterModel.get();
     const points = this._pointsModel.get();
@@ -119,7 +136,7 @@ export default class Travel {
       this._informationCityComponent = null;
     }
 
-    this._informationCityComponent = new Information(this._getInformationCity(points));
+    this._informationCityComponent = new Information(this._getInformationCity(points), this._getEndDate(), this._getStartDate());
     renderElement(this._headerMain, this._informationCityComponent, RenderPosition.AFTERBEGIN);
   }
 

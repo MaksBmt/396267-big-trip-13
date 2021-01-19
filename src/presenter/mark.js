@@ -38,9 +38,9 @@ export default class Mark {
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
   }
 
-  init(subject, button) {
+  init(subject, buttonNewPoint) {
     this._subject = subject;
-    this._buttonNewPoint = button;
+    this._buttonNewPoint = buttonNewPoint;
 
     const prevMarkItem = this._markItem;
     const prevMarkForm = this._markForm;
@@ -144,8 +144,9 @@ export default class Mark {
     this._replaceCardToForm();
   }
 
+
   _handleFavoriteClick() {
-    this._changeData(UserAction.UPDATE_TASK, UpdateType.PATCH, Object.assign({}, this._subject, {isFavorite: !this._subject.isFavorite}));
+    this._changeData(UserAction.UPDATE_TASK, UpdateType.MINOR, Object.assign({}, this._subject, {isFavorite: !this._subject.isFavorite}));
   }
 
   _handleFormSubmit(item) {
