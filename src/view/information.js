@@ -1,4 +1,8 @@
 import Abstract from "./abstract.js";
+import utc from "dayjs/plugin/utc";
+import dayjs from "dayjs";
+
+dayjs.extend(utc);
 
 
 const correctsListCities = (cities) => {
@@ -18,7 +22,7 @@ const createInformationTemplate = (informationCity, dateFinish, dateStart) => {
   return (`<section class="trip-main__trip-info  trip-info">
     <div class="trip-info__main">
       <h1 class="trip-info__title">${infoCity}</h1>
-      <p class="trip-info__dates">${dateStart.format(`MMM D`)}&nbsp;&mdash;&nbsp; ${dateFinish.format(`MMM D`)}</p >
+      <p class="trip-info__dates">${dateStart.utc().format(`MMM D`)}&nbsp;&mdash;&nbsp; ${dateFinish.utc().format(`MMM D`)}</p >
     </div >
   </section>
   `);
