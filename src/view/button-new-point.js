@@ -24,13 +24,13 @@ export default class ButtonNewPoint extends Abstract {
     this.getElement().disabled = false;
   }
 
-  _disable() {
+  disable() {
     this.getElement().disabled = true;
   }
 
   _newPointClickHandler(evt) {
     evt.preventDefault();
     this._callback.buttonClick();
-    this._disable();
+    this.disable();
   }
 }

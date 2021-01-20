@@ -32,6 +32,7 @@ export default class Mark {
     this._isNewPoint = isNewPoint;
 
     this._handleEditClick = this._handleEditClick.bind(this);
+    this._handleEditCFormClick = this._handleEditCFormClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._handleDeleteClick = this._handleDeleteClick.bind(this);
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
@@ -50,7 +51,7 @@ export default class Mark {
 
     this._markItem.setPointClickHandler(this._handleEditClick);
     this._markForm.setEditSubmitHandler(this._handleFormSubmit);
-    this._markForm.setEditClickHandler(this._handleFormSubmit);
+    this._markForm.setEditClickHandler(this._handleEditCFormClick);
     this._markForm.setDeleteClickHandler(this._handleDeleteClick);
     this._markItem.setFavoriteClickHandler(this._handleFavoriteClick);
 
@@ -138,15 +139,21 @@ export default class Mark {
   _handleEditClick() {
     if (!isOnline()) {
       toast(`You can't edit task offline`);
+      this._buttonNewPoint.disable();
+
       return;
     }
-
+    this._buttonNewPoint.enable();
     this._replaceCardToForm();
   }
 
+  _handleEditCFormClick() {
+    this._markForm.reset(this._subject);
+    this._replaceFormToCard();
+  }
 
   _handleFavoriteClick() {
-    this._changeData(UserAction.UPDATE_TASK, UpdateType.MINOR, Object.assign({}, this._subject, {isFavorite: !this._subject.isFavorite}));
+    this._changeData(UserAction.UPDATE_TASK, UpdateType.PATCH, Object.assign({}, this._subject, {isFavorite: !this._subject.isFavorite}));
   }
 
   _handleFormSubmit(item) {

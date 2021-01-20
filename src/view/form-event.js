@@ -171,7 +171,6 @@ export default class FormEvent extends Smart {
     this._destinationsModel = destinationsModel;
     this._buttonNewPoint = buttonNewPoint;
 
-
     this._data = FormEvent.parsePointToData(this._point);
     this._startDatepicker = null;
     this._endDatepicker = null;

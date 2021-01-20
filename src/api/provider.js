@@ -83,7 +83,7 @@ export default class Provider {
 
   addEvent(point) {
     if (isOnline()) {
-      return this._api.addTask(point)
+      return this._api.addEvent(point)
         .then((newPoint) => {
           this._store.setItem(newPoint.id, PointsModel.adaptToServer(newPoint));
 
@@ -92,6 +92,15 @@ export default class Provider {
     }
 
     return Promise.reject(new Error(`Add task failed`));
+  }
+
+  deleteEvent(point) {
+    if (isOnline()) {
+      return this._api.deleteEvent(point)
+        .then(() => this._store.removeItem(point.id));
+    }
+
+    return Promise.reject(new Error(`Delete task failed`));
   }
 
   sync() {

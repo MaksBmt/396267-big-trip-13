@@ -209,14 +209,19 @@ export default class Travel {
     const points = this._getPoints();
     const pointCount = points.length;
 
+    renderElement(this._headerMain, this._buttonNewPoint, RenderPosition.BEFOREEND);
+    this._buttonNewPoint.setNewPointClickHandler(this._handleNewPoint);
+
     if (pointCount === 0) {
       this._renderNoPoint();
 
       return;
     }
 
-    renderElement(this._headerMain, this._buttonNewPoint, RenderPosition.BEFOREEND);
-    this._buttonNewPoint.setNewPointClickHandler(this._handleNewPoint);
+    window.addEventListener(`offline`, () => {
+      document.title += ` [offline]`;
+      this._buttonNewPoint.disable();
+    });
 
     if (pointCount !== 0) {
       this._renderInformationCity(points);

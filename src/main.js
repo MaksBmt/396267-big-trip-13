@@ -12,12 +12,10 @@ import FilterModel from "./model/filter.js";
 import {MenuItem} from "./const.js";
 import StatisticsView from "./view/statistics.js";
 import Api from "./api/api.js";
-import {isOnline} from "./utils/common.js";
 import Store from "./api/store.js";
 import Provider from "./api/provider.js";
-import {toast} from "./utils/toast/toast.js";
 
-const AUTHORIZATION = `Basic **SlvMY$68`;
+const AUTHORIZATION = `Basic **SlvMY$684`;
 const END_POINT = `https://13.ecmascript.pages.academy/big-trip/`;
 const STORE_PREFIX = `bigtrip-localstorage`;
 const STORE_VER = `v13`;
@@ -55,12 +53,6 @@ const handleSiteMenuClick = (menuItem) => {
       break;
     case MenuItem.STATS:
       statisticsComponent = new StatisticsView(pointsModel);
-      if (!isOnline()) {
-        toast(`You can't create new task offline`);
-        remove(statisticsComponent);
-        statisticsComponent.hide();
-        break;
-      }
       renderElement(containerContent, statisticsComponent, RenderPosition.AFTEREND);
       travel.hide();
       statisticsComponent.show();
@@ -96,10 +88,6 @@ window.addEventListener(`load`, () => {
 window.addEventListener(`online`, () => {
   document.title = document.title.replace(` [offline]`, ``);
   apiWithProvider.sync();
-});
-
-window.addEventListener(`offline`, () => {
-  document.title += ` [offline]`;
 });
 
 
