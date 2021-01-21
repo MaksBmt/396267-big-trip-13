@@ -170,8 +170,8 @@ export default class Travel {
   }
 
   _renderPoint(listComponent, subject) {
-    const mark = new Mark(listComponent, this._handleViewAction, this._handleModeChange, this._isNewPoint, this._offersModel, this._destinationsModel);
-    mark.init(subject, this._buttonNewPoint);
+    const mark = new Mark(listComponent, this._handleViewAction, this._handleModeChange, this._isNewPoint, this._offersModel, this._destinationsModel, this._buttonNewPoint);
+    mark.init(subject);
     this._mark[subject.id] = mark;
   }
 

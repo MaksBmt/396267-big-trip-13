@@ -21,7 +21,9 @@ export default class ButtonNewPoint extends Abstract {
   }
 
   enable() {
-    this.getElement().disabled = false;
+    if (this.getElement().disabled) {
+      this.getElement().disabled = false;
+    }
   }
 
   disable() {

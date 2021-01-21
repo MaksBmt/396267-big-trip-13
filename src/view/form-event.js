@@ -2,8 +2,11 @@
 import {TYPES} from "../const.js";
 import Smart from "./smart.js";
 import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
 import flatpickr from "flatpickr";
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
+
+dayjs.extend(customParseFormat);
 
 export const BLANK_POINT = {
   type: TYPES[0],
@@ -185,7 +188,6 @@ export default class FormEvent extends Smart {
     this._endDateChangeHandler = this._endDateChangeHandler.bind(this);
 
     this._setInnerHandlers();
-    this._setDatepicker();
   }
 
   removeElement() {
@@ -203,7 +205,7 @@ export default class FormEvent extends Smart {
 
   restoreHandlers() {
     this._setInnerHandlers();
-    this._setDatepicker();
+    this.setDatepicker();
     this.setEditSubmitHandler(this._callback.editFormSubmit);
     this.setEditClickHandler(this._callback.editFormClick);
     this.setDeleteClickHandler(this._callback.deleteClick);
@@ -227,18 +229,7 @@ export default class FormEvent extends Smart {
     this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._formDeleteClickHandler);
   }
 
-  _destroyDatepicker() {
-    if (this._startDatepicker) {
-      this._startDatepicker.destroy();
-      this._startDatepicker = null;
-    }
-    if (this._endDatepicker) {
-      this._endDatepicker.destroy();
-      this._endDatepicker = null;
-    }
-  }
-
-  _setDatepicker() {
+  setDatepicker() {
     this._destroyDatepicker();
 
     this._startDatepicker = flatpickr(this._getInputDateStart(), {
@@ -257,6 +248,17 @@ export default class FormEvent extends Smart {
       defaultDate: `${this._data.dateEnd}`,
       onChange: this._endDateChangeHandler
     });
+  }
+
+  _destroyDatepicker() {
+    if (this._startDatepicker) {
+      this._startDatepicker.destroy();
+      this._startDatepicker = null;
+    }
+    if (this._endDatepicker) {
+      this._endDatepicker.destroy();
+      this._endDatepicker = null;
+    }
   }
 
   _getInputDateStart() {
@@ -374,28 +376,34 @@ export default class FormEvent extends Smart {
     evt.target.reportValidity();
   }
 
+  _getDifferenceDate() {
+    return +new Date(dayjs(this._getInputDateEnd().value, `YY/MM/DD HH:mm`)) - (+new Date(dayjs(this._getInputDateStart().value, `YY/MM/DD HH:mm`)));
+  }
+
 
   _startDateChangeHandler([userDate]) {
-    const inputDateOne = this._getInputDateStart();
-    inputDateOne.readOnly = false;
-    inputDateOne.addEventListener(`input`, () => {
-      const differenceDate = this._data.dateEnd.diff(this._data.dueDate);
-      const validationMessageDate = this._validateDate(differenceDate);
-      this._getInputDateStart().setCustomValidity(validationMessageDate);
-      if (validationMessageDate === ``) {
+    this._getInputDateStart().readOnly = false;
+    this.updateData({
+      dueDate: dayjs(userDate)
+    }, true);
+  }
+
+  _endDateChangeHandler([userDate]) {
+    const inputDateFinich = this._getInputDateEnd();
+    inputDateFinich.readOnly = false;
+
+    inputDateFinich.addEventListener(`input`, () => {
+      const validationMessageDate = this._validateDate(this._getDifferenceDate());
+      inputDateFinich.setCustomValidity(validationMessageDate);
+
+      if (this._getDifferenceDate()) {
         this.updateData({
-          dueDate: dayjs(userDate)
+          dateEnd: dayjs(userDate)
         }, true);
       }
     });
 
-    this._getInputDateStart().reportValidity();
-  }
-
-  _endDateChangeHandler([userDate]) {
-    this.updateData({
-      dateEnd: dayjs(userDate)
-    }, true);
+    inputDateFinich.reportValidity();
   }
 
 

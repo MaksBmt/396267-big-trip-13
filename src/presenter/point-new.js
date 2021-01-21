@@ -28,6 +28,7 @@ export default class PointNew {
     this._formComponent = new FormEvent(this._point, this._isNewPoint, this._offersModel, this._destinationsModel, this._buttonNewPoint);
     this._formComponent.setEditSubmitHandler(this._handleFormSubmit);
     this._formComponent.setDeleteClickHandler(this._handleDeleteClick);
+    this._formComponent.setDatepicker();
 
     renderElement(this._pointListContainer, this._formComponent, RenderPosition.AFTERBEGIN);
 
