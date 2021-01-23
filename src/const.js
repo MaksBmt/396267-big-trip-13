@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 
 export const RenderPosition = {
   AFTERBEGIN: `afterbegin`,
@@ -49,4 +50,18 @@ export const TimeCount = {
 export const StoreOption = {
   OFFERS: `offers`,
   DESTINATIONS: `destinations`
+};
+
+export const BLANK_POINT = {
+  type: TYPES[0],
+  city: ``,
+  destination: {
+    descriptions: ``,
+    srcImg: [],
+  },
+  price: ``,
+  offers: [],
+  isFavorite: false,
+  dueDate: dayjs(),
+  dateEnd: dayjs(),
 };

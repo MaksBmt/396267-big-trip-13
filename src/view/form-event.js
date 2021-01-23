@@ -1,26 +1,11 @@
 
 import {TYPES} from "../const.js";
 import Smart from "./smart.js";
+import {BLANK_POINT} from "../const.js";
 import dayjs from "dayjs";
-import customParseFormat from "dayjs/plugin/customParseFormat";
 import flatpickr from "flatpickr";
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
-dayjs.extend(customParseFormat);
-
-export const BLANK_POINT = {
-  type: TYPES[0],
-  city: ``,
-  destination: {
-    descriptions: ``,
-    srcImg: [],
-  },
-  price: ``,
-  offers: [],
-  isFavorite: false,
-  dueDate: dayjs(),
-  dateEnd: dayjs(),
-};
 
 const generateIdFromName = (sentence) => sentence.toLowerCase().split(` `).join(`_`);
 
@@ -328,8 +313,7 @@ export default class FormEvent extends Smart {
 
   _typeChangeClickHandler(evt) {
     evt.preventDefault();
-    const typeUpdate = this.getElement().querySelector(`.event__type-output`).textContent = this.getElement().querySelector(`#${evt.target.htmlFor}`).value;
-
+    const typeUpdate = this.getElement().querySelector(`#${evt.target.htmlFor}`).value;
     this.updateData({
       type: typeUpdate,
       offers: this._offersModel.filterByType(typeUpdate),
@@ -377,35 +361,32 @@ export default class FormEvent extends Smart {
   }
 
   _getDifferenceDate() {
-    return +new Date(dayjs(this._getInputDateEnd().value, `YY/MM/DD HH:mm`)) - (+new Date(dayjs(this._getInputDateStart().value, `YY/MM/DD HH:mm`)));
+    return +this._endDatepicker.selectedDates[0] - (+this._startDatepicker.selectedDates[0]);
   }
 
-
   _startDateChangeHandler([userDate]) {
-    this._getInputDateStart().readOnly = false;
-    this.updateData({
-      dueDate: dayjs(userDate)
-    }, true);
+    if (this._getDifferenceDate()) {
+      this.updateData({
+        dueDate: dayjs(userDate)
+      }, true);
+    }
   }
 
   _endDateChangeHandler([userDate]) {
-    const inputDateFinich = this._getInputDateEnd();
-    inputDateFinich.readOnly = false;
+    const inputDateEnd = this._getInputDateEnd();
+    const differenceDate = this._getDifferenceDate();
 
-    inputDateFinich.addEventListener(`input`, () => {
-      const validationMessageDate = this._validateDate(this._getDifferenceDate());
-      inputDateFinich.setCustomValidity(validationMessageDate);
+    const validationMessageDate = this._validateDate(differenceDate);
+    inputDateEnd.setCustomValidity(validationMessageDate);
 
-      if (this._getDifferenceDate()) {
-        this.updateData({
-          dateEnd: dayjs(userDate)
-        }, true);
-      }
-    });
+    if (differenceDate) {
+      this.updateData({
+        dateEnd: dayjs(userDate)
+      }, true);
+    }
 
-    inputDateFinich.reportValidity();
+    inputDateEnd.reportValidity();
   }
-
 
   _formDeleteClickHandler(evt) {
     evt.preventDefault();

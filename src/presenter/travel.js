@@ -95,8 +95,8 @@ export default class Travel {
     this._pointNewPresenter.init();
   }
 
-  _getInformationCity(points) {
-    return points.map((point) => point.city);
+  _getInformationCity() {
+    return this._pointsModel.get().map((point) => point.city);
   }
 
   _getEndDate() {
@@ -131,12 +131,12 @@ export default class Travel {
     return filtredPoints;
   }
 
-  _renderInformationCity(points) {
+  _renderInformationCity() {
     if (this._informationCityComponent !== null) {
       this._informationCityComponent = null;
     }
 
-    this._informationCityComponent = new Information(this._getInformationCity(points), this._getEndDate(), this._getStartDate());
+    this._informationCityComponent = new Information(this._getInformationCity(), this._getEndDate(), this._getStartDate());
     renderElement(this._headerMain, this._informationCityComponent, RenderPosition.AFTERBEGIN);
   }
 
@@ -224,9 +224,10 @@ export default class Travel {
     });
 
     if (pointCount !== 0) {
-      this._renderInformationCity(points);
+      this._renderInformationCity();
       this._renderPriceTotal();
     }
+
     this._renderSort();
     renderElement(this._containerContent, this._listComponent, RenderPosition.BEFOREEND);
     this._renderPoints(points.slice(0, pointCount));
