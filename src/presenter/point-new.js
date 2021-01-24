@@ -1,6 +1,6 @@
 import FormEvent from "../view/form-event.js";
-import {RenderPosition, renderElement, remove} from "../utils/render.js";
-import {UserAction, UpdateType} from "../const.js";
+import {renderElement, remove} from "../utils/render.js";
+import {UserAction, UpdateType, RenderPosition} from "../const.js";
 import {BLANK_POINT} from "../const.js";
 
 export default class PointNew {

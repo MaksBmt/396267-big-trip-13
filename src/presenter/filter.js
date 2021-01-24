@@ -1,5 +1,6 @@
 import FilterEvents from "../view/filter-events.js";
-import {renderElement, RenderPosition, replace, remove} from "../utils/render.js";
+import {renderElement, replace, remove} from "../utils/render.js";
+import {RenderPosition} from "../const.js";
 import {FilterType, UpdateType} from "../const.js";
 
 export default class Filter {
@@ -16,12 +17,13 @@ export default class Filter {
     this._filterModel.addObserver(this._handleModelEvent);
   }
 
-  init() {
+  init(isDisable) {
     this._currentFilter = this._filterModel.get();
+    this._isDisable = isDisable;
 
     const filters = this._get();
     const prevFilterComponent = this._filterComponent;
-    this._filterComponent = new FilterEvents(filters, this._currentFilter);
+    this._filterComponent = new FilterEvents(filters, this._currentFilter, this._isDisable);
     this._filterComponent.setFilterTypeChangeHandler(this._handleFilterTypeChange);
 
     if (prevFilterComponent === null) {

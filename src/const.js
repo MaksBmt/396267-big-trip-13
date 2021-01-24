@@ -65,3 +65,8 @@ export const BLANK_POINT = {
   dueDate: dayjs(),
   dateEnd: dayjs(),
 };
+
+export const ActiveFilter = {
+  TABLE: false,
+  STATS: true
+};

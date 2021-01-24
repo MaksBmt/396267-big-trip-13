@@ -5,22 +5,21 @@ import Loading from "../view/loading.js";
 import Information from "../view/information.js";
 import PriceTotal from "../view/price-total.js";
 import Mark, {State as MarkViewState} from "./mark.js";
-import Button from "../view/button-new-point.js";
 import PointNewPresenter from "./point-new.js";
-import {renderElement} from "../utils/render.js";
-import {RenderPosition, remove} from "../utils/render.js";
+import {renderElement, remove} from "../utils/render.js";
 import {priceSortPoints, intervalSortPoints, defaultSortPoints} from "../utils/common.js";
 import {filter} from "../utils/filter.js";
-import {SortType, UpdateType, UserAction, FilterType} from "../const.js";
+import {SortType, UpdateType, UserAction, FilterType, RenderPosition} from "../const.js";
 import dayjs from "dayjs";
 
 export default class Travel {
-  constructor(containerContent, pointsModel, filterModel, api, offersModel, destinationsModel, headerMain) {
+  constructor(containerContent, pointsModel, filterModel, api, offersModel, destinationsModel, headerMain, buttonNewPoint) {
     this._pointsModel = pointsModel;
     this._filterModel = filterModel;
     this._offersModel = offersModel;
     this._destinationsModel = destinationsModel;
     this._containerContent = containerContent;
+    this._buttonNewPoint = buttonNewPoint;
     this._sortComponent = null;
     this._informationCityComponent = null;
     this._priceTotalComponent = null;
@@ -32,7 +31,6 @@ export default class Travel {
 
     this._listComponent = new EventList();
     this._noComponent = new NoPoint();
-    this._buttonNewPoint = new Button();
     this._loadingComponent = new Loading();
 
     this._headerMain = headerMain;
@@ -209,21 +207,13 @@ export default class Travel {
     const points = this._getPoints();
     const pointCount = points.length;
 
-    renderElement(this._headerMain, this._buttonNewPoint, RenderPosition.BEFOREEND);
     this._buttonNewPoint.setNewPointClickHandler(this._handleNewPoint);
 
     if (pointCount === 0) {
       this._renderNoPoint();
 
       return;
-    }
-
-    window.addEventListener(`offline`, () => {
-      document.title += ` [offline]`;
-      this._buttonNewPoint.disable();
-    });
-
-    if (pointCount !== 0) {
+    } else {
       this._renderInformationCity();
       this._renderPriceTotal();
     }

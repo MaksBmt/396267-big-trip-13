@@ -1,9 +1,8 @@
 import FormEvent from "../view/form-event.js";
 import EventItem from "../view/event-item.js";
 import {renderElement} from "../utils/render.js";
-import {RenderPosition} from "../utils/render.js";
 import {replace, remove} from "../utils/render.js";
-import {UserAction, UpdateType} from "../const.js";
+import {UserAction, UpdateType, RenderPosition} from "../const.js";
 import {isOnline} from "../utils/common.js";
 import {toast} from "../utils/toast/toast.js";
 

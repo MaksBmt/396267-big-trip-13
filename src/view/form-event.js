@@ -219,17 +219,21 @@ export default class FormEvent extends Smart {
 
     this._startDatepicker = flatpickr(this._getInputDateStart(), {
       enableTime: true,
-      dateFormat: `d/m/y H:i`,
-      dateDefault: this._data.dueDate,
+      altFormat: `d/m/y H:i`,
+      allowInput: true,
+      altInput: true,
+      dateFormat: `U`,
       defaultDate: `${this._data.dueDate}`,
       onChange: this._startDateChangeHandler
     });
 
     this._endDatepicker = flatpickr(this._getInputDateEnd(), {
       enableTime: true,
-      dateFormat: `d/m/y H:i`,
+      altFormat: `d/m/y H:i`,
+      allowInput: true,
+      altInput: true,
+      dateFormat: `U`,
       minDate: `${this._data.dueDate}`,
-      dateDefault: this._data.dateEnd,
       defaultDate: `${this._data.dateEnd}`,
       onChange: this._endDateChangeHandler
     });
@@ -274,8 +278,8 @@ export default class FormEvent extends Smart {
     return (priceValue <= 0) ? `Число должно быть больше нуля` : ``;
   }
 
-  _validateDate(dateValue) {
-    return (dateValue <= 0) ? `Машины времени пока нет - конечная дата должна быть больше начальной` : ``;
+  _validateDate(isValidDate) {
+    return !isValidDate ? `Машины времени пока нет - конечная дата должна быть больше начальной` : ``;
   }
 
   _setInnerHandlers() {
@@ -298,6 +302,21 @@ export default class FormEvent extends Smart {
 
   _editFormSubmitHandler(evt) {
     evt.preventDefault();
+    const isValidDate = this._isValidDate();
+
+    if (!isValidDate) {
+      const inputDateEnd = this._endDatepicker.altInput;
+
+      const validationMessageDate = this._validateDate(isValidDate);
+      inputDateEnd.setCustomValidity(validationMessageDate);
+
+      inputDateEnd.reportValidity();
+
+      if (validationMessageDate !== ``) {
+
+        return;
+      }
+    }
 
     const itemOffers = this._data.offers;
     if (itemOffers) {
@@ -360,12 +379,12 @@ export default class FormEvent extends Smart {
     evt.target.reportValidity();
   }
 
-  _getDifferenceDate() {
-    return +this._endDatepicker.selectedDates[0] - (+this._startDatepicker.selectedDates[0]);
+  _isValidDate() {
+    return (+this._endDatepicker.input.value - (+this._startDatepicker.input.value)) >= 0;
   }
 
   _startDateChangeHandler([userDate]) {
-    if (this._getDifferenceDate()) {
+    if (this._isValidDate()) {
       this.updateData({
         dueDate: dayjs(userDate)
       }, true);
@@ -373,19 +392,15 @@ export default class FormEvent extends Smart {
   }
 
   _endDateChangeHandler([userDate]) {
-    const inputDateEnd = this._getInputDateEnd();
-    const differenceDate = this._getDifferenceDate();
+    const inputDateEnd = this._endDatepicker.altInput;
+    const isValidDate = this._isValidDate();
 
-    const validationMessageDate = this._validateDate(differenceDate);
-    inputDateEnd.setCustomValidity(validationMessageDate);
-
-    if (differenceDate) {
+    if (isValidDate) {
+      inputDateEnd.setCustomValidity(``);
       this.updateData({
         dateEnd: dayjs(userDate)
       }, true);
     }
-
-    inputDateEnd.reportValidity();
   }
 
   _formDeleteClickHandler(evt) {
