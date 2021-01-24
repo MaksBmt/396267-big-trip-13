@@ -1,6 +1,6 @@
 import Observer from "../utils/observer.js";
 
-export default class OffersModel extends Observer {
+export default class Offers extends Observer {
   constructor() {
     super();
     this._offers = [];
@@ -14,7 +14,7 @@ export default class OffersModel extends Observer {
     return this._offers;
   }
 
-  filter(type) {
+  filterByType(type) {
     type = type.toLowerCase();
     const item = this._offers.find((offer) => offer.type === type);
     return item ? item.offers : ``;

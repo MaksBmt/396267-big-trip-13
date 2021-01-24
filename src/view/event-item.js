@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import Abstract from "./abstract.js";
 import {TimeCount} from "../const.js";
+import {isOnline} from "../utils/common.js";
 
 dayjs.extend(utc);
 
@@ -75,10 +76,10 @@ const createEventItem = (point) => {
 };
 
 export default class EventItem extends Abstract {
-  constructor(point, button) {
+  constructor(point, buttonNewPoint) {
     super();
     this._point = point;
-    this._button = button;
+    this._buttonNewPoint = buttonNewPoint;
 
     this.itemFavorite = this.getElement().querySelector(`.event__favorite-btn`);
     this._pointClickHandler = this._pointClickHandler.bind(this);
@@ -103,7 +104,12 @@ export default class EventItem extends Abstract {
   _pointClickHandler(evt) {
     evt.preventDefault();
     this._callback.pointClick();
-    this._button.enableNewPointButton();
+
+    if (isOnline()) {
+      this._buttonNewPoint.enable();
+    } else {
+      this._buttonNewPoint.disable();
+    }
   }
 
   _favoriteClickHandler(evt) {

@@ -4,7 +4,7 @@ const createButtonEvent = () => {
   return `<button class="trip-main__event-add-btn  btn  btn--big  btn--yellow" type="button">New event</button>`;
 };
 
-export default class Button extends Abstract {
+export default class ButtonNewPoint extends Abstract {
   constructor() {
     super();
 
@@ -20,17 +20,19 @@ export default class Button extends Abstract {
     this.getElement().addEventListener(`click`, this._newPointClickHandler);
   }
 
-  enableNewPointButton() {
-    this.getElement().disabled = false;
+  enable() {
+    if (this.getElement().disabled) {
+      this.getElement().disabled = false;
+    }
   }
 
-  _disableNewPointButton() {
+  disable() {
     this.getElement().disabled = true;
   }
 
   _newPointClickHandler(evt) {
     evt.preventDefault();
     this._callback.buttonClick();
-    this._disableNewPointButton();
+    this.disable();
   }
 }

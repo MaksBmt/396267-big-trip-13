@@ -5,21 +5,21 @@ import Loading from "../view/loading.js";
 import Information from "../view/information.js";
 import PriceTotal from "../view/price-total.js";
 import Mark, {State as MarkViewState} from "./mark.js";
-import Button from "../view/button-event.js";
 import PointNewPresenter from "./point-new.js";
-import {renderElement} from "../utils/render.js";
-import {RenderPosition, remove} from "../utils/render.js";
+import {renderElement, remove} from "../utils/render.js";
 import {priceSortPoints, intervalSortPoints, defaultSortPoints} from "../utils/common.js";
 import {filter} from "../utils/filter.js";
-import {SortType, UpdateType, UserAction, FilterType} from "../const.js";
+import {SortType, UpdateType, UserAction, FilterType, RenderPosition} from "../const.js";
+import dayjs from "dayjs";
 
 export default class Travel {
-  constructor(containerContent, pointsModel, filterModel, api, offersModel, destinationsModel, headerMain) {
+  constructor(containerContent, pointsModel, filterModel, api, offersModel, destinationsModel, headerMain, buttonNewPoint) {
     this._pointsModel = pointsModel;
     this._filterModel = filterModel;
     this._offersModel = offersModel;
     this._destinationsModel = destinationsModel;
     this._containerContent = containerContent;
+    this._buttonNewPoint = buttonNewPoint;
     this._sortComponent = null;
     this._informationCityComponent = null;
     this._priceTotalComponent = null;
@@ -31,7 +31,6 @@ export default class Travel {
 
     this._listComponent = new EventList();
     this._noComponent = new NoPoint();
-    this._button = new Button();
     this._loadingComponent = new Loading();
 
     this._headerMain = headerMain;
@@ -43,7 +42,7 @@ export default class Travel {
 
     this._handleNewPoint = this._handleNewPoint.bind(this);
 
-    this._pointNewPresenter = new PointNewPresenter(this._listComponent, this._handleViewAction, this._offersModel, this._destinationsModel, this._button);
+    this._pointNewPresenter = new PointNewPresenter(this._listComponent, this._handleViewAction, this._offersModel, this._destinationsModel, this._buttonNewPoint);
   }
 
   init() {
@@ -94,8 +93,24 @@ export default class Travel {
     this._pointNewPresenter.init();
   }
 
-  _getInformationCity(points) {
-    return points.map((point) => point.city);
+  _getInformationCity() {
+    return this._pointsModel.get().map((point) => point.city);
+  }
+
+  _getEndDate() {
+
+    return this._pointsModel.get()
+      .map((point) => point.dateEnd)
+      .sort((pointA, pointB) => +dayjs(pointA) - +dayjs(pointB))
+      .pop();
+  }
+
+  _getStartDate() {
+
+    return this._pointsModel.get()
+      .map((point) => point.dueDate)
+      .sort((pointA, pointB) => +dayjs(pointA) - +dayjs(pointB))
+      .shift();
   }
 
   _getPoints() {
@@ -114,12 +129,12 @@ export default class Travel {
     return filtredPoints;
   }
 
-  _renderInformationCity(points) {
+  _renderInformationCity() {
     if (this._informationCityComponent !== null) {
       this._informationCityComponent = null;
     }
 
-    this._informationCityComponent = new Information(this._getInformationCity(points));
+    this._informationCityComponent = new Information(this._getInformationCity(), this._getEndDate(), this._getStartDate());
     renderElement(this._headerMain, this._informationCityComponent, RenderPosition.AFTERBEGIN);
   }
 
@@ -153,8 +168,8 @@ export default class Travel {
   }
 
   _renderPoint(listComponent, subject) {
-    const mark = new Mark(listComponent, this._handleViewAction, this._handleModeChange, this._isNewPoint, this._offersModel, this._destinationsModel);
-    mark.init(subject, this._button);
+    const mark = new Mark(listComponent, this._handleViewAction, this._handleModeChange, this._isNewPoint, this._offersModel, this._destinationsModel, this._buttonNewPoint);
+    mark.init(subject);
     this._mark[subject.id] = mark;
   }
 
@@ -192,19 +207,17 @@ export default class Travel {
     const points = this._getPoints();
     const pointCount = points.length;
 
+    this._buttonNewPoint.setNewPointClickHandler(this._handleNewPoint);
+
     if (pointCount === 0) {
       this._renderNoPoint();
 
       return;
-    }
-
-    renderElement(this._headerMain, this._button, RenderPosition.BEFOREEND);
-    this._button.setNewPointClickHandler(this._handleNewPoint);
-
-    if (pointCount !== 0) {
-      this._renderInformationCity(points);
+    } else {
+      this._renderInformationCity();
       this._renderPriceTotal();
     }
+
     this._renderSort();
     renderElement(this._containerContent, this._listComponent, RenderPosition.BEFOREEND);
     this._renderPoints(points.slice(0, pointCount));

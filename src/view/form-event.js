@@ -1,30 +1,18 @@
 
 import {TYPES} from "../const.js";
 import Smart from "./smart.js";
+import {BLANK_POINT} from "../const.js";
 import dayjs from "dayjs";
 import flatpickr from "flatpickr";
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
-export const BLANK_POINT = {
-  type: TYPES[0],
-  city: ``,
-  destination: {
-    descriptions: ``,
-    srcImg: [],
-  },
-  price: ``,
-  offers: [],
-  isFavorite: false,
-  dueDate: dayjs(),
-  dateEnd: dayjs(),
-};
 
 const generateIdFromName = (sentence) => sentence.toLowerCase().split(` `).join(`_`);
 
 const createListDestination = (cities) => {
   const citiesList = cities.get();
   return (`<datalist id="destination-list-1"> 
-   ${citiesList.map((item) => `<option value="${item.name}"></option>`).join(``)}
+   ${citiesList.map(({name}) => `<option value="${name}"></option>`).join(``)}
     </datalist>`
   );
 };
@@ -63,7 +51,7 @@ const createItemsType = () => {
 };
 
 const createDestinationPhotos = (srcImg) => {
-  return srcImg.map((foto) => `<img class="event__photo" src = "${foto.src}" alt = "${foto.descriptions}">`).join(``);
+  return srcImg.map(({src, descriptions}) => `<img class="event__photo" src = "${src}" alt = "${descriptions}">`).join(``);
 };
 
 const createButtonFormEdit = () => {
@@ -163,18 +151,17 @@ const createFormEvent = (data, isNewPoint, citiesList) => {
 };
 
 export default class FormEvent extends Smart {
-  constructor(point = BLANK_POINT, isNewPoint, offersModel, destinationsModel, button) {
+  constructor(point = BLANK_POINT, isNewPoint, offersModel, destinationsModel, buttonNewPoint) {
     super();
     this._isNewPoint = isNewPoint;
     this._point = point;
     this._offersModel = offersModel;
     this._destinationsModel = destinationsModel;
-    this._button = button;
-
+    this._buttonNewPoint = buttonNewPoint;
 
     this._data = FormEvent.parsePointToData(this._point);
-    this._setStartDatepicker = null;
-    this._setEndDatepicker = null;
+    this._startDatepicker = null;
+    this._endDatepicker = null;
 
     this._editFormClickHandler = this._editFormClickHandler.bind(this);
     this._editFormSubmitHandler = this._editFormSubmitHandler.bind(this);
@@ -186,7 +173,6 @@ export default class FormEvent extends Smart {
     this._endDateChangeHandler = this._endDateChangeHandler.bind(this);
 
     this._setInnerHandlers();
-    this._setDatepicker();
   }
 
   removeElement() {
@@ -204,7 +190,7 @@ export default class FormEvent extends Smart {
 
   restoreHandlers() {
     this._setInnerHandlers();
-    this._setDatepicker();
+    this.setDatepicker();
     this.setEditSubmitHandler(this._callback.editFormSubmit);
     this.setEditClickHandler(this._callback.editFormClick);
     this.setDeleteClickHandler(this._callback.deleteClick);
@@ -228,43 +214,47 @@ export default class FormEvent extends Smart {
     this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._formDeleteClickHandler);
   }
 
-  _destroyDatepicker() {
-    if (this._setStartDatepicker) {
-      this._setStartDatepicker.destroy();
-      this._setStartDatepicker = null;
-    }
-    if (this._setEndDatepicker) {
-      this._setEndDatepicker.destroy();
-      this._setEndDatepicker = null;
-    }
-  }
-
-  _setDatepicker() {
+  setDatepicker() {
     this._destroyDatepicker();
 
-    this._setStartDatepicker = flatpickr(this.getInputDateOne(), {
+    this._startDatepicker = flatpickr(this._getInputDateStart(), {
       enableTime: true,
-      dateFormat: `d/m/y H:i`,
-      dateDefault: this._data.dueDate,
+      altFormat: `d/m/y H:i`,
+      allowInput: true,
+      altInput: true,
+      dateFormat: `U`,
       defaultDate: `${this._data.dueDate}`,
       onChange: this._startDateChangeHandler
     });
 
-    this._setEndDatepicker = flatpickr(this.getInputDateSecond(), {
+    this._endDatepicker = flatpickr(this._getInputDateEnd(), {
       enableTime: true,
-      dateFormat: `d/m/y H:i`,
+      altFormat: `d/m/y H:i`,
+      allowInput: true,
+      altInput: true,
+      dateFormat: `U`,
       minDate: `${this._data.dueDate}`,
-      dateDefault: this._data.dateEnd,
       defaultDate: `${this._data.dateEnd}`,
       onChange: this._endDateChangeHandler
     });
   }
 
-  getInputDateOne() {
+  _destroyDatepicker() {
+    if (this._startDatepicker) {
+      this._startDatepicker.destroy();
+      this._startDatepicker = null;
+    }
+    if (this._endDatepicker) {
+      this._endDatepicker.destroy();
+      this._endDatepicker = null;
+    }
+  }
+
+  _getInputDateStart() {
     return this.getElement().querySelector(`.event__input--time[name = event-start-time]`);
   }
 
-  getInputDateSecond() {
+  _getInputDateEnd() {
     return this.getElement().querySelector(`.event__input--time[name = event-end-time]`);
   }
 
@@ -288,8 +278,8 @@ export default class FormEvent extends Smart {
     return (priceValue <= 0) ? `Число должно быть больше нуля` : ``;
   }
 
-  _validateDate(dateValue) {
-    return (dateValue <= 0) ? `Машины времени пока нет - конечная дата должна быть больше начальной` : ``;
+  _validateDate(isValidDate) {
+    return !isValidDate ? `Машины времени пока нет - конечная дата должна быть больше начальной` : ``;
   }
 
   _setInnerHandlers() {
@@ -307,11 +297,26 @@ export default class FormEvent extends Smart {
   _editFormClickHandler(evt) {
     evt.preventDefault();
     this._callback.editFormClick(FormEvent.parseDataToPoint(this._data));
-    this._button.enableNewPointButton();
+    this._buttonNewPoint.enable();
   }
 
   _editFormSubmitHandler(evt) {
     evt.preventDefault();
+    const isValidDate = this._isValidDate();
+
+    if (!isValidDate) {
+      const inputDateEnd = this._endDatepicker.altInput;
+
+      const validationMessageDate = this._validateDate(isValidDate);
+      inputDateEnd.setCustomValidity(validationMessageDate);
+
+      inputDateEnd.reportValidity();
+
+      if (validationMessageDate !== ``) {
+
+        return;
+      }
+    }
 
     const itemOffers = this._data.offers;
     if (itemOffers) {
@@ -327,11 +332,10 @@ export default class FormEvent extends Smart {
 
   _typeChangeClickHandler(evt) {
     evt.preventDefault();
-    const typeUpdate = this.getElement().querySelector(`.event__type-output`).textContent = this.getElement().querySelector(`#${evt.target.htmlFor}`).value;
-
+    const typeUpdate = this.getElement().querySelector(`#${evt.target.htmlFor}`).value;
     this.updateData({
       type: typeUpdate,
-      offers: this._offersModel.filter(typeUpdate),
+      offers: this._offersModel.filterByType(typeUpdate),
     });
   }
 
@@ -375,30 +379,29 @@ export default class FormEvent extends Smart {
     evt.target.reportValidity();
   }
 
+  _isValidDate() {
+    return (+this._endDatepicker.input.value - (+this._startDatepicker.input.value)) >= 0;
+  }
 
   _startDateChangeHandler([userDate]) {
-    const inputDateOne = this.getInputDateOne();
-    inputDateOne.readOnly = false;
-    inputDateOne.addEventListener(`input`, () => {
-      const differenceDate = this._data.dateEnd.diff(this._data.dueDate);
-      const validationMessageDate = this._validateDate(differenceDate);
-      this.getInputDateOne().setCustomValidity(validationMessageDate);
-      if (validationMessageDate === ``) {
-        this.updateData({
-          dueDate: dayjs(userDate)
-        }, true);
-      }
-    });
-
-    this.getInputDateOne().reportValidity();
+    if (this._isValidDate()) {
+      this.updateData({
+        dueDate: dayjs(userDate)
+      }, true);
+    }
   }
 
   _endDateChangeHandler([userDate]) {
-    this.updateData({
-      dateEnd: dayjs(userDate)
-    }, true);
-  }
+    const inputDateEnd = this._endDatepicker.altInput;
+    const isValidDate = this._isValidDate();
 
+    if (isValidDate) {
+      inputDateEnd.setCustomValidity(``);
+      this.updateData({
+        dateEnd: dayjs(userDate)
+      }, true);
+    }
+  }
 
   _formDeleteClickHandler(evt) {
     evt.preventDefault();

@@ -1,16 +1,16 @@
 import FormEvent from "../view/form-event.js";
-import {RenderPosition, renderElement, remove} from "../utils/render.js";
-import {UserAction, UpdateType} from "../const.js";
-import {BLANK_POINT} from "../view/form-event.js";
+import {renderElement, remove} from "../utils/render.js";
+import {UserAction, UpdateType, RenderPosition} from "../const.js";
+import {BLANK_POINT} from "../const.js";
 
 export default class PointNew {
-  constructor(pointListContainer, changeData, offersModel, destinationsModel, button) {
+  constructor(pointListContainer, changeData, offersModel, destinationsModel, buttonNewPoint) {
     this._pointListContainer = pointListContainer;
     this._changeData = changeData;
     this._point = BLANK_POINT;
     this._destinationsModel = destinationsModel;
     this._offersModel = offersModel;
-    this._button = button;
+    this._buttonNewPoint = buttonNewPoint;
 
     this._formComponent = null;
     this._isNewPoint = true;
@@ -25,9 +25,10 @@ export default class PointNew {
       return;
     }
 
-    this._formComponent = new FormEvent(this._point, this._isNewPoint, this._offersModel, this._destinationsModel, this._button);
+    this._formComponent = new FormEvent(this._point, this._isNewPoint, this._offersModel, this._destinationsModel, this._buttonNewPoint);
     this._formComponent.setEditSubmitHandler(this._handleFormSubmit);
     this._formComponent.setDeleteClickHandler(this._handleDeleteClick);
+    this._formComponent.setDatepicker();
 
     renderElement(this._pointListContainer, this._formComponent, RenderPosition.AFTERBEGIN);
 
@@ -66,19 +67,19 @@ export default class PointNew {
 
   _handleFormSubmit(point) {
     this._changeData(UserAction.ADD_TASK, UpdateType.MINOR, point);
-    this._button.enableNewPointButton();
+    this._buttonNewPoint.enable();
   }
 
   _handleDeleteClick() {
     this.destroy();
-    this._button.enableNewPointButton();
+    this._buttonNewPoint.enable();
   }
 
   _onEscKeyDown(evt) {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       evt.preventDefault();
       this.destroy();
-      this._button.enableNewPointButton();
+      this._buttonNewPoint.enable();
     }
   }
 }

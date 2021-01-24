@@ -1,9 +1,10 @@
 import FormEvent from "../view/form-event.js";
 import EventItem from "../view/event-item.js";
 import {renderElement} from "../utils/render.js";
-import {RenderPosition} from "../utils/render.js";
 import {replace, remove} from "../utils/render.js";
-import {UserAction, UpdateType} from "../const.js";
+import {UserAction, UpdateType, RenderPosition} from "../const.js";
+import {isOnline} from "../utils/common.js";
+import {toast} from "../utils/toast/toast.js";
 
 const Mode = {
   DEFAULT: `DEFAULT`,
@@ -17,12 +18,13 @@ export const State = {
 };
 
 export default class Mark {
-  constructor(markContainer, changeData, changeMode, isNewPoint, offersModel, destinationsModel) {
+  constructor(markContainer, changeData, changeMode, isNewPoint, offersModel, destinationsModel, buttonNewPoint) {
     this._markContainer = markContainer;
     this._changeData = changeData;
     this._changeMode = changeMode;
     this._offersModel = offersModel;
     this._destinationsModel = destinationsModel;
+    this._buttonNewPoint = buttonNewPoint;
 
     this._markItem = null;
     this._markForm = null;
@@ -30,25 +32,25 @@ export default class Mark {
     this._isNewPoint = isNewPoint;
 
     this._handleEditClick = this._handleEditClick.bind(this);
+    this._handleEditFormClick = this._handleEditFormClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._handleDeleteClick = this._handleDeleteClick.bind(this);
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
   }
 
-  init(subject, button) {
+  init(subject) {
     this._subject = subject;
-    this._button = button;
 
     const prevMarkItem = this._markItem;
     const prevMarkForm = this._markForm;
 
-    this._markItem = new EventItem(subject, this._button);
-    this._markForm = new FormEvent(subject, this._isNewPoint, this._offersModel, this._destinationsModel, this._button);
+    this._markItem = new EventItem(subject, this._buttonNewPoint);
+    this._markForm = new FormEvent(subject, this._isNewPoint, this._offersModel, this._destinationsModel, this._buttonNewPoint);
 
     this._markItem.setPointClickHandler(this._handleEditClick);
     this._markForm.setEditSubmitHandler(this._handleFormSubmit);
-    this._markForm.setEditClickHandler(this._handleFormSubmit);
+    this._markForm.setEditClickHandler(this._handleEditFormClick);
     this._markForm.setDeleteClickHandler(this._handleDeleteClick);
     this._markItem.setFavoriteClickHandler(this._handleFavoriteClick);
 
@@ -134,7 +136,21 @@ export default class Mark {
   }
 
   _handleEditClick() {
+    if (!isOnline()) {
+      toast(`You can't edit task offline`);
+      this._buttonNewPoint.disable();
+
+      return;
+    }
+
+    this._markForm.setDatepicker();
+    this._buttonNewPoint.enable();
     this._replaceCardToForm();
+  }
+
+  _handleEditFormClick() {
+    this._markForm.reset(this._subject);
+    this._replaceFormToCard();
   }
 
   _handleFavoriteClick() {
@@ -142,10 +158,20 @@ export default class Mark {
   }
 
   _handleFormSubmit(item) {
+    if (!isOnline()) {
+      toast(`You can't save task offline`);
+      return;
+    }
+
     this._changeData(UserAction.UPDATE_TASK, UpdateType.MINOR, item);
   }
 
   _handleDeleteClick(item) {
+    if (!isOnline()) {
+      toast(`You can't delete task offline`);
+      return;
+    }
+
     this._changeData(UserAction.DELETE_TASK, UpdateType.MAJOR, item);
   }
 }
