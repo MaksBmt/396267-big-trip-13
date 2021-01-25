@@ -1,7 +1,6 @@
 import FilterEvents from "../view/filter-events.js";
 import {renderElement, replace, remove} from "../utils/render.js";
-import {RenderPosition} from "../const.js";
-import {FilterType, UpdateType} from "../const.js";
+import {FilterType, UpdateType, RenderPosition} from "../const.js";
 
 export default class Filter {
   constructor(filterContainer, filterModel) {
@@ -54,14 +53,17 @@ export default class Filter {
       {
         type: FilterType.EVERYTHING,
         name: `everything`,
+        isDisableType: true
       },
       {
         type: FilterType.FUTURE,
         name: `future`,
+        isDisableType: true
       },
       {
         type: FilterType.PAST,
         name: `past`,
+        isDisableType: true
       },
     ];
   }

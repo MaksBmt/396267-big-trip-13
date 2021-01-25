@@ -36,7 +36,6 @@ export default class FilterSort extends Abstract {
     super();
 
     this._currentSortType = currentSortType;
-
     this._sortTypeChangeHandler = this._sortTypeChangeHandler.bind(this);
   }
 
@@ -51,8 +50,8 @@ export default class FilterSort extends Abstract {
 
   _sortTypeChangeHandler(evt) {
     if (evt.target.tagName !== `LABEL`) {
-      return;
 
+      return;
     }
 
     evt.preventDefault();

@@ -15,8 +15,6 @@ export const SortType = {
 
 export const TYPES = [`Taxi`, `Bus`, `Train`, `Ship`, `Transport`, `Drive`, `Flight`, `Check-in`, `Sightseeing`, `Restaurant`];
 
-//
-
 export const UserAction = {
   UPDATE_TASK: `UPDATE_TASK`,
   ADD_TASK: `ADD_TASK`,
