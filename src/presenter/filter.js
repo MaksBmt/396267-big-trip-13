@@ -53,17 +53,14 @@ export default class Filter {
       {
         type: FilterType.EVERYTHING,
         name: `everything`,
-        isDisableType: true
       },
       {
         type: FilterType.FUTURE,
         name: `future`,
-        isDisableType: true
       },
       {
         type: FilterType.PAST,
         name: `past`,
-        isDisableType: true
       },
     ];
   }
