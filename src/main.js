@@ -4,6 +4,7 @@ import Travel from "./presenter/travel.js";
 import FilterPresenter from "./presenter/filter.js";
 import {UpdateType, MenuItem, RenderPosition, ActiveFilter} from "./const.js";
 import {renderElement, remove} from "./utils/render.js";
+import {isOnline} from "./utils/common.js";
 import PointsModel from "./model/points.js";
 import OffersModel from "./model/offers.js";
 import DestinationModel from "./model/destinations.js";
@@ -14,7 +15,7 @@ import Api from "./api/api.js";
 import Store from "./api/store.js";
 import Provider from "./api/provider.js";
 
-const AUTHORIZATION = `Basic **SlvMY$685`;
+const AUTHORIZATION = `Basic **SlvMY$687`;
 const END_POINT = `https://13.ecmascript.pages.academy/big-trip/`;
 const STORE_PREFIX = `bigtrip-localstorage`;
 const STORE_VER = `v13`;
@@ -39,7 +40,6 @@ let statisticsComponent = null;
 const filterModel = new FilterModel();
 
 const filterPresenter = new FilterPresenter(headerTitle[1], filterModel);
-filterPresenter.init(ActiveFilter.TABLE);
 
 const containerContent = document.querySelector(`.trip-events`);
 
@@ -49,7 +49,9 @@ const handleSiteMenuClick = (menuItem) => {
   switch (menuItem) {
     case MenuItem.TABLE:
       travel.show();
-      buttonNewPoint.enable();
+      if (isOnline()) {
+        buttonNewPoint.enable();
+      }
       remove(statisticsComponent);
       statisticsComponent.hide();
       filterPresenter.init(ActiveFilter.TABLE);
@@ -94,6 +96,7 @@ window.addEventListener(`load`, () => {
 window.addEventListener(`online`, () => {
   document.title = document.title.replace(` [offline]`, ``);
   apiWithProvider.sync();
+  buttonNewPoint.enable();
 });
 
 window.addEventListener(`offline`, () => {
