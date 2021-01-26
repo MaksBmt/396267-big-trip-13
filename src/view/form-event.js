@@ -1,7 +1,5 @@
-
-import {TYPES} from "../const.js";
 import Smart from "./smart.js";
-import {BLANK_POINT} from "../const.js";
+import {BLANK_POINT, TYPES} from "../const.js";
 import dayjs from "dayjs";
 import flatpickr from "flatpickr";
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
@@ -385,6 +383,7 @@ export default class FormEvent extends Smart {
 
   _startDateChangeHandler([userDate]) {
     if (this._isValidDate()) {
+      this._endDatepicker.altInput.setCustomValidity(``);
       this.updateData({
         dueDate: dayjs(userDate)
       }, true);

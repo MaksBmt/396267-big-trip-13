@@ -1,7 +1,6 @@
 import FormEvent from "../view/form-event.js";
 import EventItem from "../view/event-item.js";
-import {renderElement} from "../utils/render.js";
-import {replace, remove} from "../utils/render.js";
+import {replace, remove, renderElement} from "../utils/render.js";
 import {UserAction, UpdateType, RenderPosition} from "../const.js";
 import {isOnline} from "../utils/common.js";
 import {toast} from "../utils/toast/toast.js";
@@ -83,19 +82,6 @@ export default class Mark {
     }
   }
 
-  _replaceCardToForm() {
-    replace(this._markForm, this._markItem);
-    document.addEventListener(`keydown`, this._onEscKeyDown);
-    this._changeMode();
-    this._mode = Mode.EDITING;
-  }
-
-  _replaceFormToCard() {
-    replace(this._markItem, this._markForm);
-    document.removeEventListener(`keydown`, this._onEscKeyDown);
-    this._mode = Mode.DEFAULT;
-  }
-
   setViewState(state) {
     const resetFormState = () => {
       this._markForm.updateData({
@@ -125,6 +111,18 @@ export default class Mark {
     }
   }
 
+  _replaceCardToForm() {
+    replace(this._markForm, this._markItem);
+    document.addEventListener(`keydown`, this._onEscKeyDown);
+    this._changeMode();
+    this._mode = Mode.EDITING;
+  }
+
+  _replaceFormToCard() {
+    replace(this._markItem, this._markForm);
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
+    this._mode = Mode.DEFAULT;
+  }
 
   _onEscKeyDown(evt) {
     if (evt.key === `Escape` || evt.key === `Esc`) {

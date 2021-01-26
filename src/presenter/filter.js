@@ -1,7 +1,6 @@
 import FilterEvents from "../view/filter-events.js";
 import {renderElement, replace, remove} from "../utils/render.js";
-import {RenderPosition} from "../const.js";
-import {FilterType, UpdateType} from "../const.js";
+import {FilterType, UpdateType, RenderPosition} from "../const.js";
 
 export default class Filter {
   constructor(filterContainer, filterModel) {

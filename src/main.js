@@ -20,13 +20,13 @@ const STORE_PREFIX = `bigtrip-localstorage`;
 const STORE_VER = `v13`;
 const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
 
-export const api = new Api(END_POINT, AUTHORIZATION);
+const api = new Api(END_POINT, AUTHORIZATION);
 const store = new Store(STORE_NAME, window.localStorage);
 const apiWithProvider = new Provider(api, store);
 
-export const pointsModel = new PointsModel();
-export const offersModel = new OffersModel();
-export const destinationsModel = new DestinationModel();
+const pointsModel = new PointsModel();
+const offersModel = new OffersModel();
+const destinationsModel = new DestinationModel();
 
 const headerMain = document.querySelector(`.trip-main`);
 const headerControl = headerMain.querySelector(`.trip-controls`);
@@ -37,6 +37,7 @@ const buttonNewPoint = new Button();
 let statisticsComponent = null;
 
 const filterModel = new FilterModel();
+
 const filterPresenter = new FilterPresenter(headerTitle[1], filterModel);
 filterPresenter.init(ActiveFilter.TABLE);
 
