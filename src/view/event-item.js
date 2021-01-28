@@ -32,9 +32,8 @@ const createResultOffers = (offers) => {
       &plus;&euro;&nbsp;
     <span class="event__offer-price">${offer.price}</span>
   </li>`).join(``);
-  } else {
-    return [];
   }
+  return ``;
 };
 
 const createEventItem = (point) => {
@@ -67,7 +66,7 @@ const createEventItem = (point) => {
         </p>
         <h4 class="visually-hidden">Offers:</h4>
         <ul class="event__selected-offers">
-           ${(resultOffers.length !== 0) ? resultOffers : ``}
+           ${resultOffers}
         </ul>
         <button class="${favoriteClassName}" type="button">
           <span class="visually-hidden">Add to favorite</span>

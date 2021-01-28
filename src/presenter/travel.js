@@ -45,10 +45,11 @@ export default class Travel {
     this._pointNewPresenter = new PointNewPresenter(this._listComponent, this._handleViewAction, this._offersModel, this._destinationsModel, this._buttonNewPoint);
   }
 
-  init() {
+  init(filterPresenter) {
     this._pointsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
     this._renderListContent();
+    this._filterPresenter = filterPresenter
   }
 
   hide() {
@@ -62,7 +63,6 @@ export default class Travel {
     this._currentSortType = SortType.DEFAULT;
     this._filterModel.set(UpdateType.MAJOR, FilterType.EVERYTHING);
   }
-
 
   destroy() {
     this._clearListContent({resetRenderedPointCount: true, resetSortType: true});
@@ -91,6 +91,25 @@ export default class Travel {
     this._currentSortType = SortType.DEFAULT;
     this._filterModel.set(UpdateType.MAJOR, FilterType.EVERYTHING);
     this._pointNewPresenter.init();
+  }
+
+  _getDataForDisableFilters(points) {
+    // const points = this._pointsModel.get();
+    const pointsFuture = points.filter((item) => +dayjs(item.dueDate) > +dayjs())
+    // const pointsPast = points.filter((item) => +dayjs() < +dayjs(item.dateEnd))
+    // console.log('future ', pointsFuture)
+    // console.log('past ', pointsPast)
+    // const pointsFuture = points.map((item) => +dayjs(item.dueDate))
+    if (pointsFuture.length === 0) {
+      return `futufe`;
+
+    } else if ((points.filter((item) => +dayjs() < +dayjs(item.dateEnd))).length === 0) {
+      return `past`;
+    } else {
+      return `everything`;
+    }
+
+
   }
 
   _getInformationCity() {
@@ -156,7 +175,6 @@ export default class Travel {
     renderElement(this._containerContent, this._loadingComponent, RenderPosition.BEFOREEND);
   }
 
-
   _renderSort() {
     if (this._sortComponent !== null) {
       this._sortComponent = null;
@@ -221,6 +239,9 @@ export default class Travel {
     this._renderSort();
     renderElement(this._containerContent, this._listComponent, RenderPosition.BEFOREEND);
     this._renderPoints(points.slice(0, pointCount));
+    // this._filterPresenter.getDataForDisableFilters(points)
+    this._filterModel.setDisableType(this._getDataForDisableFilters(points))
+    // console.log('data ', this._getDataForDisableFilters(points))
   }
 
 

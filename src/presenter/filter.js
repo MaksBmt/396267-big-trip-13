@@ -1,6 +1,7 @@
 import FilterEvents from "../view/filter-events.js";
 import {renderElement, replace, remove} from "../utils/render.js";
 import {FilterType, UpdateType, RenderPosition} from "../const.js";
+import dayjs from "dayjs"
 
 export default class Filter {
   constructor(filterContainer, filterModel) {
@@ -19,10 +20,12 @@ export default class Filter {
   init(isDisable) {
     this._currentFilter = this._filterModel.get();
     this._isDisable = isDisable;
-
+    // this._pointsModel = pointsModel;
+    const filterType = this._filterModel.getDisableType()
+    console.log('pm-f ', filterType)
     const filters = this._get();
     const prevFilterComponent = this._filterComponent;
-    this._filterComponent = new FilterEvents(filters, this._currentFilter, this._isDisable);
+    this._filterComponent = new FilterEvents(filters, this._currentFilter, this._isDisable, filterType);
     this._filterComponent.setFilterTypeChangeHandler(this._handleFilterTypeChange);
 
     if (prevFilterComponent === null) {
@@ -33,6 +36,23 @@ export default class Filter {
     replace(this._filterComponent, prevFilterComponent);
     remove(prevFilterComponent);
   }
+
+  // getDataForDisableFilters(points) {
+  //   // const points = this._pointsModel.get();
+  //   const pointsFuture = points.filter((item) => +dayjs(item.dueDate) > +dayjs())
+  //   // const pointsFuture = points.map((item) => +dayjs(item.dueDate))
+  //   if (pointsFuture.length === 0) {
+  //     return {
+  //       type: `future`,
+  //       isDisableType: true,
+  //     };
+  //   } else {
+  //     return {
+  //       type: `future`,
+  //       isDisableType: false,
+  //     };
+  //   }
+  // }
 
   _handleModelEvent() {
     this.init();

@@ -60,6 +60,7 @@ const handleFetch = (evt) => {
   evt.respondWith(caches.match(request)
     .then((cacheResponse) => {
       if (cacheResponse) {
+
         return cacheResponse;
       }
 

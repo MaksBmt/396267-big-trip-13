@@ -302,7 +302,6 @@ export default class Statistics extends Smart {
   }
 
   _set() {
-
     if (this._money !== null || this._transport !== null || this._time !== null) {
       this._money = null;
       this._transport = null;
@@ -327,5 +326,4 @@ export default class Statistics extends Smart {
       this._time = null;
     }
   }
-
 }

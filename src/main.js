@@ -55,6 +55,7 @@ const handleSiteMenuClick = (menuItem) => {
       }
       remove(statisticsComponent);
       statisticsComponent.hide();
+
       filterPresenter.init(ActiveFilter.TABLE);
       break;
     case MenuItem.STATS:
@@ -79,7 +80,7 @@ Promise
   .then(([points, offers, destinations]) => {
     destinationsModel.set(destinations);
     offersModel.set(offers);
-    travel.init();
+    travel.init(filterPresenter);
     pointsModel.set(UpdateType.INIT, points);
   })
   .finally(() => {

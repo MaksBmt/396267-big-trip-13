@@ -4,7 +4,6 @@ import dayjs from "dayjs";
 import flatpickr from "flatpickr";
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
-
 const generateIdFromName = (sentence) => sentence.toLowerCase().split(` `).join(`_`);
 
 const createListDestination = (cities) => {
@@ -15,7 +14,7 @@ const createListDestination = (cities) => {
   );
 };
 
-const layoutOffers = (offers) => {
+const createLayoutOffers = (offers) => {
 
   return offers.map((offer) => {
     const id = generateIdFromName(offer.title);
@@ -34,7 +33,7 @@ const createListOffers = (offers) => {
   return (`<section class="event__section  event__section--offers">    
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
          <div class="event__available-offers">
-         ${layoutOffers(offers)}
+         ${createLayoutOffers(offers)}
          </div>
       </section>`
   );
