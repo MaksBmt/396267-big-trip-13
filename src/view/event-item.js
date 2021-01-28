@@ -23,16 +23,24 @@ const transformFormatTime = (dueDate, dateEnd) => {
 };
 
 const createResultOffers = (offers) => {
-  return offers.map((offer) => `<li  class= "event__offer" > 
-    <span class="event__offer-title">${offer.title}</span>
-    &plus;&euro;&nbsp;
-  <span class="event__offer-price">${offer.price}</span>
-</li>`).join(``);
+
+  const offersIsChecked = offers.filter((offer) => typeof offer[`isChecked`]);
+  if (offersIsChecked.length !== 0) {
+    return offers.filter((offer) => offer.isChecked)
+      .map((offer) => `<li  class= "event__offer" > 
+      <span class="event__offer-title">${offer.title}</span>
+      &plus;&euro;&nbsp;
+    <span class="event__offer-price">${offer.price}</span>
+  </li>`).join(``);
+  } else {
+    return [];
+  }
 };
 
 const createEventItem = (point) => {
   const {type, city, price, isFavorite, dueDate, offers, dateEnd} = point;
 
+  const resultOffers = createResultOffers(offers);
   const resultTransfomationTime = transformFormatTime(dueDate, dateEnd);
 
   const favoriteClassName = isFavorite
@@ -59,7 +67,7 @@ const createEventItem = (point) => {
         </p>
         <h4 class="visually-hidden">Offers:</h4>
         <ul class="event__selected-offers">
-           ${createResultOffers(offers)}
+           ${(resultOffers.length !== 0) ? resultOffers : ``}
         </ul>
         <button class="${favoriteClassName}" type="button">
           <span class="visually-hidden">Add to favorite</span>

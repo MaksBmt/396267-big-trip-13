@@ -49,7 +49,7 @@ export default class FilterSort extends Abstract {
   }
 
   _sortTypeChangeHandler(evt) {
-    if (evt.target.tagName !== `LABEL`) {
+    if (evt.target.tagName !== `LABEL` || evt.target.htmlFor === `sort-offer` || evt.target.htmlFor === `sort-event`) {
 
       return;
     }

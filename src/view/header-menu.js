@@ -37,7 +37,11 @@ export default class HeaderMenu extends Abstract {
 
   _menuClickHandler(evt) {
     evt.preventDefault();
-    this._callback.menuClick(evt.target.dataset.value);
+
+    if (!evt.target.classList.contains(`trip-tabs__btn--active`)) {
+      this._callback.menuClick(evt.target.dataset.value);
+    }
+
     this.setMenuItem(evt.target.dataset.value);
   }
 

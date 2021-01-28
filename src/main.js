@@ -15,7 +15,7 @@ import Api from "./api/api.js";
 import Store from "./api/store.js";
 import Provider from "./api/provider.js";
 
-const AUTHORIZATION = `Basic **SlvMY$687`;
+const AUTHORIZATION = `Basic **SlvMY$6886`;
 const END_POINT = `https://13.ecmascript.pages.academy/big-trip/`;
 const STORE_PREFIX = `bigtrip-localstorage`;
 const STORE_VER = `v13`;
@@ -40,6 +40,7 @@ let statisticsComponent = null;
 const filterModel = new FilterModel();
 
 const filterPresenter = new FilterPresenter(headerTitle[1], filterModel);
+filterPresenter.init(ActiveFilter.TABLE);
 
 const containerContent = document.querySelector(`.trip-events`);
 

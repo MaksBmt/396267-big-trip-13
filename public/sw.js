@@ -42,6 +42,7 @@ self.addEventListener(`install`, (evt) => {
 });
 
 self.addEventListener(`activate`, (evt) => {
+
   evt.waitUntil(caches.keys()
     .then((keys) => Promise.all(keys.map((key) => {
       if (key.startsWith(CACHE_PREFIX) && key !== CACHE_NAME) {

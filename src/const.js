@@ -58,7 +58,13 @@ export const BLANK_POINT = {
     srcImg: [],
   },
   price: ``,
-  offers: [],
+  offers: [
+    {title: `Upgrade to a business class`, price: 190, isChecked: false},
+    {title: `Choose the radio station`, price: 30, isChecked: false},
+    {title: `Choose temperature`, price: 170, isChecked: false},
+    {title: `Drive quickly, I'm in a hurry`, price: 100, isChecked: false},
+    {title: `Drive slowly`, price: 110, isChecked: false}
+  ],
   isFavorite: false,
   dueDate: dayjs(),
   dateEnd: dayjs(),

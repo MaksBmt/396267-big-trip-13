@@ -16,8 +16,8 @@ const createListDestination = (cities) => {
 };
 
 const layoutOffers = (offers) => {
-  return offers.map((offer) => {
 
+  return offers.map((offer) => {
     const id = generateIdFromName(offer.title);
     return `<div class="event__offer-selector">
          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-1" type="checkbox" name="event-offer-${id}" ${offer.isChecked ? `checked` : ``}>
@@ -329,6 +329,10 @@ export default class FormEvent extends Smart {
   }
 
   _typeChangeClickHandler(evt) {
+    if (evt.target.tagName !== `LABEL`) {
+
+      return;
+    }
     evt.preventDefault();
     const typeUpdate = this.getElement().querySelector(`#${evt.target.htmlFor}`).value;
     this.updateData({
