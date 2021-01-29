@@ -49,19 +49,25 @@ export default class Travel {
     this._pointsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
     this._renderListContent();
-    this._filterPresenter = filterPresenter
+    this._filterPresenter = filterPresenter;
   }
 
   hide() {
     this._listComponent.hide();
-    this._sortComponent.hide();
+
+    if (this._sortComponent) {
+      this._sortComponent.hide();
+    }
   }
 
   show() {
     this._listComponent.show();
-    this._sortComponent.show();
-    this._currentSortType = SortType.DEFAULT;
-    this._filterModel.set(UpdateType.MAJOR, FilterType.EVERYTHING);
+
+    if (this._sortComponent) {
+      this._sortComponent.show();
+      this._currentSortType = SortType.DEFAULT;
+      this._filterModel.set(UpdateType.MAJOR, FilterType.EVERYTHING);
+    }
   }
 
   destroy() {
@@ -94,22 +100,17 @@ export default class Travel {
   }
 
   _getDataForDisableFilters(points) {
-    // const points = this._pointsModel.get();
-    const pointsFuture = points.filter((item) => +dayjs(item.dueDate) > +dayjs())
-    // const pointsPast = points.filter((item) => +dayjs() < +dayjs(item.dateEnd))
-    // console.log('future ', pointsFuture)
-    // console.log('past ', pointsPast)
-    // const pointsFuture = points.map((item) => +dayjs(item.dueDate))
-    if (pointsFuture.length === 0) {
-      return `futufe`;
 
-    } else if ((points.filter((item) => +dayjs() < +dayjs(item.dateEnd))).length === 0) {
-      return `past`;
-    } else {
-      return `everything`;
+    if ((points.filter((item) => +dayjs() < +dayjs(item.dateEnd))).length === 0) {
+
+      return FilterType.FUTURE;
+
+    } else if ((points.filter((item) => +dayjs() > +dayjs(item.dateEnd))).length === 0) {
+
+      return FilterType.PAST;
     }
 
-
+    return null;
   }
 
   _getInformationCity() {
@@ -182,7 +183,7 @@ export default class Travel {
 
     this._sortComponent = new FilterSort(this._currentSortType);
     this._sortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
-    renderElement(this._containerContent, this._sortComponent, RenderPosition.BEFOREEND);
+    renderElement(this._containerContent, this._sortComponent, RenderPosition.AFTERBEGIN);
   }
 
   _renderPoint(listComponent, subject) {
@@ -223,9 +224,21 @@ export default class Travel {
     }
 
     const points = this._getPoints();
+    const pointsAll = this._pointsModel.get();
     const pointCount = points.length;
-
     this._buttonNewPoint.setNewPointClickHandler(this._handleNewPoint);
+    const filterName = this._getDataForDisableFilters(pointsAll);
+    this._filterPresenter.enableAllFilters();
+
+    if (filterName !== null) {
+      this._filterPresenter.disableFilter(filterName);
+    }
+
+    renderElement(this._containerContent, this._listComponent, RenderPosition.BEFOREEND);
+
+    if (pointsAll.length === 0) {
+      this._filterPresenter.disableAllFilters();
+    }
 
     if (pointCount === 0) {
       this._renderNoPoint();
@@ -237,13 +250,8 @@ export default class Travel {
     }
 
     this._renderSort();
-    renderElement(this._containerContent, this._listComponent, RenderPosition.BEFOREEND);
     this._renderPoints(points.slice(0, pointCount));
-    // this._filterPresenter.getDataForDisableFilters(points)
-    this._filterModel.setDisableType(this._getDataForDisableFilters(points))
-    // console.log('data ', this._getDataForDisableFilters(points))
   }
-
 
   _handleSortTypeChange(sortType) {
     if (this._currentSortType === sortType) {

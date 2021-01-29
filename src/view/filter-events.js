@@ -1,19 +1,17 @@
 import Abstract from "./abstract.js";
 
-const createFilterItemTemplate = ({type, name}, currentFilterType, isDisable, filterType) => {
-  const isDisableFilterType = name === filterType
-
+const createFilterItemTemplate = ({type, name}, currentFilterType) => {
 
   return `<div class="trip-filters__filter">
-  <input id="filter-${name}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${type}" ${type === currentFilterType ? `checked` : ``} ${isDisable || isDisableFilterType ? `disabled` : ``}>
+  <input id="filter-${name}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${type}" ${type === currentFilterType ? `checked` : ``}>
       <label class="trip-filters__filter-label" for="filter-${name}">${name}</label>
 </div> `;
 };
 
-export const createFilterEventsTemplate = (filterItems, currentFilterType, isDisable, filterType) => {
+export const createFilterEventsTemplate = (filterItems, currentFilterType) => {
 
   const filterItemsTemplate = filterItems
-    .map((filter) => createFilterItemTemplate(filter, currentFilterType, isDisable, filterType))
+    .map((filter) => createFilterItemTemplate(filter, currentFilterType))
     .join(``);
 
   return `<form class="trip-filters" action = "#" method = "get">
@@ -23,23 +21,41 @@ export const createFilterEventsTemplate = (filterItems, currentFilterType, isDis
 };
 
 export default class FilterEvents extends Abstract {
-  constructor(filters, currentFilterType, isDisable, filterType) {
+  constructor(filters, currentFilterType) {
     super();
     this._filters = filters;
     this._currentFilter = currentFilterType;
-    this._isDisable = isDisable;
-    this._filterType = filterType
 
     this._filterTypeChangeHandler = this._filterTypeChangeHandler.bind(this);
   }
 
   getTemplate() {
-    return createFilterEventsTemplate(this._filters, this._currentFilter, this._isDisable, this._filterType);
+    return createFilterEventsTemplate(this._filters, this._currentFilter);
   }
 
   setFilterTypeChangeHandler(callback) {
     this._callback.filterTypeChange = callback;
     this.getElement().addEventListener(`change`, this._filterTypeChangeHandler);
+  }
+
+  disableFilter(filterName) {
+    this.getElement().querySelector(`#filter-${filterName}`).disabled = true;
+  }
+
+  disableAllFilters() {
+    this.getElement()
+      .querySelectorAll(`.trip-filters__filter-input`)
+      .forEach((filter) => {
+        filter.disabled = true;
+      });
+  }
+
+  enableAllFilters() {
+    this.getElement()
+      .querySelectorAll(`.trip-filters__filter-input`)
+      .forEach((filter) => {
+        filter.disabled = false;
+      });
   }
 
   _filterTypeChangeHandler(evt) {

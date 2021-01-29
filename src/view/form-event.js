@@ -230,7 +230,6 @@ export default class FormEvent extends Smart {
       allowInput: true,
       altInput: true,
       dateFormat: `U`,
-      minDate: `${this._data.dueDate}`,
       defaultDate: `${this._data.dateEnd}`,
       onChange: this._endDateChangeHandler
     });

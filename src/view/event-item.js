@@ -23,8 +23,8 @@ const transformFormatTime = (dueDate, dateEnd) => {
 };
 
 const createResultOffers = (offers) => {
-
   const offersIsChecked = offers.filter((offer) => typeof offer[`isChecked`]);
+
   if (offersIsChecked.length !== 0) {
     return offers.filter((offer) => offer.isChecked)
       .map((offer) => `<li  class= "event__offer" > 
@@ -33,6 +33,7 @@ const createResultOffers = (offers) => {
     <span class="event__offer-price">${offer.price}</span>
   </li>`).join(``);
   }
+
   return ``;
 };
 

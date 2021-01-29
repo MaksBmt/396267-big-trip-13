@@ -2,7 +2,7 @@
 import HeaderMenu from "./view/header-menu.js";
 import Travel from "./presenter/travel.js";
 import FilterPresenter from "./presenter/filter.js";
-import {UpdateType, MenuItem, RenderPosition, ActiveFilter} from "./const.js";
+import {UpdateType, MenuItem, RenderPosition} from "./const.js";
 import {renderElement, remove} from "./utils/render.js";
 import {isOnline} from "./utils/common.js";
 import PointsModel from "./model/points.js";
@@ -15,7 +15,7 @@ import Api from "./api/api.js";
 import Store from "./api/store.js";
 import Provider from "./api/provider.js";
 
-const AUTHORIZATION = `Basic **SlvMY$6886`;
+const AUTHORIZATION = `Basic **SlvMY$6878`;
 const END_POINT = `https://13.ecmascript.pages.academy/big-trip/`;
 const STORE_PREFIX = `bigtrip-localstorage`;
 const STORE_VER = `v13`;
@@ -40,7 +40,7 @@ let statisticsComponent = null;
 const filterModel = new FilterModel();
 
 const filterPresenter = new FilterPresenter(headerTitle[1], filterModel);
-filterPresenter.init(ActiveFilter.TABLE);
+filterPresenter.init();
 
 const containerContent = document.querySelector(`.trip-events`);
 
@@ -55,8 +55,8 @@ const handleSiteMenuClick = (menuItem) => {
       }
       remove(statisticsComponent);
       statisticsComponent.hide();
-
-      filterPresenter.init(ActiveFilter.TABLE);
+      filterPresenter.init();
+      filterPresenter.enableAllFilters();
       break;
     case MenuItem.STATS:
       statisticsComponent = new StatisticsView(pointsModel);
@@ -64,7 +64,8 @@ const handleSiteMenuClick = (menuItem) => {
       travel.hide();
       buttonNewPoint.disable();
       statisticsComponent.show();
-      filterPresenter.init(ActiveFilter.STATS);
+      filterPresenter.init();
+      filterPresenter.disableAllFilters();
       break;
   }
 };
@@ -105,5 +106,3 @@ window.addEventListener(`offline`, () => {
   document.title += ` [offline]`;
   buttonNewPoint.disable();
 });
-
-

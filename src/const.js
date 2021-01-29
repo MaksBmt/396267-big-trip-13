@@ -70,7 +70,3 @@ export const BLANK_POINT = {
   dateEnd: dayjs(),
 };
 
-export const ActiveFilter = {
-  TABLE: false,
-  STATS: true
-};
