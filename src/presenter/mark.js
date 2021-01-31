@@ -34,7 +34,7 @@ export default class Mark {
     this._handleEditFormClick = this._handleEditFormClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._handleDeleteClick = this._handleDeleteClick.bind(this);
-    this._eventFormEscKeyDownHandler = this._eventFormEscKeyDownHandler.bind(this);
+    this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
   }
 
@@ -113,23 +113,23 @@ export default class Mark {
 
   _replaceCardToForm() {
     replace(this._markForm, this._markItem);
-    document.addEventListener(`keydown`, this._eventFormEscKeyDownHandler);
+    document.addEventListener(`keydown`, this._escKeyDownHandler);
     this._changeMode();
     this._mode = Mode.EDITING;
   }
 
   _replaceFormToCard() {
     replace(this._markItem, this._markForm);
-    document.removeEventListener(`keydown`, this._eventFormEscKeyDownHandler);
+    document.removeEventListener(`keydown`, this._escKeyDownHandler);
     this._mode = Mode.DEFAULT;
   }
 
-  _eventFormEscKeyDownHandler(evt) {
+  _escKeyDownHandler(evt) {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       evt.preventDefault();
       this._markForm.reset(this._subject);
       this._replaceFormToCard();
-      document.removeEventListener(`keydown`, this._eventFormEscKeyDownHandler);
+      document.removeEventListener(`keydown`, this._escKeyDownHandler);
     }
   }
 
